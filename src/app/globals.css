@@ -1,0 +1,131 @@
+@import "tailwindcss";
+
+:root {
+  --background: #000000;
+  --foreground: #00ff41;
+  --primary: #003b00;
+  --accent: #008f11;
+  --matrix-green: #00ff41;
+  --matrix-green-dim: #008f11;
+  --matrix-green-dark: #003b00;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: black;
+  color: var(--foreground);
+  font-family: 'Geist Mono', 'Courier New', monospace;
+  letter-spacing: 0.05em;
+}
+
+/* Matrix grid pattern overlay */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    linear-gradient(rgba(0, 255, 65, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 65, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Leaflet map styles */
+.leaflet-container {
+  background: #000 !important;
+  border-radius: 8px;
+}
+
+.map-tiles {
+  filter: brightness(0.6) invert(1) contrast(3) hue-rotate(100deg) saturate(1.5) brightness(0.4);
+}
+
+/* Custom scrollbar for CIA theme */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #000;
+  border-left: 1px solid #003b00;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #008f11 0%, #003b00 100%);
+  border-radius: 0px;
+  border: 1px solid #00ff41;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00ff41;
+}
+
+/* Sophisticated glow effects */
+.glow-green {
+  box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+}
+
+.glow-red {
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+}
+
+/* Scan line animation */
+@keyframes scan {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+.scan-line {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(to bottom, transparent, rgba(0, 255, 65, 0.2), transparent);
+  animation: scan 6s linear infinite;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* CIA Card Shadows and Borders */
+.card-shadow {
+  box-shadow:
+    0 0 10px rgba(0, 255, 65, 0.1),
+    inset 0 0 5px rgba(0, 255, 65, 0.05);
+}
+
+/* Terminal-style text effects */
+.terminal-text {
+  font-family: 'Geist Mono', monospace;
+  text-shadow: 0 0 5px rgba(0, 255, 65, 0.6);
+}
+
+/* Crrt scanline effect over everything */
+body::after {
+  content: " ";
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+  z-index: 9998;
+  background-size: 100% 2px, 3px 100%;
+  pointer-events: none;
+}
