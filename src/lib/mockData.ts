@@ -91,6 +91,115 @@ export interface TimeSeriesData {
   [key: string]: string | number;
 }
 
+// === NCTIRS UNIFIED PLATFORM TYPES ===
+
+// Cyber Threat Types
+export type CyberThreatType = 'APT' | 'ZERO_DAY' | 'DDOS' | 'RANSOMWARE' | 'PHISHING' | 'DATA_BREACH' | 'MALWARE' | 'SQL_INJECTION';
+export type CyberThreatSeverity = 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
+export type CyberTargetType = 'GOVERNMENT' | 'FINANCIAL' | 'INFRASTRUCTURE' | 'HEALTHCARE' | 'TELECOM' | 'ENERGY' | 'TRANSPORT';
+
+export interface CyberThreat {
+  id: string;
+  type: CyberThreatType;
+  name: string;
+  description: string;
+  severity: CyberThreatSeverity;
+  targetSector: CyberTargetType;
+  sourceIP?: string;
+  targetSystem: string;
+  aptSignature?: string;
+  timestamp: Date;
+  aiConfidence: number;
+  status: 'DETECTED' | 'ANALYZING' | 'CONTAINED' | 'NEUTRALIZED';
+  iocIndicators: string[];
+}
+
+// Data Lake Sources
+export type DataSourceType = 'NETWORK_LOGS' | 'DARK_WEB' | 'CCTV_STREAM' | 'CITIZEN_REPORT' | 'OSINT' | 'SIGINT' | 'HUMINT';
+
+export interface DataLakeSource {
+  id: string;
+  type: DataSourceType;
+  name: string;
+  status: 'ACTIVE' | 'INACTIVE' | 'PROCESSING';
+  dataRate: number; // MB/s
+  lastUpdate: Date;
+  recordsProcessed: number;
+  alertsGenerated: number;
+}
+
+// Blockchain Integrity Ledger
+export interface BlockchainLedgerEntry {
+  id: string;
+  blockHash: string;
+  previousHash: string;
+  timestamp: Date;
+  dataType: 'THREAT_ALERT' | 'EVIDENCE' | 'RESPONSE_ACTION' | 'AUDIT_LOG';
+  content: string;
+  agencyId: string;
+  verified: boolean;
+  courtAdmissible: boolean;
+}
+
+// Coordinated Attack Detection (Cyber + Physical)
+export interface CoordinatedAttack {
+  id: string;
+  cyberId: string;
+  physicalId: string;
+  correlationScore: number;
+  attackVector: string;
+  targetFacility: string;
+  region: Region;
+  timestamp: Date;
+  status: 'DETECTED' | 'RESPONDING' | 'CONTAINED' | 'RESOLVED';
+  responseActions: string[];
+}
+
+// Automated Response Actions
+export type ResponseType = 'IP_BLOCK' | 'SYSTEM_ISOLATE' | 'POLICE_DISPATCH' | 'ALERT_AGENCY' | 'LOCKDOWN' | 'EVIDENCE_PRESERVE';
+
+export interface AutomatedResponse {
+  id: string;
+  triggerThreatId: string;
+  responseType: ResponseType;
+  description: string;
+  timestamp: Date;
+  status: 'PENDING' | 'EXECUTING' | 'COMPLETED' | 'FAILED';
+  executionTimeMs: number;
+  targetSystem?: string;
+  unitsDispatched?: number;
+  coordinatingAgencies: string[];
+}
+
+// System Layer Status
+export interface PerceptionLayerStatus {
+  iotSensorsActive: number;
+  iotSensorsTotal: number;
+  dronesActive: number;
+  dronesTotal: number;
+  networkSniffersActive: number;
+  cctvFeeds: number;
+  dataIngestionRate: number; // GB/hour
+}
+
+export interface CognitionLayerStatus {
+  mlModelsActive: number;
+  aptSignaturesLoaded: number;
+  threatClassificationsToday: number;
+  averageProcessingTimeMs: number;
+  falsePositiveRate: number;
+  modelAccuracy: number;
+}
+
+export interface IntegrityLayerStatus {
+  blockchainHeight: number;
+  lastBlockHash: string;
+  pendingTransactions: number;
+  nodesOnline: number;
+  dataProtectionCompliant: boolean;
+  lastAuditDate: Date;
+}
+
 // Kenyan locations with realistic coordinates
 const kenyaLocations = {
   NAIROBI: [
@@ -392,4 +501,277 @@ export function generateTimeSeriesData(days: number = 30) {
   }
 
   return data;
+}
+
+// === NCTIRS UNIFIED PLATFORM GENERATORS ===
+
+const cyberThreatNames: Record<CyberThreatType, string[]> = {
+  APT: ['APT-KE-001 SANDSTORM', 'APT-KE-002 BUSHFIRE', 'APT-KE-003 MONSOON', 'APT-KE-004 SAVANNA'],
+  ZERO_DAY: ['CVE-2026-0041 Kernel Exploit', 'CVE-2026-0089 Browser RCE', 'CVE-2026-0123 Network Stack'],
+  DDOS: ['Volumetric Flood Attack', 'Application Layer Assault', 'Protocol Exploitation'],
+  RANSOMWARE: ['LOCKBIT-4.0', 'BLACKCAT-KENYA', 'REVIL-VARIANT', 'CONTI-RESURGENCE'],
+  PHISHING: ['Spear Phishing Campaign', 'Credential Harvesting', 'Business Email Compromise'],
+  DATA_BREACH: ['Database Exfiltration', 'API Data Leak', 'Insider Threat Detected'],
+  MALWARE: ['Trojan Deployment', 'Rootkit Installation', 'Wiper Malware'],
+  SQL_INJECTION: ['SQLi on Public Portal', 'Database Manipulation', 'Authentication Bypass'],
+};
+
+const targetSystems: Record<CyberTargetType, string[]> = {
+  GOVERNMENT: ['eCitizen Portal', 'Huduma Centers', 'IFMIS', 'Digital ID System', 'KRA iTax'],
+  FINANCIAL: ['CBK Core Banking', 'M-Pesa Infrastructure', 'NSE Trading Platform', 'RTGS System'],
+  INFRASTRUCTURE: ['KPLC Grid Control', 'Nairobi Water SCADA', 'Kenya Ports Authority'],
+  HEALTHCARE: ['NHIF Database', 'Kenyatta Hospital EHR', 'Medical Supply Chain'],
+  TELECOM: ['Safaricom Core Network', 'Airtel Kenya Systems', 'National Fiber Backbone'],
+  ENERGY: ['Geothermal Plant SCADA', 'Oil Pipeline Monitoring', 'Fuel Distribution Network'],
+  TRANSPORT: ['JKIA Control Systems', 'SGR Operations', 'Kenya Airways Reservation'],
+};
+
+// Generate cyber threats
+export function generateCyberThreats(count: number = 15): CyberThreat[] {
+  const threats: CyberThreat[] = [];
+  const types = Object.keys(cyberThreatNames) as CyberThreatType[];
+  const sectors = Object.keys(targetSystems) as CyberTargetType[];
+  const severities: CyberThreatSeverity[] = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'];
+  const statuses: Array<'DETECTED' | 'ANALYZING' | 'CONTAINED' | 'NEUTRALIZED'> = ['DETECTED', 'ANALYZING', 'CONTAINED', 'NEUTRALIZED'];
+
+  for (let i = 0; i < count; i++) {
+    const type = types[Math.floor(Math.random() * types.length)];
+    const sector = sectors[Math.floor(Math.random() * sectors.length)];
+    const names = cyberThreatNames[type];
+    const systems = targetSystems[sector];
+
+    threats.push({
+      id: `CTH-${Date.now()}-${i}`,
+      type,
+      name: names[Math.floor(Math.random() * names.length)],
+      description: `AI-detected ${type.toLowerCase().replace('_', ' ')} targeting ${sector.toLowerCase()} sector infrastructure.`,
+      severity: severities[Math.floor(Math.random() * severities.length)],
+      targetSector: sector,
+      sourceIP: `${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`,
+      targetSystem: systems[Math.floor(Math.random() * systems.length)],
+      aptSignature: type === 'APT' ? `SIG-${Math.random().toString(36).substr(2, 8).toUpperCase()}` : undefined,
+      timestamp: new Date(Date.now() - Math.random() * 24 * 60 * 60 * 1000),
+      aiConfidence: Math.floor(Math.random() * 25) + 75,
+      status: statuses[Math.floor(Math.random() * statuses.length)],
+      iocIndicators: [
+        `hash:${Math.random().toString(36).substr(2, 32)}`,
+        `domain:malicious-${Math.floor(Math.random() * 1000)}.ke`,
+        `ip:${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.0.0/16`,
+      ].slice(0, Math.floor(Math.random() * 3) + 1),
+    });
+  }
+
+  return threats.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+}
+
+// Generate data lake sources
+export function generateDataLakeSources(): DataLakeSource[] {
+  const sources: DataLakeSource[] = [
+    {
+      id: 'DLS-001',
+      type: 'NETWORK_LOGS',
+      name: 'National Firewall Logs',
+      status: 'ACTIVE',
+      dataRate: 2450,
+      lastUpdate: new Date(),
+      recordsProcessed: 15420000,
+      alertsGenerated: 342,
+    },
+    {
+      id: 'DLS-002',
+      type: 'DARK_WEB',
+      name: 'Dark Web Intelligence Feed',
+      status: 'ACTIVE',
+      dataRate: 128,
+      lastUpdate: new Date(Date.now() - 5 * 60 * 1000),
+      recordsProcessed: 89450,
+      alertsGenerated: 67,
+    },
+    {
+      id: 'DLS-003',
+      type: 'CCTV_STREAM',
+      name: 'National CCTV Network',
+      status: 'ACTIVE',
+      dataRate: 8500,
+      lastUpdate: new Date(),
+      recordsProcessed: 4520000,
+      alertsGenerated: 156,
+    },
+    {
+      id: 'DLS-004',
+      type: 'CITIZEN_REPORT',
+      name: 'Community Intelligence App',
+      status: 'ACTIVE',
+      dataRate: 45,
+      lastUpdate: new Date(Date.now() - 2 * 60 * 1000),
+      recordsProcessed: 12890,
+      alertsGenerated: 89,
+    },
+    {
+      id: 'DLS-005',
+      type: 'OSINT',
+      name: 'Open Source Intelligence',
+      status: 'PROCESSING',
+      dataRate: 890,
+      lastUpdate: new Date(Date.now() - 10 * 60 * 1000),
+      recordsProcessed: 2340000,
+      alertsGenerated: 234,
+    },
+    {
+      id: 'DLS-006',
+      type: 'SIGINT',
+      name: 'Signals Intelligence',
+      status: 'ACTIVE',
+      dataRate: 1200,
+      lastUpdate: new Date(),
+      recordsProcessed: 890000,
+      alertsGenerated: 45,
+    },
+  ];
+  return sources;
+}
+
+// Generate blockchain ledger entries
+export function generateBlockchainLedger(count: number = 20): BlockchainLedgerEntry[] {
+  const entries: BlockchainLedgerEntry[] = [];
+  const dataTypes: Array<'THREAT_ALERT' | 'EVIDENCE' | 'RESPONSE_ACTION' | 'AUDIT_LOG'> = ['THREAT_ALERT', 'EVIDENCE', 'RESPONSE_ACTION', 'AUDIT_LOG'];
+  const agencies = ['NIS', 'NPS', 'KDF', 'DCI', 'NCTC', 'CAK'];
+
+  let prevHash = '0000000000000000000000000000000000000000000000000000000000000000';
+
+  for (let i = 0; i < count; i++) {
+    const hash = Array(64).fill(0).map(() => Math.floor(Math.random() * 16).toString(16)).join('');
+    const dataType = dataTypes[Math.floor(Math.random() * dataTypes.length)];
+
+    entries.push({
+      id: `BLK-${i.toString().padStart(6, '0')}`,
+      blockHash: hash,
+      previousHash: prevHash,
+      timestamp: new Date(Date.now() - (count - i) * 15 * 60 * 1000),
+      dataType,
+      content: `${dataType.replace('_', ' ')} recorded at block ${i}`,
+      agencyId: agencies[Math.floor(Math.random() * agencies.length)],
+      verified: true,
+      courtAdmissible: Math.random() > 0.2,
+    });
+
+    prevHash = hash;
+  }
+
+  return entries.reverse();
+}
+
+// Generate coordinated attacks
+export function generateCoordinatedAttacks(count: number = 5): CoordinatedAttack[] {
+  const attacks: CoordinatedAttack[] = [];
+  const regions = Object.keys(kenyaLocations) as Region[];
+  const statuses: Array<'DETECTED' | 'RESPONDING' | 'CONTAINED' | 'RESOLVED'> = ['DETECTED', 'RESPONDING', 'CONTAINED', 'RESOLVED'];
+  const facilities = [
+    'KPLC Grid Station Alpha',
+    'Mombasa Port Control Center',
+    'JKIA Terminal Control',
+    'CBK Data Center',
+    'Safaricom NOC',
+    'Water Treatment Plant',
+  ];
+  const vectors = [
+    'Cyber intrusion timed with physical breach',
+    'DDoS cover for facility infiltration',
+    'Network disruption with simultaneous sabotage',
+    'Ransomware deployment with insider threat',
+  ];
+
+  for (let i = 0; i < count; i++) {
+    attacks.push({
+      id: `COORD-${Date.now()}-${i}`,
+      cyberId: `CTH-${Date.now()}-${Math.floor(Math.random() * 10)}`,
+      physicalId: `INC-${Date.now()}-${Math.floor(Math.random() * 10)}`,
+      correlationScore: Math.floor(Math.random() * 30) + 70,
+      attackVector: vectors[Math.floor(Math.random() * vectors.length)],
+      targetFacility: facilities[Math.floor(Math.random() * facilities.length)],
+      region: regions[Math.floor(Math.random() * regions.length)],
+      timestamp: new Date(Date.now() - Math.random() * 6 * 60 * 60 * 1000),
+      status: statuses[Math.floor(Math.random() * statuses.length)],
+      responseActions: [
+        'IP blocking initiated',
+        'Physical security dispatched',
+        'System isolation in progress',
+        'Evidence preservation active',
+      ].slice(0, Math.floor(Math.random() * 3) + 2),
+    });
+  }
+
+  return attacks.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+}
+
+// Generate automated responses
+export function generateAutomatedResponses(count: number = 12): AutomatedResponse[] {
+  const responses: AutomatedResponse[] = [];
+  const types: ResponseType[] = ['IP_BLOCK', 'SYSTEM_ISOLATE', 'POLICE_DISPATCH', 'ALERT_AGENCY', 'LOCKDOWN', 'EVIDENCE_PRESERVE'];
+  const statuses: Array<'PENDING' | 'EXECUTING' | 'COMPLETED' | 'FAILED'> = ['PENDING', 'EXECUTING', 'COMPLETED', 'FAILED'];
+  const agencies = ['NIS', 'NPS', 'KDF', 'DCI', 'NCTC', 'CAK', 'GSU'];
+
+  const descriptions: Record<ResponseType, string[]> = {
+    IP_BLOCK: ['Blocking malicious IP range', 'Firewall rule deployed', 'Traffic blackhole initiated'],
+    SYSTEM_ISOLATE: ['Critical system isolated', 'Network segment quarantined', 'Server taken offline'],
+    POLICE_DISPATCH: ['Quick response unit dispatched', 'Patrol units redirected', 'GSU team deployed'],
+    ALERT_AGENCY: ['Inter-agency alert sent', 'Threat notification broadcast', 'Emergency coordination initiated'],
+    LOCKDOWN: ['Facility lockdown initiated', 'Access control override', 'Perimeter secured'],
+    EVIDENCE_PRESERVE: ['Memory dump captured', 'Log files preserved', 'Blockchain record created'],
+  };
+
+  for (let i = 0; i < count; i++) {
+    const type = types[Math.floor(Math.random() * types.length)];
+    const descs = descriptions[type];
+
+    responses.push({
+      id: `RESP-${Date.now()}-${i}`,
+      triggerThreatId: `CTH-${Date.now()}-${Math.floor(Math.random() * 10)}`,
+      responseType: type,
+      description: descs[Math.floor(Math.random() * descs.length)],
+      timestamp: new Date(Date.now() - Math.random() * 60 * 60 * 1000),
+      status: statuses[Math.floor(Math.random() * statuses.length)],
+      executionTimeMs: Math.floor(Math.random() * 5000) + 100,
+      targetSystem: type === 'IP_BLOCK' || type === 'SYSTEM_ISOLATE' ? 'Target System ' + Math.floor(Math.random() * 100) : undefined,
+      unitsDispatched: type === 'POLICE_DISPATCH' ? Math.floor(Math.random() * 5) + 1 : undefined,
+      coordinatingAgencies: agencies.slice(0, Math.floor(Math.random() * 3) + 1),
+    });
+  }
+
+  return responses.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+}
+
+// Generate system layer statuses
+export function generatePerceptionLayerStatus(): PerceptionLayerStatus {
+  return {
+    iotSensorsActive: Math.floor(Math.random() * 500) + 4500,
+    iotSensorsTotal: 5000,
+    dronesActive: Math.floor(Math.random() * 5) + 20,
+    dronesTotal: 25,
+    networkSniffersActive: Math.floor(Math.random() * 10) + 40,
+    cctvFeeds: Math.floor(Math.random() * 500) + 4500,
+    dataIngestionRate: Math.floor(Math.random() * 100) + 850,
+  };
+}
+
+export function generateCognitionLayerStatus(): CognitionLayerStatus {
+  return {
+    mlModelsActive: 12,
+    aptSignaturesLoaded: 15420,
+    threatClassificationsToday: Math.floor(Math.random() * 5000) + 10000,
+    averageProcessingTimeMs: Math.floor(Math.random() * 50) + 25,
+    falsePositiveRate: Math.random() * 2 + 1,
+    modelAccuracy: 97 + Math.random() * 2,
+  };
+}
+
+export function generateIntegrityLayerStatus(): IntegrityLayerStatus {
+  return {
+    blockchainHeight: Math.floor(Math.random() * 10000) + 150000,
+    lastBlockHash: Array(64).fill(0).map(() => Math.floor(Math.random() * 16).toString(16)).join(''),
+    pendingTransactions: Math.floor(Math.random() * 50),
+    nodesOnline: Math.floor(Math.random() * 3) + 7,
+    dataProtectionCompliant: true,
+    lastAuditDate: new Date(Date.now() - 24 * 60 * 60 * 1000),
+  };
 }
