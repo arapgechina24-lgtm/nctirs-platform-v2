@@ -273,10 +273,10 @@ export default function Home() {
 
         {/* View Routing */}
         {currentView === 'COMMAND_CENTER' && (
-          <div className="flex flex-col gap-3 h-[calc(100vh-10rem)]">
+          <div className="flex flex-col gap-5 h-[calc(100vh-11rem)]">
 
             {/* TOP ROW: Metrics Bar with Emergency Button */}
-            <div className="flex items-stretch gap-3">
+            <div className="flex items-stretch gap-5 shrink-0">
               <div className="flex-1">
                 <KeyMetrics metrics={{
                   threatLevel: activeCoordinated > 0 ? 'CRITICAL' : highThreatCount > 5 ? 'HIGH' : 'MEDIUM',
@@ -289,7 +289,7 @@ export default function Home() {
               </div>
               <button
                 onClick={() => setIsEmergency(true)}
-                className="bg-red-950/50 text-red-400 text-xs border-2 border-red-800 px-5 hover:bg-red-900/60 uppercase font-bold transition-all flex items-center gap-2"
+                className="bg-red-950/50 text-red-400 text-xs border-2 border-red-800 px-5 hover:bg-red-900/60 uppercase font-bold transition-all flex items-center gap-2 shrink-0"
               >
                 <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
                 SIMULATE BREACH
@@ -297,44 +297,46 @@ export default function Home() {
             </div>
 
             {/* MAIN CONTENT: Equal 3-Column Grid */}
-            <div className="grid grid-cols-12 gap-3 flex-1 min-h-0">
+            <div className="grid grid-cols-12 gap-5 flex-1 min-h-0 overflow-hidden">
 
               {/* COLUMN 1: Infrastructure Status */}
-              <div className="col-span-12 lg:col-span-4 flex flex-col gap-3 overflow-y-auto">
-                <div className="text-[9px] text-green-600 uppercase tracking-widest font-bold px-1 flex items-center gap-2">
+              <div className="col-span-12 lg:col-span-4 flex flex-col gap-4 overflow-y-auto pr-1">
+                <div className="text-[9px] text-green-600 uppercase tracking-widest font-bold px-1 flex items-center gap-2 shrink-0">
                   <span className="w-1.5 h-1.5 bg-green-500 rounded-full" />
                   Infrastructure Status
                 </div>
-                <CNIHeatmap />
-                <SystemArchitecture
-                  perception={data.perceptionLayer}
-                  cognition={data.cognitionLayer}
-                  integrity={data.integrityLayer}
-                />
-                <DataLakeMonitor sources={data.dataLakeSources} />
+                <div className="flex-1 flex flex-col gap-4 min-h-0">
+                  <CNIHeatmap />
+                  <SystemArchitecture
+                    perception={data.perceptionLayer}
+                    cognition={data.cognitionLayer}
+                    integrity={data.integrityLayer}
+                  />
+                  <DataLakeMonitor sources={data.dataLakeSources} />
+                </div>
               </div>
 
               {/* COLUMN 2: Threat Visualization */}
-              <div className="col-span-12 lg:col-span-4 flex flex-col gap-3 overflow-hidden">
-                <div className="text-[9px] text-green-600 uppercase tracking-widest font-bold px-1 flex items-center gap-2">
+              <div className="col-span-12 lg:col-span-4 flex flex-col gap-4">
+                <div className="text-[9px] text-green-600 uppercase tracking-widest font-bold px-1 flex items-center gap-2 shrink-0">
                   <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse" />
                   Threat Visualization
                 </div>
 
                 {/* Quick Stats */}
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-4 shrink-0">
                   <div className="bg-black border border-red-900/60 p-3">
-                    <div className="text-[8px] text-red-500 uppercase tracking-wider mb-1">Critical</div>
-                    <div className="text-xl font-bold text-red-400">{criticalCyber}</div>
+                    <div className="text-[8px] text-red-500 uppercase tracking-wider mb-1">Critical Threats</div>
+                    <div className="text-2xl font-bold text-red-400">{criticalCyber}</div>
                   </div>
                   <div className="bg-black border border-purple-900/60 p-3">
-                    <div className="text-[8px] text-purple-500 uppercase tracking-wider mb-1">Blocked</div>
-                    <div className="text-xl font-bold text-purple-400">14.2K</div>
+                    <div className="text-[8px] text-purple-500 uppercase tracking-wider mb-1">Attacks Blocked</div>
+                    <div className="text-2xl font-bold text-purple-400">14.2K</div>
                   </div>
                 </div>
 
-                {/* Main Map */}
-                <div className="flex-1 min-h-[200px] border border-green-900/30">
+                {/* Main Map - Takes available space */}
+                <div className="flex-1 min-h-[180px] border border-green-900/30 overflow-hidden">
                   <ThreatMap
                     incidents={data.incidents}
                     predictions={data.predictions}
@@ -342,31 +344,36 @@ export default function Home() {
                   />
                 </div>
 
-                {/* Charts */}
-                <div className="grid grid-cols-2 gap-3 h-32">
+                {/* Charts - Fixed height */}
+                <div className="grid grid-cols-2 gap-4 h-28 shrink-0">
                   <ThreatAnalyticsChart analytics={data.threatAnalytics} />
                   <IncidentTrendsChart data={data.timeSeriesData} />
                 </div>
               </div>
 
               {/* COLUMN 3: Intelligence & Response */}
-              <div className="col-span-12 lg:col-span-4 flex flex-col gap-3 overflow-hidden">
-                <div className="text-[9px] text-green-600 uppercase tracking-widest font-bold px-1 flex items-center gap-2">
+              <div className="col-span-12 lg:col-span-4 flex flex-col gap-4 overflow-hidden">
+                <div className="text-[9px] text-green-600 uppercase tracking-widest font-bold px-1 flex items-center gap-2 shrink-0">
                   <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full" />
                   Intelligence Feed
                 </div>
 
-                <ThreatAnalyticsEngine
-                  cyberThreats={data.cyberThreats}
-                  coordinatedAttacks={data.coordinatedAttacks}
-                />
-
-                <div className="flex-1 overflow-y-auto flex flex-col gap-3">
-                  <IncidentList incidents={data.incidents} maxItems={4} />
-                  <SurveillanceMonitor feeds={data.surveillanceFeeds} maxItems={3} />
+                <div className="shrink-0">
+                  <ThreatAnalyticsEngine
+                    cyberThreats={data.cyberThreats}
+                    coordinatedAttacks={data.coordinatedAttacks}
+                  />
                 </div>
 
-                <AIAssistantPanel />
+                <div className="flex-1 overflow-y-auto flex flex-col gap-4 pr-1 min-h-0">
+                  <IncidentList incidents={data.incidents} maxItems={5} />
+                  <SurveillanceMonitor feeds={data.surveillanceFeeds} maxItems={4} />
+                  <CommunityReports reports={data.communityReports} maxItems={3} />
+                </div>
+
+                <div className="shrink-0">
+                  <AIAssistantPanel />
+                </div>
               </div>
 
             </div>
@@ -485,7 +492,7 @@ export default function Home() {
               <DataProtectionMonitor />
               <div className="bg-black border border-green-900/50 p-4 flex-1">
                 <h3 className="text-green-400 font-bold mb-4 text-sm uppercase tracking-wider">Deployed Resources</h3>
-                <div className="grid grid-cols-2 gap-3 text-xs text-green-600 font-mono">
+                <div className="grid grid-cols-2 gap-5 text-xs text-green-600 font-mono">
                   <div className="bg-green-950/20 p-3 border border-green-900/30">
                     <div className="text-xl font-bold text-white mb-1">42</div>
                     <div className="uppercase tracking-wider text-[10px]">GSU Units</div>
