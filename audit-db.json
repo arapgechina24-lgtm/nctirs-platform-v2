@@ -7,7 +7,8 @@
     "action": "ISOLATE_NETWORK",
     "severity": "CRITICAL",
     "notifiedNC4": true,
-    "receiptId": "NC4-B83X-9921"
+    "receiptId": "NC4-B83X-9921",
+    "integrityHash": "ee48e2de7147860cd7e416136949b451ccad0cb10c7c4f0ea88215422141e8a5"
   },
   {
     "id": "ev_1a55pQv92",
@@ -17,7 +18,8 @@
     "action": "BLOCK_IP_RANGE",
     "severity": "HIGH",
     "notifiedNC4": true,
-    "receiptId": "NC4-A12P-4402"
+    "receiptId": "NC4-A12P-4402",
+    "integrityHash": "293e1b234af4c6117d99d9d16a69fd3e89e2788ea86cb0f3cfe00db657bf9f14"
   },
   {
     "id": "ev_99z4mXk11",
@@ -26,6 +28,7 @@
     "sector": "Financial Services",
     "action": "SUSPEND_AUTH",
     "severity": "MEDIUM",
-    "notifiedNC4": false
+    "notifiedNC4": false,
+    "integrityHash": "5359ceebbff5545c2011a6859d9734db241ab69167e45a35a4db870abed479f8"
   }
 ]
