@@ -117,25 +117,34 @@ export function Header({ currentView, onViewChange }: HeaderProps) {
         </div>
 
         {/* Navigation */}
-        <div className="border-t border-green-900/30 bg-black/50 backdrop-blur-sm">
-          <nav className="flex w-full gap-0 overflow-x-auto">
+        <div className="border-t border-green-900/40 bg-gradient-to-b from-black/80 to-black/95">
+          <nav className="grid grid-cols-5 w-full">
             {[
-              { icon: Activity, label: 'COMMAND_CENTER', display: 'COMMAND CENTER' },
-              { icon: Users, label: 'FUSION_CENTER', display: 'FUSION CENTER' },
-              { icon: AlertTriangle, label: 'THREAT_MATRIX', display: 'THREAT MATRIX' },
-              { icon: TrendingUp, label: 'ANALYTICS', display: 'ANALYTICS' },
-              { icon: Shield, label: 'OPERATIONS', display: 'OPERATIONS' },
-            ].map((item) => (
+              { icon: Activity, label: 'COMMAND_CENTER', display: 'COMMAND', shortDesc: 'Main Hub' },
+              { icon: Users, label: 'FUSION_CENTER', display: 'FUSION', shortDesc: 'Intel Feed' },
+              { icon: AlertTriangle, label: 'THREAT_MATRIX', display: 'THREATS', shortDesc: 'Live Matrix' },
+              { icon: TrendingUp, label: 'ANALYTICS', display: 'ANALYTICS', shortDesc: 'AI Insights' },
+              { icon: Shield, label: 'OPERATIONS', display: 'OPS', shortDesc: 'Response' },
+            ].map((item, index) => (
               <button
                 key={item.label}
                 onClick={() => onViewChange(item.label as ViewType)}
-                className={`group flex items-center justify-center gap-2 px-4 py-4 flex-1 rounded-none text-[10px] font-bold tracking-[0.2em] transition-all whitespace-nowrap border-b-2 border-r border-r-green-900/20 last:border-r-0 ${currentView === item.label
-                  ? 'bg-green-900/20 text-green-400 border-b-green-500 shadow-[inset_0_0_15px_rgba(0,255,65,0.1)]'
-                  : 'text-green-800 border-b-transparent hover:bg-green-900/10 hover:text-green-300 hover:border-b-green-800'
-                  }`}
+                className={`group relative flex flex-col items-center justify-center gap-1 py-3 px-2 text-center transition-all duration-200 border-r border-green-900/30 last:border-r-0
+                  ${currentView === item.label
+                    ? 'bg-green-900/30 text-green-400 shadow-[inset_0_-3px_0_0_#22c55e,inset_0_0_20px_rgba(0,255,65,0.15)]'
+                    : 'text-green-700 hover:bg-green-900/15 hover:text-green-400'}
+                `}
               >
-                <item.icon className={`h-3.5 w-3.5 ${currentView === item.label ? 'text-green-400' : 'text-green-800 group-hover:text-green-400'}`} strokeWidth={2} />
-                {item.display}
+                <div className="flex items-center gap-1.5">
+                  <item.icon className={`h-4 w-4 ${currentView === item.label ? 'text-green-400' : 'text-green-700 group-hover:text-green-400'}`} strokeWidth={1.5} />
+                  <span className="text-[11px] font-bold tracking-wider">{item.display}</span>
+                </div>
+                <span className={`text-[8px] uppercase tracking-widest ${currentView === item.label ? 'text-green-500' : 'text-green-800'}`}>
+                  {item.shortDesc}
+                </span>
+                {currentView === item.label && (
+                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-green-500 rounded-t-sm" />
+                )}
               </button>
             ))}
           </nav>
