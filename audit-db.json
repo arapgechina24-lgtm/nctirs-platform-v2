@@ -1,5 +1,16 @@
 [
   {
+    "assetName": "SEACOM SUBMARINE CABLE - MOMBASA",
+    "sector": "Telecommunications (Mombasa)",
+    "action": "AUTO_CONTAINMENT_ALPHA",
+    "severity": "CRITICAL",
+    "notifiedNC4": true,
+    "receiptId": "NC4-D0VE",
+    "id": "ev_6w37f1mwi",
+    "timestamp": "2026-01-21 23:15:32",
+    "integrityHash": "9376acd5a8067d478c7d8171c9d96c381b44612e19166d7df3ba960b53695df1"
+  },
+  {
     "id": "ev_8x29kLm01",
     "timestamp": "2026-01-22 10:45:12",
     "assetName": "SEACOM Landing Station",

@@ -9,7 +9,7 @@
 
 **AI-Powered National Security & Smart Policing Intelligence Platform**
 
-[Live Demo](https://nctirs.vercel.app) • [Documentation](#features) • [Getting Started](#getting-started)
+[Live Demo](https://nctirs-dashboard.vercel.app) • [Documentation](#features) • [Getting Started](#getting-started)
 
 </div>
 
@@ -17,7 +17,9 @@
 
 ## 🎬 Demo
 
-> **Press `Ctrl+Shift+E` to trigger the Emergency Protocol simulation!**
+> **🚀 [Launch Live Demo](https://nctirs-dashboard.vercel.app)** | Press `Ctrl+Shift+E` to trigger the Emergency Protocol simulation!
+
+![Emergency Overlay Demo](./public/demo.webp)
 
 The platform simulates a Level 5 National Cyber Emergency with:
 - 🔴 Cinematic "National Emergency" overlay with glitch effects
