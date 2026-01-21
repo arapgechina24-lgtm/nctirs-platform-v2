@@ -33,9 +33,28 @@ export default function EmergencyOverlay({ isActive, onMitigate, onDismiss, targ
             const alertAudio = new Audio('/emergency-siren.mp3');
             alertAudio.loop = true;
             alertAudio.play().catch(() => console.log("Audio blocked by browser"));
-            return () => alertAudio.pause();
+
+            // Voice narration using Web Speech API
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(
+                    `National Emergency Protocol Activated. ${targetAsset} is under critical threat. Initiating Air Gap isolation sequence.`
+                );
+                utterance.rate = 0.9;
+                utterance.pitch = 0.8;
+                utterance.volume = 1;
+                // Try to get a robotic voice
+                const voices = speechSynthesis.getVoices();
+                const robotVoice = voices.find(v => v.name.includes('Google') || v.name.includes('English'));
+                if (robotVoice) utterance.voice = robotVoice;
+                speechSynthesis.speak(utterance);
+            }
+
+            return () => {
+                alertAudio.pause();
+                speechSynthesis.cancel();
+            };
         }
-    }, [isActive]);
+    }, [isActive, targetAsset]);
 
     const handleMitigationClick = async () => {
         // Execute the mitigation logic from parent

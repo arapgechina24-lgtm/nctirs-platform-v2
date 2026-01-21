@@ -1,36 +1,122 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🛡️ NCTIRS - National Cyber Threat Intelligence & Response System
 
-## Getting Started
+<div align="center">
 
-First, run the development server:
+![NCTIRS Banner](https://img.shields.io/badge/NCTIRS-National%20Security-green?style=for-the-badge&logo=shield&logoColor=white)
+![Next.js 16](https://img.shields.io/badge/Next.js-16.1.1-black?style=for-the-badge&logo=next.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)
+![Kenya](https://img.shields.io/badge/Built%20for-Kenya%20🇰🇪-red?style=for-the-badge)
+
+**AI-Powered National Security & Smart Policing Intelligence Platform**
+
+[Live Demo](https://nctirs.vercel.app) • [Documentation](#features) • [Getting Started](#getting-started)
+
+</div>
+
+---
+
+## 🎬 Demo
+
+> **Press `Ctrl+Shift+E` to trigger the Emergency Protocol simulation!**
+
+The platform simulates a Level 5 National Cyber Emergency with:
+- 🔴 Cinematic "National Emergency" overlay with glitch effects
+- 🔊 Voice narration using Web Speech API
+- 📄 Real-time NC4 Compliance Report generation
+- ✅ SHA-256 cryptographic audit trail
+
+---
+
+## 🚀 Features
+
+### 🎯 Command Center
+- **Real-time Threat Map**: Visualize active threats across Kenya's 47 counties
+- **CNI Heatmap**: Monitor Critical National Infrastructure (SEACOM, KPLC, M-Pesa)
+- **AI Threat Analytics**: MITRE ATT&CK framework integration
+
+### 🛡️ SOAR Automation
+- **Automated Response Protocols**: One-click Air-Gap isolation
+- **NC4 Compliance Reporting**: Aligned with Kenya Computer Misuse Act (2018)
+- **SHA-256 Integrity Hashing**: Tamper-proof audit logs
+
+### 📊 Compliance & Audit
+- **National Audit Trail**: Immutable log of all security actions
+- **Partial Prerendering (PPR)**: Optimized performance with Next.js 16
+- **KDPA 2019 Compliance**: Data protection indicators
+
+### 🎭 Demo Mode
+- **Auto-Trigger Simulation**: Watch the system respond to threats automatically
+- **Keyboard Shortcuts**: `Ctrl+Shift+E` for Emergency, `Ctrl+Shift+A` for Audit
+
+---
+
+## 🛠️ Tech Stack
+
+| Category | Technology |
+|----------|------------|
+| Framework | Next.js 16 (App Router, PPR) |
+| Language | TypeScript 5 |
+| Styling | Tailwind CSS 4 |
+| Maps | Leaflet + React-Leaflet |
+| Charts | Recharts |
+| Security | Node.js Crypto (SHA-256) |
+
+---
+
+## 🏁 Getting Started
 
 ```bash
+# Clone the repository
+git clone https://github.com/arapgechina24-lgtm/nctirs-dashboard.git
+cd nctirs-dashboard
+
+# Install dependencies
+npm install
+
+# Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Build for production
+npm run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit [http://localhost:3000](http://localhost:3000) to see the dashboard.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## ⌨️ Keyboard Shortcuts
 
-## Learn More
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl+Shift+E` | Trigger Emergency Overlay |
+| `Ctrl+Shift+A` | Open Audit Trail |
+| `Ctrl+Shift+D` | Toggle Demo Mode |
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📜 Legal Compliance
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+This system is designed to comply with:
+- 🇰🇪 **Kenya Computer Misuse and Cybercrime Act (2018)** - Section 11: CII Protection
+- 🇰🇪 **Kenya Data Protection Act (2019)** - PII exposure monitoring
+- 🌍 **NIST SP 800-53** - Security controls framework
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🇰🇪 Built for Kenya
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+<div align="center">
+
+**"Securing Kenya's Digital Backbone"**
+
+This project was developed for the **NIRU Hackathon** to demonstrate how AI and automation can protect Kenya's Critical National Infrastructure from cyber threats.
+
+*Built with ❤️ by Kenyan developers*
+
+</div>
+
+---
+
+## 📄 License
+
+MIT License - See [LICENSE](LICENSE) for details.

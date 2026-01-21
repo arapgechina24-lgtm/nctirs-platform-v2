@@ -27,6 +27,7 @@ import { ContainmentPanel } from "@/components/SOAR/ContainmentPanel"
 import { NC4ReportPanel } from "@/components/NC4ReportPanel"
 import EmergencyOverlay from "@/components/EmergencyOverlay"
 import { ThreatMonitor } from "@/components/ThreatMonitor"
+import DemoModeController from "@/components/DemoModeController"
 
 import {
   generateMockIncidents,
@@ -502,6 +503,8 @@ export default function Home() {
         onMitigate={handleMitigation}
         onDismiss={() => setIsEmergency(false)}
       />
+
+      <DemoModeController onTriggerEmergency={() => setIsEmergency(true)} />
     </div>
   );
 }
