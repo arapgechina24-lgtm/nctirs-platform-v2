@@ -1,0 +1,50 @@
+'use server';
+
+export interface AuditLog {
+    id: string;
+    timestamp: string;
+    assetName: string;
+    sector: string;
+    action: string;
+    severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+    notifiedNC4: boolean;
+    receiptId?: string;
+}
+
+export async function getAuditLogs(): Promise<AuditLog[]> {
+    // Simulate secure DB fetch
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    return [
+        {
+            id: "ev_8x29kLm01",
+            timestamp: "2026-01-22 10:45:12",
+            assetName: "SEACOM Landing Station",
+            sector: "Telecommunications (Mombasa)",
+            action: "ISOLATE_NETWORK",
+            severity: "CRITICAL",
+            notifiedNC4: true,
+            receiptId: "NC4-B83X-9921",
+        },
+        {
+            id: "ev_1a55pQv92",
+            timestamp: "2026-01-22 09:12:05",
+            assetName: "KPLC Roysambu Substation",
+            sector: "Energy (Nairobi)",
+            action: "BLOCK_IP_RANGE",
+            severity: "HIGH",
+            notifiedNC4: true,
+            receiptId: "NC4-A12P-4402",
+        },
+        {
+            id: "ev_99z4mXk11",
+            timestamp: "2026-01-21 23:30:59",
+            assetName: "M-Pesa Gateway Node 4",
+            sector: "Financial Services",
+            action: "SUSPEND_AUTH",
+            severity: "MEDIUM",
+            notifiedNC4: false,
+            receiptId: undefined, // Type compatibility
+        },
+    ];
+}

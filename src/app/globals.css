@@ -4,10 +4,18 @@
   --background: #000000;
   --foreground: #00ff41;
   --primary: #003b00;
-  --accent: #008f11;
+  --accent: #00fa00;
+  /* Brighter accent */
   --matrix-green: #00ff41;
   --matrix-green-dim: #008f11;
   --matrix-green-dark: #003b00;
+
+  /* Status Colors for Threat Levels */
+  --status-critical: #ff0000;
+  --status-high: #ff8c00;
+  --status-medium: #ffff00;
+  --status-low: #00ff41;
+  /* Standard Green */
 }
 
 @theme inline {
@@ -85,6 +93,7 @@ body::before {
   0% {
     transform: translateY(-100%);
   }
+
   100% {
     transform: translateY(100vh);
   }
@@ -128,4 +137,39 @@ body::after {
   z-index: 9998;
   background-size: 100% 2px, 3px 100%;
   pointer-events: none;
+}
+
+/* Cyber Emergency Animations */
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+  }
+
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes glitch-pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: hue-rotate(0deg);
+  }
+
+  50% {
+    opacity: 0.8;
+    transform: scale(1.02);
+    filter: hue-rotate(180deg);
+  }
+}
+
+.animate-scanline {
+  animation: scanline 4s linear infinite;
+}
+
+.animate-glitch {
+  animation: glitch-pulse 0.2s ease-in-out infinite;
 }

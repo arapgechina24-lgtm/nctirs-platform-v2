@@ -775,3 +775,70 @@ export function generateIntegrityLayerStatus(): IntegrityLayerStatus {
     lastAuditDate: new Date(Date.now() - 24 * 60 * 60 * 1000),
   };
 }
+
+// === NEW MULTIPLAYER INCIDENT TYPES ===
+
+export type AgencyID = 'ICT_MINISTRY' | 'CENTRAL_BANK' | 'KE_CIRT' | 'ENERGY_REGULATOR';
+
+export interface IncidentParticipant {
+  id: string;
+  agency: AgencyID;
+  activeStatus: 'VIEWING' | 'REMEDIATING' | 'IDLE';
+  lastSeen: Date;
+}
+
+export interface AuditEntry {
+  timestamp: string;
+  actor: string;
+  action: string;
+  previousState: string;
+  newState: string;
+}
+
+export interface ThreatIncident {
+  id: string;
+  mitreAttackId: string; // e.g., T1566 (Phishing)
+  severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  status: 'DETECTED' | 'TRIAGED' | 'CONTAINED' | 'RESOLVED';
+  assignedAgencies: AgencyID[];
+  activeWarRoom: IncidentParticipant[];
+  auditTrail: AuditEntry[];
+}
+
+// Generate advanced threat incidents
+export function generateThreatIncidents(count: number = 5): ThreatIncident[] {
+  const incidents: ThreatIncident[] = [];
+  const agencies: AgencyID[] = ['ICT_MINISTRY', 'CENTRAL_BANK', 'KE_CIRT', 'ENERGY_REGULATOR'];
+  const severities: Array<'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'> = ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'];
+  const statuses: Array<'DETECTED' | 'TRIAGED' | 'CONTAINED' | 'RESOLVED'> = ['DETECTED', 'TRIAGED', 'CONTAINED', 'RESOLVED'];
+  const mitreIds = ['T1566', 'T1190', 'T1078', 'T1204', 'T1003'];
+
+  for (let i = 0; i < count; i++) {
+    const assigned = agencies.slice(0, Math.floor(Math.random() * 3) + 1);
+
+    incidents.push({
+      id: `ADV-INC-${Date.now()}-${i}`,
+      mitreAttackId: mitreIds[Math.floor(Math.random() * mitreIds.length)],
+      severity: severities[Math.floor(Math.random() * severities.length)],
+      status: statuses[Math.floor(Math.random() * statuses.length)],
+      assignedAgencies: assigned,
+      activeWarRoom: Array.from({ length: Math.floor(Math.random() * 3) + 1 }, (_, idx) => ({
+        id: `USR-${idx}`,
+        agency: assigned[idx % assigned.length],
+        activeStatus: ['VIEWING', 'REMEDIATING', 'IDLE'][Math.floor(Math.random() * 3)] as 'VIEWING' | 'REMEDIATING' | 'IDLE',
+        lastSeen: new Date()
+      })),
+      auditTrail: [
+        {
+          timestamp: new Date().toISOString(),
+          actor: 'SYSTEM',
+          action: 'INCIDENT_CREATED',
+          previousState: 'NULL',
+          newState: 'DETECTED'
+        }
+      ]
+    });
+  }
+
+  return incidents;
+}

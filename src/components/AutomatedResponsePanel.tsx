@@ -1,10 +1,19 @@
 'use client'
 
-import { Shield, Ban, Truck, Bell, Lock, FileCheck, Zap, Clock, CheckCircle, XCircle, Loader } from "lucide-react"
+import { useState } from "react"
+import { Shield, Ban, Truck, Bell, Lock, FileCheck, Zap, Clock, CheckCircle, XCircle, Loader, UserCheck, AlertOctagon } from "lucide-react"
 import { AutomatedResponse, ResponseType } from "@/lib/mockData"
 
 interface AutomatedResponsePanelProps {
     responses: AutomatedResponse[];
+}
+
+interface PendingAction {
+    id: string;
+    type: ResponseType;
+    target: string;
+    riskLevel: 'HIGH' | 'CRITICAL';
+    timestamp: Date;
 }
 
 const responseIcons: Record<ResponseType, typeof Shield> = {
@@ -33,13 +42,28 @@ const statusIcons = {
 }
 
 export function AutomatedResponsePanel({ responses }: AutomatedResponsePanelProps) {
+    // Human-in-the-loop state
+    const [pendingActions, setPendingActions] = useState<PendingAction[]>([
+        { id: 'PA-001', type: 'SYSTEM_ISOLATE', target: 'KPLC-GRID-CONTROL-04', riskLevel: 'CRITICAL', timestamp: new Date() },
+        { id: 'PA-002', type: 'IP_BLOCK', target: '192.168.44.102/32', riskLevel: 'HIGH', timestamp: new Date() }
+    ]);
+
+    const handleApprove = (id: string) => {
+        setPendingActions(prev => prev.filter(a => a.id !== id));
+        // In a real app, this would trigger the server action
+    };
+
+    const handleDeny = (id: string) => {
+        setPendingActions(prev => prev.filter(a => a.id !== id));
+    };
+
     const cyberResponses = responses.filter(r =>
         r.responseType === 'IP_BLOCK' || r.responseType === 'SYSTEM_ISOLATE'
     );
     const physicalResponses = responses.filter(r =>
         r.responseType === 'POLICE_DISPATCH' || r.responseType === 'LOCKDOWN'
     );
-    const completedCount = responses.filter(r => r.status === 'COMPLETED').length;
+    const completedCount = responses.filter(r => r.status === 'COMPLETED').length + (2 - pendingActions.length); // Mock accepted count increment
     const executingCount = responses.filter(r => r.status === 'EXECUTING').length;
 
     return (
@@ -69,6 +93,46 @@ export function AutomatedResponsePanel({ responses }: AutomatedResponsePanelProp
                 </div>
             </div>
 
+            {/* Human-in-the-Loop Authorization Queue */}
+            {pendingActions.length > 0 && (
+                <div className="mb-4 space-y-2 border border-orange-500/50 bg-orange-950/10 p-2 rounded relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-1">
+                        <div className="flex items-center gap-1 bg-orange-900/80 px-2 py-0.5 rounded text-[8px] text-orange-200 border border-orange-500/50 animate-pulse">
+                            <UserCheck className="w-3 h-3" />
+                            HUMAN AUTHORIZATION REQUIRED
+                        </div>
+                    </div>
+
+                    {pendingActions.map(action => (
+                        <div key={action.id} className="flex items-center justify-between bg-black/60 p-2 border-l-2 border-orange-500">
+                            <div>
+                                <div className="flex items-center gap-2">
+                                    <AlertOctagon className="w-4 h-4 text-orange-500" />
+                                    <span className="text-[10px] font-bold text-orange-400">PENDING: {action.type.replace('_', ' ')}</span>
+                                </div>
+                                <div className="text-[9px] text-gray-400 font-mono ml-6">
+                                    TARGET: <span className="text-white">{action.target}</span>
+                                </div>
+                            </div>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => handleDeny(action.id)}
+                                    className="px-3 py-1 bg-red-950 hover:bg-red-900 border border-red-800 text-red-400 text-[9px] font-bold transition-colors"
+                                >
+                                    DENY
+                                </button>
+                                <button
+                                    onClick={() => handleApprove(action.id)}
+                                    className="px-3 py-1 bg-green-950 hover:bg-green-900 border border-green-800 text-green-400 text-[9px] font-bold transition-colors shadow-[0_0_10px_rgba(0,255,65,0.2)]"
+                                >
+                                    AUTHORIZE
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+
             <div className="grid grid-cols-2 gap-4">
                 {/* Cyber Response Column (ARCM) */}
                 <div>
@@ -97,9 +161,9 @@ export function AutomatedResponsePanel({ responses }: AutomatedResponsePanelProp
                                             </span>
                                         </div>
                                         <div className={`flex items-center gap-1 text-[8px] ${response.status === 'COMPLETED' ? 'text-green-400' :
-                                                response.status === 'EXECUTING' ? 'text-yellow-400' :
-                                                    response.status === 'FAILED' ? 'text-red-400' :
-                                                        'text-gray-400'
+                                            response.status === 'EXECUTING' ? 'text-yellow-400' :
+                                                response.status === 'FAILED' ? 'text-red-400' :
+                                                    'text-gray-400'
                                             }`}>
                                             <StatusIcon className={`h-3 w-3 ${response.status === 'EXECUTING' ? 'animate-spin' : ''}`} />
                                             {response.status}
@@ -143,9 +207,9 @@ export function AutomatedResponsePanel({ responses }: AutomatedResponsePanelProp
                                             </span>
                                         </div>
                                         <div className={`flex items-center gap-1 text-[8px] ${response.status === 'COMPLETED' ? 'text-green-400' :
-                                                response.status === 'EXECUTING' ? 'text-yellow-400' :
-                                                    response.status === 'FAILED' ? 'text-red-400' :
-                                                        'text-gray-400'
+                                            response.status === 'EXECUTING' ? 'text-yellow-400' :
+                                                response.status === 'FAILED' ? 'text-red-400' :
+                                                    'text-gray-400'
                                             }`}>
                                             <StatusIcon className={`h-3 w-3 ${response.status === 'EXECUTING' ? 'animate-spin' : ''}`} />
                                             {response.status}

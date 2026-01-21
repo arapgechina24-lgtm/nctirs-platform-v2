@@ -1,7 +1,14 @@
 import { useState, useEffect } from "react"
-import { Shield, AlertTriangle, Activity, TrendingUp, Lock, Radio } from "lucide-react"
+import { Shield, AlertTriangle, Activity, TrendingUp, Lock, Radio, Users } from "lucide-react"
 
-export function Header() {
+export type ViewType = 'COMMAND_CENTER' | 'FUSION_CENTER' | 'THREAT_MATRIX' | 'ANALYTICS' | 'OPERATIONS';
+
+interface HeaderProps {
+  currentView: ViewType;
+  onViewChange: (view: ViewType) => void;
+}
+
+export function Header({ currentView, onViewChange }: HeaderProps) {
   const [sessionId, setSessionId] = useState<string>("")
   const [currentTime, setCurrentTime] = useState<string>("")
 
@@ -110,31 +117,29 @@ export function Header() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex gap-1 px-6 pb-3">
-          {[
-            { icon: Activity, label: 'COMMAND CENTER', active: true },
-            { icon: AlertTriangle, label: 'THREAT MATRIX' },
-            { icon: TrendingUp, label: 'ANALYTICS' },
-            { icon: Shield, label: 'OPERATIONS' },
-          ].map((item) => (
-            <button
-              key={item.label}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-none text-[10px] font-bold tracking-[0.2em] transition-all ${item.active
-                ? 'bg-green-900/30 text-green-400 shadow-[0_0_15px_rgba(0,255,65,0.1)] border border-green-500/50'
-                : 'text-green-900 hover:bg-green-950 hover:text-green-400 border border-transparent hover:border-green-900/50'
-                }`}
-            >
-              <item.icon className="h-3.5 w-3.5" strokeWidth={2} />
-              {item.label}
-            </button>
-          ))}
-
-          {/* Right side indicator */}
-          <div className="ml-auto flex items-center gap-2 px-4 py-2 bg-black border border-green-900/50 rounded-none">
-            <div className="text-[9px] font-mono text-green-900 uppercase">SESSION_ID:</div>
-            <div className="text-xs font-mono font-bold text-green-500">{sessionId || "INITIALIZING..."}</div>
-          </div>
-        </nav>
+        <div className="border-t border-green-900/30 bg-black/50 backdrop-blur-sm">
+          <nav className="flex w-full gap-0 overflow-x-auto">
+            {[
+              { icon: Activity, label: 'COMMAND_CENTER', display: 'COMMAND CENTER' },
+              { icon: Users, label: 'FUSION_CENTER', display: 'FUSION CENTER' },
+              { icon: AlertTriangle, label: 'THREAT_MATRIX', display: 'THREAT MATRIX' },
+              { icon: TrendingUp, label: 'ANALYTICS', display: 'ANALYTICS' },
+              { icon: Shield, label: 'OPERATIONS', display: 'OPERATIONS' },
+            ].map((item) => (
+              <button
+                key={item.label}
+                onClick={() => onViewChange(item.label as ViewType)}
+                className={`group flex items-center justify-center gap-2 px-4 py-4 flex-1 rounded-none text-[10px] font-bold tracking-[0.2em] transition-all whitespace-nowrap border-b-2 border-r border-r-green-900/20 last:border-r-0 ${currentView === item.label
+                  ? 'bg-green-900/20 text-green-400 border-b-green-500 shadow-[inset_0_0_15px_rgba(0,255,65,0.1)]'
+                  : 'text-green-800 border-b-transparent hover:bg-green-900/10 hover:text-green-300 hover:border-b-green-800'
+                  }`}
+              >
+                <item.icon className={`h-3.5 w-3.5 ${currentView === item.label ? 'text-green-400' : 'text-green-800 group-hover:text-green-400'}`} strokeWidth={2} />
+                {item.display}
+              </button>
+            ))}
+          </nav>
+        </div>
       </header>
     </>
   )
