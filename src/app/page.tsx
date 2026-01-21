@@ -273,32 +273,38 @@ export default function Home() {
 
         {/* View Routing */}
         {currentView === 'COMMAND_CENTER' && (
-          <div className="flex flex-col gap-4 h-full">
-            {/* Horizontal Key Metrics Strip */}
-            <KeyMetrics metrics={{
-              threatLevel: activeCoordinated > 0 ? 'CRITICAL' : highThreatCount > 5 ? 'HIGH' : 'MEDIUM',
-              activeIncidents: data.incidents.length,
-              aiConfidence: 94.2,
-              systemLoad: 78,
-              responsesActive: activeResponses,
-              networkTraffic: '45.2 TB/s'
-            }} />
+          <div className="flex flex-col gap-3 h-[calc(100vh-10rem)]">
 
-            {/* Manual Emergency Trigger for Demo */}
-            <div className="absolute top-28 right-6 z-40">
+            {/* TOP ROW: Metrics Bar with Emergency Button */}
+            <div className="flex items-stretch gap-3">
+              <div className="flex-1">
+                <KeyMetrics metrics={{
+                  threatLevel: activeCoordinated > 0 ? 'CRITICAL' : highThreatCount > 5 ? 'HIGH' : 'MEDIUM',
+                  activeIncidents: data.incidents.length,
+                  aiConfidence: 94.2,
+                  systemLoad: 78,
+                  responsesActive: activeResponses,
+                  networkTraffic: '45.2 TB/s'
+                }} />
+              </div>
               <button
                 onClick={() => setIsEmergency(true)}
-                className="bg-red-950/30 text-red-500 text-[10px] border border-red-900/50 px-3 py-1.5 hover:bg-red-900/50 uppercase font-bold transition-colors"
+                className="bg-red-950/50 text-red-400 text-xs border-2 border-red-800 px-5 hover:bg-red-900/60 uppercase font-bold transition-all flex items-center gap-2"
               >
-                [!] SIMULATE BREACH
+                <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                SIMULATE BREACH
               </button>
             </div>
 
-            {/* Main Grid Layout - 3 Columns */}
-            <div className="grid grid-cols-12 gap-4 flex-1 min-h-0">
+            {/* MAIN CONTENT: Equal 3-Column Grid */}
+            <div className="grid grid-cols-12 gap-3 flex-1 min-h-0">
 
-              {/* LEFT COLUMN - System Overview */}
-              <div className="col-span-12 lg:col-span-3 flex flex-col gap-4">
+              {/* COLUMN 1: Infrastructure Status */}
+              <div className="col-span-12 lg:col-span-4 flex flex-col gap-3 overflow-y-auto">
+                <div className="text-[9px] text-green-600 uppercase tracking-widest font-bold px-1 flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 bg-green-500 rounded-full" />
+                  Infrastructure Status
+                </div>
                 <CNIHeatmap />
                 <SystemArchitecture
                   perception={data.perceptionLayer}
@@ -308,29 +314,27 @@ export default function Home() {
                 <DataLakeMonitor sources={data.dataLakeSources} />
               </div>
 
-              {/* CENTER COLUMN - Primary Visualization */}
-              <div className="col-span-12 lg:col-span-6 flex flex-col gap-4">
-                {/* Stats Row */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-black border border-red-900/50 p-4 relative overflow-hidden group">
-                    <div className="absolute inset-0 bg-red-900/10 group-hover:bg-red-900/20 transition-all" />
-                    <div className="relative z-10">
-                      <div className="text-[10px] text-red-500 font-bold mb-1 uppercase tracking-wider">Critical Threats</div>
-                      <div className="text-3xl font-bold text-red-400">{criticalCyber}</div>
-                    </div>
+              {/* COLUMN 2: Threat Visualization */}
+              <div className="col-span-12 lg:col-span-4 flex flex-col gap-3 overflow-hidden">
+                <div className="text-[9px] text-green-600 uppercase tracking-widest font-bold px-1 flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse" />
+                  Threat Visualization
+                </div>
+
+                {/* Quick Stats */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-black border border-red-900/60 p-3">
+                    <div className="text-[8px] text-red-500 uppercase tracking-wider mb-1">Critical</div>
+                    <div className="text-xl font-bold text-red-400">{criticalCyber}</div>
                   </div>
-                  <div className="bg-black border border-purple-900/50 p-4 relative overflow-hidden group">
-                    <div className="absolute inset-0 bg-purple-900/10 group-hover:bg-purple-900/20 transition-all" />
-                    <div className="relative z-10">
-                      <div className="text-[10px] text-purple-500 font-bold mb-1 uppercase tracking-wider">Data Leaks Prevented</div>
-                      <div className="text-3xl font-bold text-purple-400">14,203</div>
-                      <div className="text-[9px] text-purple-700 mt-1">LAST 24h</div>
-                    </div>
+                  <div className="bg-black border border-purple-900/60 p-3">
+                    <div className="text-[8px] text-purple-500 uppercase tracking-wider mb-1">Blocked</div>
+                    <div className="text-xl font-bold text-purple-400">14.2K</div>
                   </div>
                 </div>
 
-                {/* Threat Map */}
-                <div className="flex-1 min-h-[300px]">
+                {/* Main Map */}
+                <div className="flex-1 min-h-[200px] border border-green-900/30">
                   <ThreatMap
                     incidents={data.incidents}
                     predictions={data.predictions}
@@ -338,26 +342,31 @@ export default function Home() {
                   />
                 </div>
 
-                {/* Charts Row */}
-                <div className="grid grid-cols-2 gap-4">
+                {/* Charts */}
+                <div className="grid grid-cols-2 gap-3 h-32">
                   <ThreatAnalyticsChart analytics={data.threatAnalytics} />
                   <IncidentTrendsChart data={data.timeSeriesData} />
                 </div>
-
-                <AIAssistantPanel />
               </div>
 
-              {/* RIGHT COLUMN - Intelligence Feeds */}
-              <div className="col-span-12 lg:col-span-3 flex flex-col gap-4">
+              {/* COLUMN 3: Intelligence & Response */}
+              <div className="col-span-12 lg:col-span-4 flex flex-col gap-3 overflow-hidden">
+                <div className="text-[9px] text-green-600 uppercase tracking-widest font-bold px-1 flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full" />
+                  Intelligence Feed
+                </div>
+
                 <ThreatAnalyticsEngine
                   cyberThreats={data.cyberThreats}
                   coordinatedAttacks={data.coordinatedAttacks}
                 />
-                <div className="flex-1 overflow-y-auto min-h-0 flex flex-col gap-4">
-                  <IncidentList incidents={data.incidents} maxItems={6} />
-                  <SurveillanceMonitor feeds={data.surveillanceFeeds} maxItems={4} />
-                  <CommunityReports reports={data.communityReports} maxItems={5} />
+
+                <div className="flex-1 overflow-y-auto flex flex-col gap-3">
+                  <IncidentList incidents={data.incidents} maxItems={4} />
+                  <SurveillanceMonitor feeds={data.surveillanceFeeds} maxItems={3} />
                 </div>
+
+                <AIAssistantPanel />
               </div>
 
             </div>
