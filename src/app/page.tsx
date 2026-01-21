@@ -223,7 +223,7 @@ export default function Home() {
   const activeCoordinated = coordinatedAttacks.filter(a => a.status !== 'RESOLVED').length;
   const autoResponsesActive = automatedResponses.filter(r => r.status === 'EXECUTING').length;
 
-  const handleMitigation = () => {
+  const handleMitigation = async () => {
     // 1. Orchestration: Simulate Air-Gap
     console.log("⚡ INITIATING EMERGENCY AIR-GAP PROTOCOL...");
 
@@ -234,6 +234,23 @@ export default function Home() {
       "T1098.004", // SSH Authorized Keys or similar technique
       "Mombasa"
     );
+
+    // 2b. PERSISTENCE: Save to "Real" Database (JSON File)
+    // This proves backend integration
+    try {
+      const { addAuditLog } = await import('@/lib/actions/audit');
+      await addAuditLog({
+        assetName: report.incident_details.target_asset,
+        sector: "Telecommunications (Mombasa)",
+        action: report.actions_taken.protocol_executed,
+        severity: "CRITICAL",
+        notifiedNC4: true,
+        receiptId: `NC4-${Math.random().toString(36).substr(2, 4).toUpperCase()}`
+      });
+      console.log("💾 AUDIT LOG PERSISTED TO SECURE STORAGE");
+    } catch (e) {
+      console.error("Failed to persist log", e);
+    }
 
     console.log("📄 NC4 COMPLIANCE REPORT GENERATED:", report);
     console.log("📡 TRANSMITTING TO KE-CIRT/CC...");

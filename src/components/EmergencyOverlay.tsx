@@ -7,7 +7,7 @@ import { NC4IncidentReport } from '@/lib/soar-logic';
 
 interface EmergencyOverlayProps {
     isActive: boolean;
-    onMitigate: () => NC4IncidentReport;
+    onMitigate: () => Promise<NC4IncidentReport> | NC4IncidentReport;
     onDismiss?: () => void;
     targetAsset: string;
 }
@@ -37,9 +37,9 @@ export default function EmergencyOverlay({ isActive, onMitigate, onDismiss, targ
         }
     }, [isActive]);
 
-    const handleMitigationClick = () => {
+    const handleMitigationClick = async () => {
         // Execute the mitigation logic from parent
-        const report = onMitigate();
+        const report = await onMitigate();
         setSentPacket(report);
         setReceiptId(`KC-${Math.random().toString(36).substr(2, 9).toUpperCase()}`);
     };
