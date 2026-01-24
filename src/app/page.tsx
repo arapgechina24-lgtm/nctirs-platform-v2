@@ -372,15 +372,9 @@ export default function Home() {
                   />
                 </div>
 
-                {/* Charts */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="h-36">
-                    <ThreatAnalyticsChart analytics={data.threatAnalytics} />
-                  </div>
-                  <div className="h-36">
-                    <IncidentTrendsChart data={data.timeSeriesData} />
-                  </div>
-                </div>
+                {/* Charts - Full Width Stacked */}
+                <ThreatAnalyticsChart analytics={data.threatAnalytics} />
+                <IncidentTrendsChart data={data.timeSeriesData} />
               </div>
 
               {/* COLUMN 3: Intelligence & Response */}
