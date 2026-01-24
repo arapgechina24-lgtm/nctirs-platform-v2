@@ -30,13 +30,13 @@ export function ExplainableAIPanel({ explanations }: ExplainableAIPanelProps) {
             </div>
 
             {/* Explanations List */}
-            <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
+            <div className="space-y-2">
                 {explanations.map(exp => (
                     <div
                         key={exp.id}
                         className={`border ${exp.analystApproved
-                                ? 'border-green-900/30 bg-green-950/5'
-                                : 'border-purple-900/30 bg-purple-950/5'
+                            ? 'border-green-900/30 bg-green-950/5'
+                            : 'border-purple-900/30 bg-purple-950/5'
                             }`}
                     >
                         {/* Header Row */}
@@ -45,12 +45,12 @@ export function ExplainableAIPanel({ explanations }: ExplainableAIPanelProps) {
                             className="w-full flex items-center justify-between p-2 text-left"
                         >
                             <div className="flex items-center gap-2">
-                                <div className={`w-2 h-2 rounded-full ${exp.threatType === 'APT' ? 'bg-red-500' :
-                                        exp.threatType === 'Ransomware' ? 'bg-orange-500' :
-                                            'bg-yellow-500'
+                                <div className={`w-2 h-2 rounded-full shrink-0 ${exp.threatType === 'APT' ? 'bg-red-500' :
+                                    exp.threatType === 'Ransomware' ? 'bg-orange-500' :
+                                        'bg-yellow-500'
                                     }`} />
-                                <span className="text-[10px] text-gray-300 font-medium">{exp.action}</span>
-                                <span className="text-[9px] text-gray-500">({exp.threatType})</span>
+                                <span className="text-xs text-gray-200 font-medium">{exp.action}</span>
+                                <span className="text-[10px] text-gray-500">({exp.threatType})</span>
                             </div>
                             <div className="flex items-center gap-2">
                                 <span className="text-[10px] text-purple-400 font-mono">{exp.confidence}%</span>
@@ -70,17 +70,17 @@ export function ExplainableAIPanel({ explanations }: ExplainableAIPanelProps) {
                                     <div className="text-[8px] text-gray-600 uppercase tracking-wider mb-1">Contributing Factors (SHAP)</div>
                                     <div className="space-y-1">
                                         {exp.factors.map((factor, idx) => (
-                                            <div key={idx} className="flex items-center gap-2">
+                                            <div key={idx} className="flex items-center gap-3">
                                                 <div className="flex-1">
-                                                    <div className="h-2 bg-gray-900 rounded-full overflow-hidden">
+                                                    <div className="h-2.5 bg-gray-900 rounded-full overflow-hidden">
                                                         <div
                                                             className="h-full bg-gradient-to-r from-purple-500 to-purple-400"
                                                             style={{ width: `${factor.weight * 100}%` }}
                                                         />
                                                     </div>
                                                 </div>
-                                                <span className="text-[9px] text-gray-400 w-24 truncate">{factor.name}</span>
-                                                <span className="text-[9px] text-purple-400 font-mono w-10">
+                                                <span className="text-[10px] text-gray-300 w-32">{factor.name}</span>
+                                                <span className="text-[10px] text-purple-400 font-mono w-12 text-right">
                                                     +{(factor.weight * 100).toFixed(0)}%
                                                 </span>
                                             </div>
@@ -89,9 +89,9 @@ export function ExplainableAIPanel({ explanations }: ExplainableAIPanelProps) {
                                 </div>
 
                                 {/* Natural Language Explanation */}
-                                <div className="bg-black/50 border border-purple-900/20 p-2">
-                                    <div className="text-[8px] text-gray-600 uppercase tracking-wider mb-1">Natural Language</div>
-                                    <p className="text-[10px] text-gray-300 leading-relaxed">
+                                <div className="bg-black/50 border border-purple-900/20 p-3">
+                                    <div className="text-[9px] text-gray-500 uppercase tracking-wider mb-1">Natural Language</div>
+                                    <p className="text-xs text-gray-200 leading-relaxed">
                                         &quot;{exp.naturalLanguage}&quot;
                                     </p>
                                 </div>
@@ -105,8 +105,8 @@ export function ExplainableAIPanel({ explanations }: ExplainableAIPanelProps) {
                                                 key={level}
                                                 onClick={() => handleOverride(exp.id, level)}
                                                 className={`px-2 py-0.5 text-[8px] border ${overrides[exp.id] === level || exp.overrideLevel === level
-                                                        ? 'bg-orange-900/30 border-orange-500 text-orange-400'
-                                                        : 'border-gray-800 text-gray-500 hover:border-gray-600'
+                                                    ? 'bg-orange-900/30 border-orange-500 text-orange-400'
+                                                    : 'border-gray-800 text-gray-500 hover:border-gray-600'
                                                     }`}
                                             >
                                                 {level}

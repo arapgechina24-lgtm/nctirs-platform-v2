@@ -50,34 +50,34 @@ export function SovereignAIStatusPanel({ status }: SovereignAIStatusPanelProps) 
                         <div
                             key={llm.id}
                             className={`flex items-center justify-between p-2 border ${llm.status === 'ONLINE'
-                                    ? 'border-green-900/30 bg-green-950/10'
-                                    : llm.status === 'UPDATING'
-                                        ? 'border-yellow-900/30 bg-yellow-950/10'
-                                        : 'border-red-900/30 bg-red-950/10'
+                                ? 'border-green-900/30 bg-green-950/10'
+                                : llm.status === 'UPDATING'
+                                    ? 'border-yellow-900/30 bg-yellow-950/10'
+                                    : 'border-red-900/30 bg-red-950/10'
                                 }`}
                         >
-                            <div className="flex items-center gap-2">
-                                <Cpu className={`w-4 h-4 ${llm.status === 'ONLINE' ? 'text-green-400' :
-                                        llm.status === 'UPDATING' ? 'text-yellow-400' :
-                                            'text-red-400'
+                            <div className="flex items-center gap-3">
+                                <Cpu className={`w-5 h-5 ${llm.status === 'ONLINE' ? 'text-green-400' :
+                                    llm.status === 'UPDATING' ? 'text-yellow-400' :
+                                        'text-red-400'
                                     }`} />
                                 <div>
-                                    <div className="text-[11px] text-gray-300 font-medium">{llm.name}</div>
-                                    <div className="text-[8px] text-gray-600">{llm.version}</div>
+                                    <div className="text-sm text-gray-200 font-medium">{llm.name}</div>
+                                    <div className="text-[9px] text-gray-500">{llm.version}</div>
                                 </div>
                             </div>
-                            <div className="grid grid-cols-3 gap-3 text-right text-[9px]">
+                            <div className="grid grid-cols-3 gap-4 text-right text-[10px]">
                                 <div>
-                                    <div className="text-cyan-400 font-mono">{llm.inferenceLatencyMs}ms</div>
-                                    <div className="text-gray-600">Latency</div>
+                                    <div className="text-cyan-400 font-mono text-sm">{llm.inferenceLatencyMs}ms</div>
+                                    <div className="text-gray-500">Latency</div>
                                 </div>
                                 <div>
-                                    <div className="text-purple-400 font-mono">{llm.gpuUtilization}%</div>
-                                    <div className="text-gray-600">GPU</div>
+                                    <div className="text-purple-400 font-mono text-sm">{llm.gpuUtilization}%</div>
+                                    <div className="text-gray-500">GPU</div>
                                 </div>
                                 <div>
-                                    <div className="text-green-400 font-mono">{llm.requestsPerSecond}</div>
-                                    <div className="text-gray-600">RPS</div>
+                                    <div className="text-green-400 font-mono text-sm">{llm.requestsPerSecond}</div>
+                                    <div className="text-gray-500">RPS</div>
                                 </div>
                             </div>
                         </div>
@@ -91,23 +91,23 @@ export function SovereignAIStatusPanel({ status }: SovereignAIStatusPanelProps) 
                     <span className="text-[9px] text-gray-600 uppercase tracking-wider">Edge Deployment Nodes</span>
                     <span className="text-[10px] text-green-400">{onlineEdgeNodes}/{status.edgeNodes.length} Online</span>
                 </div>
-                <div className="grid grid-cols-4 gap-1">
+                <div className="grid grid-cols-4 gap-2">
                     {status.edgeNodes.map(node => (
                         <div
                             key={node.id}
                             className={`p-1.5 text-center border ${node.status === 'ONLINE'
-                                    ? 'border-green-900/30 bg-green-950/10'
-                                    : node.status === 'MAINTENANCE'
-                                        ? 'border-yellow-900/30 bg-yellow-950/10'
-                                        : 'border-red-900/30 bg-red-950/10'
+                                ? 'border-green-900/30 bg-green-950/10'
+                                : node.status === 'MAINTENANCE'
+                                    ? 'border-yellow-900/30 bg-yellow-950/10'
+                                    : 'border-red-900/30 bg-red-950/10'
                                 }`}
                             title={`${node.location} - ${node.inferenceCount.toLocaleString()} inferences`}
                         >
-                            <MapPin className={`w-3 h-3 mx-auto mb-0.5 ${node.status === 'ONLINE' ? 'text-green-400' :
-                                    node.status === 'MAINTENANCE' ? 'text-yellow-400' :
-                                        'text-red-400'
+                            <MapPin className={`w-4 h-4 mx-auto mb-1 ${node.status === 'ONLINE' ? 'text-green-400' :
+                                node.status === 'MAINTENANCE' ? 'text-yellow-400' :
+                                    'text-red-400'
                                 }`} />
-                            <div className="text-[7px] text-gray-400 truncate">{node.location.split(' ')[0]}</div>
+                            <div className="text-[9px] text-gray-300">{node.location.split(' ')[0]}</div>
                         </div>
                     ))}
                 </div>
@@ -115,17 +115,17 @@ export function SovereignAIStatusPanel({ status }: SovereignAIStatusPanelProps) 
 
             {/* Sovereignty Stats */}
             <div className="grid grid-cols-3 gap-2">
-                <div className="bg-black border border-green-900/30 p-2 text-center">
-                    <div className="text-lg font-bold text-green-400">{status.onPremisePercentage}%</div>
-                    <div className="text-[7px] text-gray-600 uppercase">On-Premise</div>
+                <div className="bg-black border border-green-900/30 p-3 text-center">
+                    <div className="text-xl font-bold text-green-400">{status.onPremisePercentage}%</div>
+                    <div className="text-[9px] text-gray-500 uppercase">On-Premise</div>
                 </div>
-                <div className="bg-black border border-cyan-900/30 p-2 text-center">
-                    <ShieldCheck className="w-4 h-4 mx-auto text-cyan-400 mb-1" />
-                    <div className="text-[7px] text-gray-600 uppercase">DPA Compliant</div>
+                <div className="bg-black border border-cyan-900/30 p-3 text-center">
+                    <ShieldCheck className="w-5 h-5 mx-auto text-cyan-400 mb-1" />
+                    <div className="text-[9px] text-gray-500 uppercase">DPA Compliant</div>
                 </div>
-                <div className="bg-black border border-purple-900/30 p-2 text-center">
-                    <Globe className="w-4 h-4 mx-auto text-purple-400 mb-1" />
-                    <div className="text-[7px] text-gray-600 uppercase">Kenya Only</div>
+                <div className="bg-black border border-purple-900/30 p-3 text-center">
+                    <Globe className="w-5 h-5 mx-auto text-purple-400 mb-1" />
+                    <div className="text-[9px] text-gray-500 uppercase">Kenya Only</div>
                 </div>
             </div>
 

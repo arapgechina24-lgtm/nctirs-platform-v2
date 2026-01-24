@@ -71,41 +71,41 @@ export function FederatedLearningHub({ status }: FederatedLearningHubProps) {
             </div>
 
             {/* Agency Nodes */}
-            <div className="text-[9px] text-gray-600 uppercase tracking-wider mb-2">Agency Enclaves</div>
-            <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
+            <div className="text-[10px] text-gray-500 uppercase tracking-wider mb-2">Agency Enclaves</div>
+            <div className="space-y-2">
                 {status.nodes.map(node => (
                     <div
                         key={node.id}
                         className={`flex items-center justify-between text-[10px] px-2 py-1.5 border ${node.status === 'OFFLINE'
-                                ? 'bg-red-950/10 border-red-900/30'
-                                : node.status === 'TRAINING'
-                                    ? 'bg-yellow-950/10 border-yellow-900/30'
-                                    : node.status === 'SYNCING'
-                                        ? 'bg-blue-950/10 border-blue-900/30'
-                                        : 'bg-green-950/10 border-green-900/30'
+                            ? 'bg-red-950/10 border-red-900/30'
+                            : node.status === 'TRAINING'
+                                ? 'bg-yellow-950/10 border-yellow-900/30'
+                                : node.status === 'SYNCING'
+                                    ? 'bg-blue-950/10 border-blue-900/30'
+                                    : 'bg-green-950/10 border-green-900/30'
                             }`}
                     >
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
                             {node.status === 'OFFLINE' ? (
-                                <Wifi className="w-3 h-3 text-red-400" />
+                                <Wifi className="w-3.5 h-3.5 text-red-400 shrink-0" />
                             ) : node.status === 'TRAINING' ? (
-                                <RefreshCw className="w-3 h-3 text-yellow-400 animate-spin" />
+                                <RefreshCw className="w-3.5 h-3.5 text-yellow-400 animate-spin shrink-0" />
                             ) : node.status === 'SYNCING' ? (
-                                <ArrowUpDown className="w-3 h-3 text-blue-400" />
+                                <ArrowUpDown className="w-3.5 h-3.5 text-blue-400 shrink-0" />
                             ) : (
-                                <CheckCircle className="w-3 h-3 text-green-400" />
+                                <CheckCircle className="w-3.5 h-3.5 text-green-400 shrink-0" />
                             )}
-                            <span className="text-gray-300 truncate max-w-[100px]">{node.agency}</span>
+                            <span className="text-gray-200 text-xs">{node.agency}</span>
                         </div>
-                        <div className="flex items-center gap-3">
-                            <div className="text-gray-500">
+                        <div className="flex items-center gap-4 shrink-0">
+                            <div className="text-gray-400 text-xs">
                                 <Database className="w-3 h-3 inline mr-1" />
                                 {(node.localDataPoints / 1000).toFixed(0)}K
                             </div>
-                            <div className={`font-mono ${node.status === 'OFFLINE' ? 'text-red-400' :
-                                    node.status === 'TRAINING' ? 'text-yellow-400' :
-                                        node.status === 'SYNCING' ? 'text-blue-400' :
-                                            'text-green-400'
+                            <div className={`font-mono text-xs ${node.status === 'OFFLINE' ? 'text-red-400' :
+                                node.status === 'TRAINING' ? 'text-yellow-400' :
+                                    node.status === 'SYNCING' ? 'text-blue-400' :
+                                        'text-green-400'
                                 }`}>
                                 {node.status}
                             </div>

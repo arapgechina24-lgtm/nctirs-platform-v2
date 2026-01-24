@@ -508,36 +508,36 @@ export default function Home() {
         )}
 
         {currentView === 'OPERATIONS' && (
-          <div className="flex flex-col gap-4 h-[calc(100vh-10rem)]">
+          <div className="flex flex-col gap-4 overflow-y-auto" style={{ height: 'calc(100vh - 9rem)' }}>
             {/* 4 PILLARS HEADER */}
-            <div className="flex items-center justify-between px-1">
-              <div className="text-[9px] text-green-600 uppercase tracking-widest font-bold flex items-center gap-2">
-                <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+            <div className="flex items-center justify-between px-1 shrink-0">
+              <div className="text-xs text-green-500 uppercase tracking-widest font-bold flex items-center gap-2">
+                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
                 MAJESTIC SHIELD: 4 Winning Pillars
               </div>
-              <div className="text-[8px] text-gray-600">
+              <div className="text-[10px] text-gray-500">
                 National Security Gold Standard
               </div>
             </div>
 
-            {/* TOP ROW: Adversarial + Federated Learning */}
-            <div className="grid grid-cols-12 gap-4 flex-1 min-h-0">
-              {/* COLUMN 1: Adversarial Defense */}
-              <div className="col-span-12 lg:col-span-4 overflow-y-auto">
-                <AdversarialDefensePanel metrics={data.adversarialMetrics} />
-              </div>
+            {/* 2x2 Grid Layout for better visibility */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+              {/* Pillar 1: Adversarial Defense */}
+              <AdversarialDefensePanel metrics={data.adversarialMetrics} />
 
-              {/* COLUMN 2: Federated Learning + Sovereign AI */}
-              <div className="col-span-12 lg:col-span-4 flex flex-col gap-4 overflow-y-auto">
-                <FederatedLearningHub status={data.federatedStatus} />
-                <SovereignAIStatusPanel status={data.sovereignAIStatus} />
-              </div>
+              {/* Pillar 2: Federated Learning */}
+              <FederatedLearningHub status={data.federatedStatus} />
 
-              {/* COLUMN 3: Explainable AI + Response */}
-              <div className="col-span-12 lg:col-span-4 flex flex-col gap-4 overflow-y-auto">
-                <ExplainableAIPanel explanations={data.xaiExplanations} />
-                <AutomatedResponsePanel responses={data.automatedResponses} />
-              </div>
+              {/* Pillar 3: Explainable AI */}
+              <ExplainableAIPanel explanations={data.xaiExplanations} />
+
+              {/* Pillar 4: Sovereign AI */}
+              <SovereignAIStatusPanel status={data.sovereignAIStatus} />
+            </div>
+
+            {/* Response Panel - Full Width */}
+            <div className="shrink-0">
+              <AutomatedResponsePanel responses={data.automatedResponses} />
             </div>
           </div>
         )}
