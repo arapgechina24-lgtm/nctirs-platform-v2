@@ -33,6 +33,8 @@ import AdversarialDefensePanel from "@/components/AdversarialDefensePanel"
 import FederatedLearningHub from "@/components/FederatedLearningHub"
 import ExplainableAIPanel from "@/components/ExplainableAIPanel"
 import SovereignAIStatusPanel from "@/components/SovereignAIStatusPanel"
+// Analytics tracking
+import { trackPageView, trackAction, trackPerformance } from "@/lib/analytics"
 
 import {
   generateMockIncidents,
@@ -155,6 +157,24 @@ export default function Home() {
   const [mounted, setMounted] = useState(false)
   const [data, setData] = useState<DashboardData | null>(null)
 
+  // Track page views and view changes
+  useEffect(() => {
+    trackPageView('NCTIRS Dashboard', { initialView: 'COMMAND_CENTER' })
+    const startTime = performance.now()
+
+    return () => {
+      const loadTime = performance.now() - startTime
+      trackPerformance('session_duration', { loadTime })
+    }
+  }, [])
+
+  // Track view changes
+  useEffect(() => {
+    if (mounted) {
+      trackAction('view_change', { view: currentView })
+    }
+  }, [currentView, mounted])
+
   useEffect(() => {
     // Generate all mock data on client
     const incidents = generateMockIncidents(30);
@@ -178,6 +198,9 @@ export default function Home() {
     const federatedStatus = generateFederatedNodes();
     const xaiExplanations = generateXAIExplanations(8);
     const sovereignAIStatus = generateSovereignAIStatus();
+
+    // Track data generation performance
+    const startTime = performance.now()
 
     // Use setTimeout to avoid synchronous setState warning
     const timer = setTimeout(() => {
@@ -204,6 +227,10 @@ export default function Home() {
         sovereignAIStatus,
       })
       setMounted(true)
+
+      // Track render performance
+      const renderTime = performance.now() - startTime
+      trackPerformance('initial_render', { renderTime })
     }, 0)
 
     return () => clearTimeout(timer);
