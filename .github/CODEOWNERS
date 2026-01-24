@@ -1,0 +1,20 @@
+# CODEOWNERS - Automatic code review assignment
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Global owners - review all changes
+* @arapgechina24-lgtm
+
+# Core application code
+/src/app/ @arapgechina24-lgtm
+/src/components/ @arapgechina24-lgtm
+/src/lib/ @arapgechina24-lgtm
+
+# Documentation changes
+*.md @arapgechina24-lgtm
+/docs/ @arapgechina24-lgtm
+
+# GitHub configuration
+/.github/ @arapgechina24-lgtm
+
+# Security-sensitive files
+SECURITY.md @arapgechina24-lgtm
