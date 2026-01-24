@@ -28,6 +28,11 @@ import { NC4ReportPanel } from "@/components/NC4ReportPanel"
 import EmergencyOverlay from "@/components/EmergencyOverlay"
 import { ThreatMonitor } from "@/components/ThreatMonitor"
 import DemoModeController from "@/components/DemoModeController"
+// 4 WINNING PILLARS: MAJESTIC SHIELD
+import AdversarialDefensePanel from "@/components/AdversarialDefensePanel"
+import FederatedLearningHub from "@/components/FederatedLearningHub"
+import ExplainableAIPanel from "@/components/ExplainableAIPanel"
+import SovereignAIStatusPanel from "@/components/SovereignAIStatusPanel"
 
 import {
   generateMockIncidents,
@@ -46,6 +51,11 @@ import {
   generatePerceptionLayerStatus,
   generateCognitionLayerStatus,
   generateIntegrityLayerStatus,
+  // 4 WINNING PILLARS generators
+  generateAdversarialMetrics,
+  generateFederatedNodes,
+  generateXAIExplanations,
+  generateSovereignAIStatus,
   SecurityIncident,
   CrimePrediction,
   SurveillanceFeed,
@@ -61,6 +71,11 @@ import {
   PerceptionLayerStatus,
   CognitionLayerStatus,
   IntegrityLayerStatus,
+  // 4 WINNING PILLARS types
+  AdversarialMetrics,
+  FederatedLearningStatus,
+  XAIExplanation,
+  SovereignAIStatus,
 } from "@/lib/mockData"
 import { createNC4Report } from "@/lib/soar-logic"
 import { AlertTriangle, Shield, Camera, Users, Activity, Zap, Database, Brain } from "lucide-react"
@@ -82,6 +97,11 @@ interface DashboardData {
   perceptionLayer: PerceptionLayerStatus;
   cognitionLayer: CognitionLayerStatus;
   integrityLayer: IntegrityLayerStatus;
+  // 4 WINNING PILLARS
+  adversarialMetrics: AdversarialMetrics;
+  federatedStatus: FederatedLearningStatus;
+  xaiExplanations: XAIExplanation[];
+  sovereignAIStatus: SovereignAIStatus;
 }
 
 // KeyMetrics Component
@@ -153,6 +173,11 @@ export default function Home() {
     const perceptionLayer = generatePerceptionLayerStatus();
     const cognitionLayer = generateCognitionLayerStatus();
     const integrityLayer = generateIntegrityLayerStatus();
+    // 4 WINNING PILLARS data
+    const adversarialMetrics = generateAdversarialMetrics();
+    const federatedStatus = generateFederatedNodes();
+    const xaiExplanations = generateXAIExplanations(8);
+    const sovereignAIStatus = generateSovereignAIStatus();
 
     // Use setTimeout to avoid synchronous setState warning
     const timer = setTimeout(() => {
@@ -172,6 +197,11 @@ export default function Home() {
         perceptionLayer,
         cognitionLayer,
         integrityLayer,
+        // 4 WINNING PILLARS
+        adversarialMetrics,
+        federatedStatus,
+        xaiExplanations,
+        sovereignAIStatus,
       })
       setMounted(true)
     }, 0)
@@ -478,38 +508,35 @@ export default function Home() {
         )}
 
         {currentView === 'OPERATIONS' && (
-          <div className="grid grid-cols-12 gap-4 h-[calc(100vh-10rem)]">
-            {/* LEFT - Response Panels */}
-            <div className="col-span-12 lg:col-span-6 flex flex-col gap-4 overflow-y-auto">
-              <AutomatedResponsePanel responses={data.automatedResponses} />
-              <ContainmentPanel incidentId="INC-LIVE-001" />
-              <NC4ReportPanel incidentId="INC-LIVE-001" assetType="TELECOMMUNICATIONS" />
-              <EmergencyResponseList responses={data.emergencyResponses} />
+          <div className="flex flex-col gap-4 h-[calc(100vh-10rem)]">
+            {/* 4 PILLARS HEADER */}
+            <div className="flex items-center justify-between px-1">
+              <div className="text-[9px] text-green-600 uppercase tracking-widest font-bold flex items-center gap-2">
+                <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                MAJESTIC SHIELD: 4 Winning Pillars
+              </div>
+              <div className="text-[8px] text-gray-600">
+                National Security Gold Standard
+              </div>
             </div>
-            {/* RIGHT - System Status */}
-            <div className="col-span-12 lg:col-span-6 flex flex-col gap-4">
-              <DigitalTwinMonitor />
-              <DataProtectionMonitor />
-              <div className="bg-black border border-green-900/50 p-4 flex-1">
-                <h3 className="text-green-400 font-bold mb-4 text-sm uppercase tracking-wider">Deployed Resources</h3>
-                <div className="grid grid-cols-2 gap-5 text-xs text-green-600 font-mono">
-                  <div className="bg-green-950/20 p-3 border border-green-900/30">
-                    <div className="text-xl font-bold text-white mb-1">42</div>
-                    <div className="uppercase tracking-wider text-[10px]">GSU Units</div>
-                  </div>
-                  <div className="bg-green-950/20 p-3 border border-green-900/30">
-                    <div className="text-xl font-bold text-white mb-1">15</div>
-                    <div className="uppercase tracking-wider text-[10px]">Cyber Squads</div>
-                  </div>
-                  <div className="bg-green-950/20 p-3 border border-green-900/30">
-                    <div className="text-xl font-bold text-white mb-1">3</div>
-                    <div className="uppercase tracking-wider text-[10px]">Drone Swarms</div>
-                  </div>
-                  <div className="bg-green-950/20 p-3 border border-green-900/30">
-                    <div className="text-xl font-bold text-white mb-1">8</div>
-                    <div className="uppercase tracking-wider text-[10px]">DCI Analysts</div>
-                  </div>
-                </div>
+
+            {/* TOP ROW: Adversarial + Federated Learning */}
+            <div className="grid grid-cols-12 gap-4 flex-1 min-h-0">
+              {/* COLUMN 1: Adversarial Defense */}
+              <div className="col-span-12 lg:col-span-4 overflow-y-auto">
+                <AdversarialDefensePanel metrics={data.adversarialMetrics} />
+              </div>
+
+              {/* COLUMN 2: Federated Learning + Sovereign AI */}
+              <div className="col-span-12 lg:col-span-4 flex flex-col gap-4 overflow-y-auto">
+                <FederatedLearningHub status={data.federatedStatus} />
+                <SovereignAIStatusPanel status={data.sovereignAIStatus} />
+              </div>
+
+              {/* COLUMN 3: Explainable AI + Response */}
+              <div className="col-span-12 lg:col-span-4 flex flex-col gap-4 overflow-y-auto">
+                <ExplainableAIPanel explanations={data.xaiExplanations} />
+                <AutomatedResponsePanel responses={data.automatedResponses} />
               </div>
             </div>
           </div>

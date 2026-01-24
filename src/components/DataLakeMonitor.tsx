@@ -60,50 +60,42 @@ export function DataLakeMonitor({ sources }: DataLakeMonitorProps) {
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-                {sources.map((source) => {
+            <div className="grid grid-cols-2 gap-2">
+                {sources.slice(0, 4).map((source) => {
                     const Icon = sourceIcons[source.type] || Database;
                     const colorClass = sourceColors[source.type] || 'text-green-400 bg-green-950/50';
 
                     return (
                         <div
                             key={source.id}
-                            className="bg-black/50 border border-green-900/30 p-3 relative overflow-hidden group hover:border-green-700/50 transition-all"
+                            className="bg-black/50 border border-green-900/30 p-2 relative overflow-hidden group hover:border-green-700/50 transition-all"
                         >
                             {/* Animated data flow effect */}
                             <div className="absolute inset-0 opacity-10">
                                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-green-500/20 to-transparent animate-pulse" />
                             </div>
 
-                            <div className="relative flex items-start justify-between mb-2">
-                                <div className={`p-1.5 ${colorClass.split(' ')[1]} border border-current/30`}>
-                                    <Icon className={`h-4 w-4 ${colorClass.split(' ')[0]}`} />
+                            <div className="relative flex items-center justify-between mb-1">
+                                <div className={`p-1 ${colorClass.split(' ')[1]} border border-current/30`}>
+                                    <Icon className={`h-3 w-3 ${colorClass.split(' ')[0]}`} />
                                 </div>
-                                <div className={`flex items-center gap-1 px-1.5 py-0.5 text-[9px] font-mono ${source.status === 'ACTIVE' ? 'bg-green-950/50 text-green-400' :
-                                        source.status === 'PROCESSING' ? 'bg-yellow-950/50 text-yellow-400' :
-                                            'bg-red-950/50 text-red-400'
+                                <div className={`flex items-center gap-1 px-1 py-0.5 text-[8px] font-mono ${source.status === 'ACTIVE' ? 'bg-green-950/50 text-green-400' :
+                                    source.status === 'PROCESSING' ? 'bg-yellow-950/50 text-yellow-400' :
+                                        'bg-red-950/50 text-red-400'
                                     }`}>
-                                    <div className={`h-1.5 w-1.5 rounded-full ${source.status === 'ACTIVE' ? 'bg-green-500 animate-pulse' :
-                                            source.status === 'PROCESSING' ? 'bg-yellow-500 animate-pulse' :
-                                                'bg-red-500'
+                                    <div className={`h-1 w-1 rounded-full ${source.status === 'ACTIVE' ? 'bg-green-500 animate-pulse' :
+                                        source.status === 'PROCESSING' ? 'bg-yellow-500 animate-pulse' :
+                                            'bg-red-500'
                                         }`} />
                                     {source.status}
                                 </div>
                             </div>
 
                             <div className="relative">
-                                <div className="text-[10px] font-bold text-green-400 mb-0.5">{source.name}</div>
-                                <div className="text-[9px] text-green-800 font-mono mb-2">{source.type.replace('_', ' ')}</div>
-
-                                <div className="grid grid-cols-2 gap-2 text-[9px]">
-                                    <div>
-                                        <div className="text-green-900">RATE</div>
-                                        <div className="text-cyan-400 font-mono">{source.dataRate} MB/s</div>
-                                    </div>
-                                    <div>
-                                        <div className="text-green-900">ALERTS</div>
-                                        <div className="text-orange-400 font-mono">{source.alertsGenerated}</div>
-                                    </div>
+                                <div className="text-[9px] font-bold text-green-400 truncate">{source.name}</div>
+                                <div className="flex justify-between text-[8px] mt-1">
+                                    <span className="text-cyan-400 font-mono">{source.dataRate} MB/s</span>
+                                    <span className="text-orange-400 font-mono">{source.alertsGenerated} alerts</span>
                                 </div>
                             </div>
 

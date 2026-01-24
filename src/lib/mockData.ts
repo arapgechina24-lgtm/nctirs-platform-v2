@@ -842,3 +842,274 @@ export function generateThreatIncidents(count: number = 5): ThreatIncident[] {
 
   return incidents;
 }
+
+// === 4 WINNING PILLARS: MAJESTIC SHIELD ===
+
+// Pillar 1: Adversarial Robustness Layer
+export interface AdversarialMetrics {
+  attacksDetected: number;
+  attacksBlocked: number;
+  evasionAttempts: number;
+  poisoningAttempts: number;
+  modelExtractionAttempts: number;
+  defenseStatus: {
+    gradientMasking: 'ACTIVE' | 'INACTIVE';
+    noiseInjection: 'ACTIVE' | 'INACTIVE';
+    adversarialTraining: 'ACTIVE' | 'INACTIVE';
+    ensembleVoting: 'ACTIVE' | 'INACTIVE';
+    certifiedRobustness: 'ACTIVE' | 'INACTIVE';
+  };
+  redTeamCycle: {
+    lastRun: Date;
+    attacksGenerated: number;
+    failuresAnalyzed: number;
+    modelsRetrained: number;
+  };
+  hardeningProgress: number; // 0-100
+}
+
+export function generateAdversarialMetrics(): AdversarialMetrics {
+  return {
+    attacksDetected: Math.floor(Math.random() * 500) + 1200,
+    attacksBlocked: Math.floor(Math.random() * 480) + 1180,
+    evasionAttempts: Math.floor(Math.random() * 50) + 30,
+    poisoningAttempts: Math.floor(Math.random() * 10) + 5,
+    modelExtractionAttempts: Math.floor(Math.random() * 8) + 2,
+    defenseStatus: {
+      gradientMasking: 'ACTIVE',
+      noiseInjection: 'ACTIVE',
+      adversarialTraining: 'ACTIVE',
+      ensembleVoting: 'ACTIVE',
+      certifiedRobustness: Math.random() > 0.3 ? 'ACTIVE' : 'INACTIVE',
+    },
+    redTeamCycle: {
+      lastRun: new Date(Date.now() - Math.random() * 24 * 60 * 60 * 1000),
+      attacksGenerated: Math.floor(Math.random() * 1000) + 500,
+      failuresAnalyzed: Math.floor(Math.random() * 50) + 10,
+      modelsRetrained: Math.floor(Math.random() * 5) + 1,
+    },
+    hardeningProgress: Math.floor(Math.random() * 15) + 85,
+  };
+}
+
+// Pillar 2: Federated Learning Architecture
+export interface FederatedNode {
+  id: string;
+  agency: string;
+  status: 'ONLINE' | 'TRAINING' | 'SYNCING' | 'OFFLINE';
+  lastSync: Date;
+  localDataPoints: number;
+  gradientsSent: number;
+  modelVersion: string;
+  privacyBudget: number; // ε value for differential privacy
+}
+
+export interface FederatedLearningStatus {
+  globalModelVersion: string;
+  trainingRound: number;
+  totalRounds: number;
+  nodes: FederatedNode[];
+  aggregationProgress: number;
+  differentialPrivacyEpsilon: number;
+  dataTransferred: 'GRADIENTS_ONLY' | 'NONE';
+  lastGlobalUpdate: Date;
+}
+
+export function generateFederatedNodes(): FederatedLearningStatus {
+  const agencies = [
+    { id: 'NIS-FL-001', agency: 'National Intelligence Service' },
+    { id: 'KRA-FL-002', agency: 'Kenya Revenue Authority' },
+    { id: 'CBK-FL-003', agency: 'Central Bank of Kenya' },
+    { id: 'IMM-FL-004', agency: 'Immigration Department' },
+    { id: 'DCI-FL-005', agency: 'Directorate of Criminal Investigations' },
+    { id: 'CAK-FL-006', agency: 'Communications Authority' },
+  ];
+
+  const statuses: Array<'ONLINE' | 'TRAINING' | 'SYNCING' | 'OFFLINE'> = ['ONLINE', 'TRAINING', 'SYNCING', 'OFFLINE'];
+
+  return {
+    globalModelVersion: `v${Math.floor(Math.random() * 5) + 3}.${Math.floor(Math.random() * 10)}.${Math.floor(Math.random() * 100)}`,
+    trainingRound: Math.floor(Math.random() * 50) + 150,
+    totalRounds: 200,
+    nodes: agencies.map(a => ({
+      ...a,
+      status: statuses[Math.floor(Math.random() * (statuses.length - 1))], // Avoid OFFLINE mostly
+      lastSync: new Date(Date.now() - Math.random() * 60 * 60 * 1000),
+      localDataPoints: Math.floor(Math.random() * 500000) + 100000,
+      gradientsSent: Math.floor(Math.random() * 1000) + 500,
+      modelVersion: `v${Math.floor(Math.random() * 5) + 3}.${Math.floor(Math.random() * 10)}.${Math.floor(Math.random() * 100)}`,
+      privacyBudget: Math.random() * 0.5 + 0.3,
+    })),
+    aggregationProgress: Math.floor(Math.random() * 100),
+    differentialPrivacyEpsilon: 0.8 + Math.random() * 0.4,
+    dataTransferred: 'GRADIENTS_ONLY',
+    lastGlobalUpdate: new Date(Date.now() - Math.random() * 2 * 60 * 60 * 1000),
+  };
+}
+
+// Pillar 3: Explainable AI (XAI)
+export interface XAIExplanation {
+  id: string;
+  threatId: string;
+  threatType: string;
+  action: string;
+  confidence: number;
+  factors: {
+    name: string;
+    weight: number;
+    description: string;
+  }[];
+  naturalLanguage: string;
+  timestamp: Date;
+  overrideLevel: 'L1' | 'L2' | 'L3' | 'L4' | null;
+  analystApproved: boolean;
+}
+
+export function generateXAIExplanations(count: number = 5): XAIExplanation[] {
+  const explanations: XAIExplanation[] = [];
+  const actions = [
+    'IP Blocked',
+    'Session Terminated',
+    'User Account Locked',
+    'System Isolated',
+    'Alert Escalated',
+    'Evidence Preserved',
+  ];
+  const threatTypes = ['APT', 'Ransomware', 'Phishing', 'DDoS', 'Insider Threat', 'Data Breach'];
+
+  const factorTemplates = [
+    { name: 'Mouse pattern anomaly', description: 'Right-handed to left-handed transition detected' },
+    { name: 'Geo-fence violation', description: 'Access from outside authorized coordinates' },
+    { name: 'Keystroke cadence', description: 'Typing rhythm deviation from baseline' },
+    { name: 'Access time anomaly', description: 'Login outside normal working hours' },
+    { name: 'IP reputation', description: 'Source IP associated with known threat actors' },
+    { name: 'Behavioral score', description: 'Session behavior deviates from user profile' },
+    { name: 'Network traffic pattern', description: 'Unusual data exfiltration pattern detected' },
+    { name: 'Authentication failures', description: 'Multiple failed authentication attempts' },
+  ];
+
+  for (let i = 0; i < count; i++) {
+    const selectedFactors = factorTemplates
+      .sort(() => Math.random() - 0.5)
+      .slice(0, Math.floor(Math.random() * 3) + 2)
+      .map(f => ({
+        ...f,
+        weight: Math.random() * 0.5 + 0.1,
+      }))
+      .sort((a, b) => b.weight - a.weight);
+
+    const threatType = threatTypes[Math.floor(Math.random() * threatTypes.length)];
+    const action = actions[Math.floor(Math.random() * actions.length)];
+
+    explanations.push({
+      id: `XAI-${Date.now()}-${i}`,
+      threatId: `CTH-${Date.now()}-${i}`,
+      threatType,
+      action,
+      confidence: Math.floor(Math.random() * 15) + 85,
+      factors: selectedFactors,
+      naturalLanguage: `${action} because ${selectedFactors[0].description.toLowerCase()} (${(selectedFactors[0].weight * 100).toFixed(0)}% confidence) AND ${selectedFactors[1]?.description.toLowerCase() || 'additional anomalies detected'}.`,
+      timestamp: new Date(Date.now() - Math.random() * 2 * 60 * 60 * 1000),
+      overrideLevel: Math.random() > 0.8 ? (['L1', 'L2', 'L3', 'L4'][Math.floor(Math.random() * 4)] as 'L1' | 'L2' | 'L3' | 'L4') : null,
+      analystApproved: Math.random() > 0.3,
+    });
+  }
+
+  return explanations.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+}
+
+// Pillar 4: Sovereign AI Status
+export interface SovereignLLM {
+  id: string;
+  name: string;
+  version: string;
+  status: 'ONLINE' | 'LOADING' | 'OFFLINE' | 'UPDATING';
+  gpuUtilization: number;
+  inferenceLatencyMs: number;
+  requestsPerSecond: number;
+  memoryUsageGB: number;
+}
+
+export interface EdgeNode {
+  id: string;
+  location: string;
+  status: 'ONLINE' | 'OFFLINE' | 'MAINTENANCE';
+  lastHeartbeat: Date;
+  inferenceCount: number;
+}
+
+export interface SovereignAIStatus {
+  llms: SovereignLLM[];
+  edgeNodes: EdgeNode[];
+  foreignAPICallsToday: number; // Should always be 0
+  dataEgressToday: number; // Should always be 0
+  onPremisePercentage: number; // Should be 100
+  sovereignCloudProvider: string;
+  lastSecurityAudit: Date;
+  dpaCompliant: boolean;
+}
+
+export function generateSovereignAIStatus(): SovereignAIStatus {
+  const llms: SovereignLLM[] = [
+    {
+      id: 'LLM-001',
+      name: 'LLaMA-70B',
+      version: '2.1.0',
+      status: 'ONLINE',
+      gpuUtilization: Math.floor(Math.random() * 30) + 60,
+      inferenceLatencyMs: Math.floor(Math.random() * 20) + 35,
+      requestsPerSecond: Math.floor(Math.random() * 50) + 100,
+      memoryUsageGB: Math.floor(Math.random() * 20) + 120,
+    },
+    {
+      id: 'LLM-002',
+      name: 'Mistral-22B',
+      version: '1.8.0',
+      status: 'ONLINE',
+      gpuUtilization: Math.floor(Math.random() * 25) + 45,
+      inferenceLatencyMs: Math.floor(Math.random() * 15) + 25,
+      requestsPerSecond: Math.floor(Math.random() * 80) + 150,
+      memoryUsageGB: Math.floor(Math.random() * 15) + 45,
+    },
+    {
+      id: 'LLM-003',
+      name: 'Falcon-40B (Swahili)',
+      version: '3.2.1',
+      status: Math.random() > 0.9 ? 'UPDATING' : 'ONLINE',
+      gpuUtilization: Math.floor(Math.random() * 20) + 50,
+      inferenceLatencyMs: Math.floor(Math.random() * 18) + 30,
+      requestsPerSecond: Math.floor(Math.random() * 60) + 80,
+      memoryUsageGB: Math.floor(Math.random() * 18) + 80,
+    },
+  ];
+
+  const edgeLocations = [
+    'JKIA Border Control',
+    'Port of Mombasa',
+    'Busia Checkpoint',
+    'Malaba Border',
+    'Namanga Border',
+    'Wilson Airport',
+    'NIS HQ Nairobi',
+    'Regional HQ Mombasa',
+  ];
+
+  const edgeNodes: EdgeNode[] = edgeLocations.map((location, i) => ({
+    id: `EDGE-${i.toString().padStart(3, '0')}`,
+    location,
+    status: Math.random() > 0.1 ? 'ONLINE' : (Math.random() > 0.5 ? 'MAINTENANCE' : 'OFFLINE'),
+    lastHeartbeat: new Date(Date.now() - Math.random() * 60 * 1000),
+    inferenceCount: Math.floor(Math.random() * 10000) + 1000,
+  }));
+
+  return {
+    llms,
+    edgeNodes,
+    foreignAPICallsToday: 0, // ALWAYS 0 - Digital Sovereignty
+    dataEgressToday: 0, // ALWAYS 0 - No data leaves Kenya
+    onPremisePercentage: 100, // ALWAYS 100
+    sovereignCloudProvider: 'NIS Secure Data Center (Nairobi)',
+    lastSecurityAudit: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+    dpaCompliant: true,
+  };
+}
