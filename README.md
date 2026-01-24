@@ -9,11 +9,21 @@
 
 **AI-Powered National Security & Smart Policing Intelligence Platform**
 
-[Live Demo](https://nctirs-dashboard.vercel.app) • [Documentation](#features) • [Getting Started](#getting-started)
+[Live Demo](https://nctirs-dashboard.vercel.app) • [MAJESTIC SHIELD Proposal](./docs/MAJESTIC_SHIELD_PROPOSAL.md) • [Documentation](#features) • [Getting Started](#getting-started)
 
 </div>
 
 ---
+
+## 📋 MAJESTIC SHIELD Proposal
+
+> **[Read the Full Unified Master Proposal](./docs/MAJESTIC_SHIELD_PROPOSAL.md)** - AI-Driven National Cyber-Intelligence & Zero-Trust Response System for Kenya's National Intelligence Service.
+
+The proposal outlines:
+- 🧠 **AI Threat Analytics Engine (ATAE)** - Deep Learning, NLP, Behavioral Biometrics
+- 🏛️ **National Cyber Fusion Center (NCFC)** - Multi-agency intelligence integration
+- 🔐 **Continuous Adaptive Authentication (CAA)** - Zero-Trust Architecture
+- ⛓️ **Data Protection & Compliance Layer (DPCL)** - DPA 2019, Blockchain evidence
 
 ## 🎬 Demo
 
