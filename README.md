@@ -129,6 +129,49 @@ This project was developed for the **NIRU Hackathon** to demonstrate how AI and 
 
 ---
 
+## 🗺️ Roadmap
+
+| Phase | Feature | Status |
+|-------|---------|--------|
+| ✅ v1.0 | Core Dashboard (5 Views) | Completed |
+| ✅ v1.1 | Four Winning Pillars UI | Completed |
+| ✅ v1.2 | Layout & Accessibility Improvements | Completed |
+| ✅ v1.3 | Community Files & Documentation | Completed |
+| 🔄 v1.4 | Real-time WebSocket Integration | In Progress |
+| 📋 v2.0 | Backend API & Authentication | Planned |
+| 📋 v2.1 | Multi-agency Role-Based Access | Planned |
+| 📋 v2.2 | Production Deployment Guides | Planned |
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our community resources:
+
+| Document | Description |
+|----------|-------------|
+| [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute to the project |
+| [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) | Community standards and behavior |
+| [SECURITY.md](SECURITY.md) | Security vulnerability reporting |
+| [CHANGELOG.md](CHANGELOG.md) | Version history and changes |
+
+### Quick Contribution Steps
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+---
+
+## 👥 Contributors
+
+<a href="https://github.com/arapgechina24-lgtm/nctirs-dashboard/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=arapgechina24-lgtm/nctirs-dashboard" />
+</a>
+
+---
+
 ## 📄 License
 
 MIT License - See [LICENSE](LICENSE) for details.
