@@ -3,9 +3,11 @@
 <div align="center">
 
 ![NCTIRS Banner](https://img.shields.io/badge/NCTIRS-National%20Security-green?style=for-the-badge&logo=shield&logoColor=white)
-![Next.js 16](https://img.shields.io/badge/Next.js-16.1.1-black?style=for-the-badge&logo=next.js)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)
-![Kenya](https://img.shields.io/badge/Built%20for-Kenya%20🇰🇪-red?style=for-the-badge)
+[![CI](https://github.com/arapgechina24-lgtm/nctirs-dashboard/actions/workflows/ci.yml/badge.svg)](https://github.com/arapgechina24-lgtm/nctirs-dashboard/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/arapgechina24-lgtm/nctirs-dashboard/actions/workflows/codeql.yml/badge.svg)](https://github.com/arapgechina24-lgtm/nctirs-dashboard/actions/workflows/codeql.yml)
+[![Scorecard](https://github.com/arapgechina24-lgtm/nctirs-dashboard/actions/workflows/scorecard.yml/badge.svg)](https://github.com/arapgechina24-lgtm/nctirs-dashboard/actions/workflows/scorecard.yml)
+[![License](https://img.shields.io/github/license/arapgechina24-lgtm/nctirs-dashboard?style=flat-square)](LICENSE)
+
 
 **AI-Powered National Security & Smart Policing Intelligence Platform**
 
