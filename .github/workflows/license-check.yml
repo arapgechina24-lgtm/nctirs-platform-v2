@@ -1,0 +1,24 @@
+name: License Check
+on: [push, pull_request]
+
+jobs:
+    license-check:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+            - run: npm ci
+            # Using a simple script or tool to check licenses would be ideal here.
+            # For now, we'll verify the LICENSE file exists and npm can parse package.json license.
+            - name: Check LICENSE file exists
+              run: |
+                  if [ ! -f LICENSE ]; then
+                    echo "LICENSE file not found!"
+                    exit 1
+                  fi
+            - name: Verify package.json license
+              run: |
+                  # Use node to verify the license field exists in package.json
+                  node -e "const pkg = require('./package.json'); if (!pkg.license) { console.error('No license field in package.json'); process.exit(1); } else { console.log('License found:', pkg.license); }"

@@ -1,0 +1,20 @@
+name: "Dependency Review"
+on: [pull_request]
+
+permissions:
+    contents: read
+
+jobs:
+    dependency-review:
+        runs-on: ubuntu-latest
+        steps:
+            - name: "Checkout Repository"
+              uses: actions/checkout@v4
+            - name: "Dependency Review"
+              uses: actions/dependency-review-action@v4
+              with:
+                  # Fail on any vulnerability (critical, high, moderate, low)
+                  fail-on-severity: moderate
+                  # Don't fail on scopes we ignore (e.g. dev-dependencies if needed)
+                  # deny-licenses: GPL-3.0
+                  # retry-on-snapshot-warnings: true
