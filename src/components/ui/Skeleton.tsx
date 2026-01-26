@@ -47,7 +47,7 @@ export function ChartSkeleton({ height = 300 }: { height?: number }) {
                     <Skeleton
                         key={i}
                         className="flex-1 max-w-12"
-                        height={`${Math.random() * 60 + 20}%`}
+                        height={`${((i * 13) % 60) + 20}%`}
                     />
                 ))}
             </div>

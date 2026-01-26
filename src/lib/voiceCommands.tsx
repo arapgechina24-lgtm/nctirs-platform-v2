@@ -20,12 +20,7 @@ interface SpeechRecognitionResultList {
     [index: number]: SpeechRecognitionResult
 }
 
-interface SpeechRecognitionEventMap {
-    'result': SpeechRecognitionEvent
-    'error': SpeechRecognitionErrorEvent
-    'start': Event
-    'end': Event
-}
+// Removed unused SpeechRecognitionEventMap
 
 interface SpeechRecognitionEvent extends Event {
     results: SpeechRecognitionResultList
@@ -120,17 +115,22 @@ export function useVoiceCommands(
         transcript: '',
         confidence: 0,
         error: null,
-        isSupported: false,
+        isSupported: false, // Will be updated on mount
     })
 
     const recognitionRef = useRef<ISpeechRecognition | null>(null)
+    const isListeningRef = useRef(false)
 
+    // Check support on mount
     useEffect(() => {
         setState(prev => ({ ...prev, isSupported: isSpeechRecognitionSupported() }))
     }, [])
 
     const startListening = useCallback(() => {
-        if (!state.isSupported) {
+        // Prevent multiple starts
+        if (isListeningRef.current) return
+
+        if (!isSpeechRecognitionSupported()) {
             setState(prev => ({ ...prev, error: 'Speech recognition not supported' }))
             return
         }
@@ -141,6 +141,7 @@ export function useVoiceCommands(
         recognitionRef.current = recognition
 
         recognition.onstart = () => {
+            isListeningRef.current = true
             setState(prev => ({ ...prev, isListening: true, error: null }))
         }
 
@@ -163,18 +164,44 @@ export function useVoiceCommands(
         }
 
         recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-            setState(prev => ({ ...prev, error: event.error, isListening: false }))
+            // Ignore "no-speech" errors as they are common
+            if (event.error !== 'no-speech') {
+                setState(prev => ({ ...prev, error: event.error }))
+            }
+            if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+                isListeningRef.current = false
+                setState(prev => ({ ...prev, isListening: false }))
+            }
         }
 
         recognition.onend = () => {
-            setState(prev => ({ ...prev, isListening: false }))
+            // If we are supposed to be listening (and didn't stop manually), restart
+            // This mimics 'continuous' beyond the browser's session limit
+            if (enabled && isListeningRef.current) {
+                try {
+                    recognition.start()
+                } catch {
+                    isListeningRef.current = false
+                    setState(prev => ({ ...prev, isListening: false }))
+                }
+            } else {
+                isListeningRef.current = false
+                setState(prev => ({ ...prev, isListening: false }))
+            }
         }
 
-        recognition.start()
-    }, [state.isSupported, onCommand])
+        try {
+            recognition.start()
+        } catch {
+            // Ignore start errors
+        }
+    }, [enabled, onCommand])
 
     const stopListening = useCallback(() => {
-        recognitionRef.current?.stop()
+        isListeningRef.current = false
+        if (recognitionRef.current) {
+            recognitionRef.current.stop()
+        }
         setState(prev => ({ ...prev, isListening: false }))
     }, [])
 
@@ -186,21 +213,23 @@ export function useVoiceCommands(
         }
     }, [state.isListening, startListening, stopListening])
 
-    // Cleanup on unmount
+    // Handle enabled prop changes
     useEffect(() => {
-        return () => {
-            recognitionRef.current?.stop()
-        }
-    }, [])
-
-    // Auto-start if enabled
-    useEffect(() => {
-        if (enabled && state.isSupported && !state.isListening) {
+        if (enabled && !state.isListening) {
             startListening()
         } else if (!enabled && state.isListening) {
             stopListening()
         }
-    }, [enabled, state.isSupported, state.isListening, startListening, stopListening])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [enabled]) // Only trigger when enabled changes
+
+    // Cleanup on unmount
+    useEffect(() => {
+        return () => {
+            isListeningRef.current = false
+            recognitionRef.current?.stop()
+        }
+    }, [])
 
     return {
         ...state,

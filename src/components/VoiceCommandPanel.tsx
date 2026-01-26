@@ -149,7 +149,7 @@ export function VoiceCommandPanel({ onNavigate, onEmergency, onRefresh }: VoiceC
                                     <span className="text-xs font-bold">EMERGENCY COMMANDS</span>
                                 </div>
                                 <div className="text-[11px] text-red-300 font-mono">
-                                    Say: "Trigger emergency"
+                                    Say: &quot;Trigger emergency&quot;
                                 </div>
                             </div>
 
@@ -164,7 +164,7 @@ export function VoiceCommandPanel({ onNavigate, onEmergency, onRefresh }: VoiceC
                                             key={command}
                                             className="flex items-center justify-between text-[11px] py-1.5 px-2 bg-green-950/20 border border-green-900/30"
                                         >
-                                            <span className="text-green-300 font-mono">"{command}"</span>
+                                            <span className="text-green-300 font-mono">&quot;{command}&quot;</span>
                                             <span className="text-green-700 text-[9px]">
                                                 {action.split(':')[1]?.replace('_', ' ').toUpperCase()}
                                             </span>
@@ -178,7 +178,7 @@ export function VoiceCommandPanel({ onNavigate, onEmergency, onRefresh }: VoiceC
                                 <div className="text-[10px] text-green-700 space-y-1">
                                     <p>• Click the microphone button to enable voice commands</p>
                                     <p>• Speak clearly and wait for confirmation</p>
-                                    <p>• Say "help" anytime to see this panel</p>
+                                    <p>• Say &quot;help&quot; anytime to see this panel</p>
                                     <p>• Works best with Chrome/Edge browsers</p>
                                 </div>
                             </div>

@@ -35,6 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (stored) {
             try {
                 const { user, token } = JSON.parse(stored)
+                // eslint-disable-next-line react-hooks/set-state-in-effect
                 setUser(user)
                 setToken(token)
             } catch {
@@ -73,7 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Register function
     const register = useCallback(async (data: RegisterData) => {
         try {
-            const response = await apiRegister(data)
+            await apiRegister(data)
             // Auto-login after registration
             const loginResult = await apiLogin({ email: data.email, password: data.password })
             saveSession(loginResult.user, loginResult.token)

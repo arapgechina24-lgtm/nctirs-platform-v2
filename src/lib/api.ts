@@ -311,6 +311,7 @@ export function useIncidents(options?: Parameters<typeof fetchIncidents>[0]) {
         } finally {
             setLoading(false)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [options?.status, options?.severity, options?.limit])
 
     useEffect(() => {
@@ -336,6 +337,7 @@ export function useThreats(options?: Parameters<typeof fetchThreats>[0]) {
         } finally {
             setLoading(false)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [options?.type, options?.severity, options?.limit])
 
     useEffect(() => {
