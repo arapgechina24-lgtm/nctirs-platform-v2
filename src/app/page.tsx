@@ -2,12 +2,9 @@
 
 import { useState, useEffect } from "react"
 import { Header, ViewType } from "@/components/Header"
-import { StatCard } from "@/components/StatCard"
 import { IncidentList } from "@/components/IncidentList"
-import { CrimePredictionList } from "@/components/CrimePredictionList"
 import { SurveillanceMonitor } from "@/components/SurveillanceMonitor"
 import { CommunityReports } from "@/components/CommunityReports"
-import { EmergencyResponseList } from "@/components/EmergencyResponseList"
 import { ThreatAnalyticsChart } from "@/components/ThreatAnalyticsChart"
 import { ThreatMap } from "@/components/ThreatMap"
 import { IncidentTrendsChart } from "@/components/IncidentTrendsChart"
@@ -15,19 +12,15 @@ import { IncidentTrendsChart } from "@/components/IncidentTrendsChart"
 import { DataLakeMonitor } from "@/components/DataLakeMonitor"
 import { ThreatAnalyticsEngine } from "@/components/ThreatAnalyticsEngine"
 import { AutomatedResponsePanel } from "@/components/AutomatedResponsePanel"
-import { BlockchainLedger } from "@/components/BlockchainLedger"
 import { SystemArchitecture } from "@/components/SystemArchitecture"
 // NEW Components
-import DigitalTwinMonitor from "@/components/DigitalTwinMonitor"
 import CNIHeatmap from "@/components/CNIHeatmap"
 import AIAssistantPanel from "@/components/AIAssistantPanel"
 import MultiplayerSession from "@/components/MultiplayerSession"
-import { DataProtectionMonitor } from "@/components/DataProtectionMonitor"
-import { ContainmentPanel } from "@/components/SOAR/ContainmentPanel"
-import { NC4ReportPanel } from "@/components/NC4ReportPanel"
 import EmergencyOverlay from "@/components/EmergencyOverlay"
 import { ThreatMonitor } from "@/components/ThreatMonitor"
 import DemoModeController from "@/components/DemoModeController"
+import { VoiceCommandPanel } from "@/components/VoiceCommandPanel"
 // 4 WINNING PILLARS: MAJESTIC SHIELD
 import AdversarialDefensePanel from "@/components/AdversarialDefensePanel"
 import FederatedLearningHub from "@/components/FederatedLearningHub"
@@ -35,6 +28,8 @@ import ExplainableAIPanel from "@/components/ExplainableAIPanel"
 import SovereignAIStatusPanel from "@/components/SovereignAIStatusPanel"
 // Analytics tracking
 import { trackPageView, trackAction, trackPerformance } from "@/lib/analytics"
+// API Client for real data
+import { fetchIncidents, fetchThreats } from "@/lib/api"
 
 import {
   generateMockIncidents,
@@ -80,7 +75,6 @@ import {
   SovereignAIStatus,
 } from "@/lib/mockData"
 import { createNC4Report } from "@/lib/soar-logic"
-import { AlertTriangle, Shield, Camera, Users, Activity, Zap, Database, Brain } from "lucide-react"
 
 interface DashboardData {
   incidents: SecurityIncident[];
@@ -176,34 +170,37 @@ export default function Home() {
   }, [currentView, mounted])
 
   useEffect(() => {
-    // Generate all mock data on client
-    const incidents = generateMockIncidents(30);
-    const predictions = generateCrimePredictions(15);
-    const surveillanceFeeds = generateSurveillanceFeeds(40);
-    const communityReports = generateCommunityReports(25);
-    const emergencyResponses = generateEmergencyResponses(12);
-    const threatAnalytics = generateThreatAnalytics();
-    const timeSeriesData = generateTimeSeriesData(30);
-    // NCTIRS data
-    const cyberThreats = generateCyberThreats(20);
-    const dataLakeSources = generateDataLakeSources();
-    const blockchainLedger = generateBlockchainLedger(25);
-    const coordinatedAttacks = generateCoordinatedAttacks(5);
-    const automatedResponses = generateAutomatedResponses(15);
-    const perceptionLayer = generatePerceptionLayerStatus();
-    const cognitionLayer = generateCognitionLayerStatus();
-    const integrityLayer = generateIntegrityLayerStatus();
-    // 4 WINNING PILLARS data
-    const adversarialMetrics = generateAdversarialMetrics();
-    const federatedStatus = generateFederatedNodes();
-    const xaiExplanations = generateXAIExplanations(8);
-    const sovereignAIStatus = generateSovereignAIStatus();
+    // Async function to load data from API + mock generators
+    async function loadData() {
+      const startTime = performance.now()
 
-    // Track data generation performance
-    const startTime = performance.now()
+      // Fetch from API (with fallback to mock data)
+      const [incidents, cyberThreats] = await Promise.all([
+        fetchIncidents({ limit: 30 }),
+        fetchThreats({ limit: 20 }),
+      ])
 
-    // Use setTimeout to avoid synchronous setState warning
-    const timer = setTimeout(() => {
+      // Generate remaining mock data for components without API yet
+      const predictions = generateCrimePredictions(15);
+      const surveillanceFeeds = generateSurveillanceFeeds(40);
+      const communityReports = generateCommunityReports(25);
+      const emergencyResponses = generateEmergencyResponses(12);
+      const threatAnalytics = generateThreatAnalytics();
+      const timeSeriesData = generateTimeSeriesData(30);
+      // NCTIRS data (mock for now)
+      const dataLakeSources = generateDataLakeSources();
+      const blockchainLedger = generateBlockchainLedger(25);
+      const coordinatedAttacks = generateCoordinatedAttacks(5);
+      const automatedResponses = generateAutomatedResponses(15);
+      const perceptionLayer = generatePerceptionLayerStatus();
+      const cognitionLayer = generateCognitionLayerStatus();
+      const integrityLayer = generateIntegrityLayerStatus();
+      // 4 WINNING PILLARS data
+      const adversarialMetrics = generateAdversarialMetrics();
+      const federatedStatus = generateFederatedNodes();
+      const xaiExplanations = generateXAIExplanations(8);
+      const sovereignAIStatus = generateSovereignAIStatus();
+
       setData({
         incidents,
         predictions,
@@ -231,9 +228,9 @@ export default function Home() {
       // Track render performance
       const renderTime = performance.now() - startTime
       trackPerformance('initial_render', { renderTime })
-    }, 0)
+    }
 
-    return () => clearTimeout(timer);
+    loadData()
   }, [])
 
   if (!mounted || !data) {
@@ -572,6 +569,12 @@ export default function Home() {
         targetAsset="SEACOM SUBMARINE CABLE - MOMBASA"
         onMitigate={handleMitigation}
         onDismiss={() => setIsEmergency(false)}
+      />
+
+      <VoiceCommandPanel
+        onNavigate={setCurrentView}
+        onEmergency={() => setIsEmergency(true)}
+        onRefresh={() => window.location.reload()}
       />
 
       <DemoModeController onTriggerEmergency={() => setIsEmergency(true)} />

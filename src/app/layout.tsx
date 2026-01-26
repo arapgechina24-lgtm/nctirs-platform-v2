@@ -4,6 +4,7 @@ import "./globals.css";
 import GlobalStatusBanner from "@/components/GlobalStatusBanner";
 import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,10 +38,12 @@ export default function RootLayout({
         {/* Global Status Banner */}
         <GlobalStatusBanner />
 
-        {/* Main App with Error Boundary */}
-        <ErrorBoundary componentName="NCTIRS Dashboard">
-          {children}
-        </ErrorBoundary>
+        {/* Auth Provider + Main App with Error Boundary */}
+        <AuthProvider>
+          <ErrorBoundary componentName="NCTIRS Dashboard">
+            {children}
+          </ErrorBoundary>
+        </AuthProvider>
 
         {/* Kenya Footer */}
         <footer className="fixed bottom-0 left-0 right-0 bg-black/80 border-t border-green-900/50 py-2 px-4 z-40">

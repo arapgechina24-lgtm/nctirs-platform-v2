@@ -1,5 +1,9 @@
+'use client'
+
 import { useState, useEffect } from "react"
-import { Shield, AlertTriangle, Activity, TrendingUp, Lock, Radio, Users } from "lucide-react"
+import { Shield, AlertTriangle, Activity, TrendingUp, Lock, Radio, Users, User, LogOut, LogIn } from "lucide-react"
+import { useAuth } from "@/contexts/AuthContext"
+import Link from "next/link"
 
 export type ViewType = 'COMMAND_CENTER' | 'FUSION_CENTER' | 'THREAT_MATRIX' | 'ANALYTICS' | 'OPERATIONS';
 
@@ -9,6 +13,7 @@ interface HeaderProps {
 }
 
 export function Header({ currentView, onViewChange }: HeaderProps) {
+  const { user, isAuthenticated, logout } = useAuth()
   const [sessionId, setSessionId] = useState<string>("")
   const [currentTime, setCurrentTime] = useState<string>("")
 
@@ -113,6 +118,43 @@ export function Header({ currentView, onViewChange }: HeaderProps) {
                 {currentTime || "LOADING..."}
               </div>
             </div>
+
+            {/* User Profile */}
+            {isAuthenticated && user ? (
+              <div className="flex items-center gap-3 px-4 py-2 bg-black border border-green-900/50 rounded-none">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 bg-green-950 border border-green-800 rounded-full">
+                    <User className="h-4 w-4 text-green-400" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-bold text-green-400">{user.name || user.email.split('@')[0]}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[8px] text-green-700 font-mono">{user.agency || 'AGENCY'}</span>
+                      <span className={`text-[8px] px-1 py-0.5 font-bold rounded-none ${user.role === 'L4' ? 'bg-red-950 text-red-400 border border-red-700/50' :
+                          user.role === 'L3' ? 'bg-orange-950 text-orange-400 border border-orange-700/50' :
+                            user.role === 'L2' ? 'bg-yellow-950 text-yellow-400 border border-yellow-700/50' :
+                              'bg-green-950 text-green-400 border border-green-700/50'
+                        }`}>{user.role}</span>
+                    </div>
+                  </div>
+                </div>
+                <button
+                  onClick={logout}
+                  className="p-1.5 bg-red-950/50 border border-red-900/50 text-red-400 hover:bg-red-900/50 hover:border-red-700 transition-all"
+                  title="Logout"
+                >
+                  <LogOut className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="flex items-center gap-2 px-4 py-2 bg-cyan-950/50 border border-cyan-900/50 text-cyan-400 hover:bg-cyan-900/50 hover:border-cyan-700 transition-all"
+              >
+                <LogIn className="h-4 w-4" />
+                <span className="text-[10px] font-bold tracking-wider">LOGIN</span>
+              </Link>
+            )}
           </div>
         </div>
 
