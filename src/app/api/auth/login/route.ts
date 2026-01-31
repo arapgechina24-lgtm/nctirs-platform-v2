@@ -74,6 +74,7 @@ export async function POST(request: NextRequest) {
         })
 
         // Return user data (without password)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { password: _, ...userWithoutPassword } = user
 
         // In production, you would set a secure HTTP-only cookie here

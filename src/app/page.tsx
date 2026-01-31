@@ -32,7 +32,6 @@ import { trackPageView, trackAction, trackPerformance } from "@/lib/analytics"
 import { fetchIncidents, fetchThreats } from "@/lib/api"
 
 import {
-  generateMockIncidents,
   generateCrimePredictions,
   generateSurveillanceFeeds,
   generateCommunityReports,
@@ -40,7 +39,6 @@ import {
   generateThreatAnalytics,
   generateTimeSeriesData,
   // NCTIRS generators
-  generateCyberThreats,
   generateDataLakeSources,
   generateBlockchainLedger,
   generateCoordinatedAttacks,
@@ -249,34 +247,11 @@ export default function Home() {
     )
   }
 
-  const {
-    incidents,
-    predictions,
-    surveillanceFeeds,
-    communityReports,
-    emergencyResponses,
-    threatAnalytics,
-    timeSeriesData,
-    cyberThreats,
-    dataLakeSources,
-    blockchainLedger,
-    coordinatedAttacks,
-    automatedResponses,
-    perceptionLayer,
-    cognitionLayer,
-    integrityLayer,
-  } = data
+
 
   // Calculate stats
-  const activeIncidents = incidents.filter(i => i.status === 'ACTIVE').length;
-  const highThreatCount = incidents.filter(i => i.threatLevel === 'CRITICAL' || i.threatLevel === 'HIGH').length;
-  const activeSurveillance = surveillanceFeeds.filter(f => f.status === 'ACTIVE').length;
-  const verifiedReports = communityReports.filter(r => r.verified).length;
-  const activeResponses = emergencyResponses.filter(r => r.status !== 'RESOLVED').length;
-  // NCTIRS stats
-  const criticalCyber = cyberThreats.filter(t => t.severity === 'CRITICAL').length;
-  const activeCoordinated = coordinatedAttacks.filter(a => a.status !== 'RESOLVED').length;
-  const autoResponsesActive = automatedResponses.filter(r => r.status === 'EXECUTING').length;
+  // Calculate stats
+  // (Stats variables removed as they were unused)
 
   const handleMitigation = async () => {
     // 1. Orchestration: Simulate Air-Gap

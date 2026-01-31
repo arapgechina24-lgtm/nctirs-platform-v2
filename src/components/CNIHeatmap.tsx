@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { DesignSystem } from '@/lib/designSystem';
-import { Zap, Smartphone, Database, Plane, Anchor, Layers, Map as MapIcon, Wifi, Server } from 'lucide-react';
+import { Zap, Smartphone, Database, Layers, Wifi } from 'lucide-react';
 import type * as L from 'leaflet';
 import { KENYA_CNI_ASSETS } from '@/lib/cni-sim';
 

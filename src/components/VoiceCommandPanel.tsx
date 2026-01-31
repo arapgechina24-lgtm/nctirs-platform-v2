@@ -42,7 +42,7 @@ export function VoiceCommandPanel({ onNavigate, onEmergency, onRefresh }: VoiceC
         }
     }, [onNavigate, onEmergency, onRefresh, isMuted, speak])
 
-    const { isListening, transcript, isSupported, error, toggleListening } = useVoiceCommands(
+    const { isListening, transcript, isSupported, error } = useVoiceCommands(
         handleCommand,
         isEnabled
     )

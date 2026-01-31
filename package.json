@@ -10,6 +10,14 @@
     "lint": "eslint",
     "test": "vitest run"
   },
+  "eslintConfig": {
+    "extends": "next/core-web-vitals",
+    "ignorePatterns": [
+      "hft_system/",
+      "node_modules/",
+      ".next/"
+    ]
+  },
   "dependencies": {
     "@libsql/client": "^0.17.0",
     "@prisma/adapter-libsql": "^7.3.0",

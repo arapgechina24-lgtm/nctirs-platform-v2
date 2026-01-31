@@ -1,13 +1,11 @@
+
 // API Client for NCTIRS Dashboard
 // Fetches data from backend API routes with fallback to mock data
-
 import {
     generateMockIncidents,
     generateCyberThreats,
-    generateSurveillanceFeeds,
     SecurityIncident,
     CyberThreat,
-    SurveillanceFeed,
 } from './mockData'
 
 // Base API URL
@@ -15,7 +13,7 @@ const API_BASE = '/api'
 
 // Generic fetch wrapper with error handling
 async function apiFetch<T>(endpoint: string, options?: RequestInit): Promise<T> {
-    const response = await fetch(`${API_BASE}${endpoint}`, {
+    const response = await fetch(`${API_BASE}${endpoint} `, {
         headers: {
             'Content-Type': 'application/json',
             ...options?.headers,
@@ -24,7 +22,7 @@ async function apiFetch<T>(endpoint: string, options?: RequestInit): Promise<T> 
     })
 
     if (!response.ok) {
-        throw new Error(`API Error: ${response.status} ${response.statusText}`)
+        throw new Error(`API Error: ${response.status} ${response.statusText} `)
     }
 
     return response.json()
@@ -65,7 +63,7 @@ export async function fetchIncidents(options?: {
         if (options?.limit) params.set('limit', options.limit.toString())
 
         const queryString = params.toString()
-        const endpoint = queryString ? `/incidents?${queryString}` : '/incidents'
+        const endpoint = queryString ? `/ incidents ? ${queryString} ` : '/incidents'
 
         const data = await apiFetch<{ incidents: DBIncident[], total: number }>(endpoint)
 
@@ -115,15 +113,7 @@ function mapDBIncidentToSecurityIncident(db: DBIncident): SecurityIncident {
     }
 }
 
-function mapSeverityToPriority(severity: string): number {
-    switch (severity) {
-        case 'CRITICAL': return 1
-        case 'HIGH': return 2
-        case 'MEDIUM': return 3
-        case 'LOW': return 4
-        default: return 5
-    }
-}
+
 
 export async function createIncident(incident: Partial<DBIncident>): Promise<DBIncident> {
     return apiFetch<DBIncident>('/incidents', {
@@ -161,7 +151,7 @@ export async function fetchThreats(options?: {
         if (options?.limit) params.set('limit', options.limit.toString())
 
         const queryString = params.toString()
-        const endpoint = queryString ? `/threats?${queryString}` : '/threats'
+        const endpoint = queryString ? `/ threats ? ${queryString} ` : '/threats'
 
         const data = await apiFetch<{ threats: DBThreat[], total: number }>(endpoint)
 
@@ -182,7 +172,7 @@ function mapDBThreatToCyberThreat(db: DBThreat): CyberThreat {
         id: db.id,
         name: db.name,
         type: db.type as CyberThreat['type'],
-        description: db.description || `AI-detected ${db.type.toLowerCase()} threat targeting ${db.targetSector || 'unknown'} sector.`,
+        description: db.description || `AI - detected ${db.type.toLowerCase()} threat targeting ${db.targetSector || 'unknown'} sector.`,
         severity: db.severity as CyberThreat['severity'],
         targetSector: (db.targetSector as CyberThreat['targetSector']) || 'GOVERNMENT',
         sourceIP: undefined, // Not stored in DB
@@ -191,7 +181,7 @@ function mapDBThreatToCyberThreat(db: DBThreat): CyberThreat {
         timestamp: new Date(db.createdAt), // Required Date field
         aiConfidence: Math.round(db.confidence * 100), // Required: convert 0-1 to 0-100
         status: 'DETECTED' as const, // Required status field
-        iocIndicators: parsedIndicators.length > 0 ? parsedIndicators : [`hash:${db.id.slice(0, 32)}`], // Required IOC array
+        iocIndicators: parsedIndicators.length > 0 ? parsedIndicators : [`hash:${db.id.slice(0, 32)} `], // Required IOC array
     }
 }
 
@@ -272,7 +262,7 @@ export async function fetchAuditLogs(options?: {
     if (options?.limit) params.set('limit', options.limit.toString())
 
     const queryString = params.toString()
-    const endpoint = queryString ? `/audit?${queryString}` : '/audit'
+    const endpoint = queryString ? `/ audit ? ${queryString} ` : '/audit'
 
     const data = await apiFetch<{ logs: AuditLog[], total: number }>(endpoint)
     return data.logs

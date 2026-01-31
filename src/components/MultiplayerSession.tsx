@@ -22,8 +22,25 @@ interface CursorPosition {
 
 const MultiplayerSession: React.FC = () => {
     const [cursors, setCursors] = useState<CursorPosition[]>([]);
-    const [status, setStatus] = useState<'CONNECTING' | 'LIVE' | 'SIMULATION'>('CONNECTING');
+    const [status, setStatus] = useState<'CONNECTING' | 'LIVE' | 'SIMULATION'>(() => {
+        return getAblyClient() ? 'CONNECTING' : 'SIMULATION';
+    });
     const [myId] = useState(() => `user-${Math.random().toString(36).substr(2, 5)}`);
+
+    const startGhostSimulation = () => {
+        // Initialize random positions
+        setCursors(GHOST_USERS.map(u => ({ id: u.id, x: Math.random() * 80 + 10, y: Math.random() * 80 + 10, name: u.name, color: u.color })));
+
+        const interval = setInterval(() => {
+            setCursors(prev => prev.map(cursor => ({
+                ...cursor,
+                x: Math.max(0, Math.min(100, cursor.x + (Math.random() - 0.5) * 5)),
+                y: Math.max(0, Math.min(100, cursor.y + (Math.random() - 0.5) * 5))
+            })));
+        }, 100); // Update every 100ms for smooth-ish animation
+
+        return () => clearInterval(interval);
+    };
 
     useEffect(() => {
         const ably = getAblyClient();
@@ -31,8 +48,8 @@ const MultiplayerSession: React.FC = () => {
         if (!ably) {
             // FALLBACK: Start Ghost Simulation if no API Key
             console.log('Using Ghost Simulation Mode');
-            setStatus('SIMULATION');
-            startGhostSimulation();
+            // Defer execution to avoid sync state update warning
+            setTimeout(() => startGhostSimulation(), 0);
             return;
         }
 
@@ -93,27 +110,10 @@ const MultiplayerSession: React.FC = () => {
             // but in a strict cleanup we might.
         };
 
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+
     }, [myId]);
 
-    const startGhostSimulation = () => {
-        // Initialize random positions
-        setCursors(GHOST_USERS.map(u => ({ id: u.id, x: Math.random() * 80 + 10, y: Math.random() * 80 + 10, name: u.name, color: u.color })));
 
-        const interval = setInterval(() => {
-            setCursors(prev => prev.map(cursor => {
-                // Find original user config to keep name/color persistent if needed
-                // For ghosts, we just update x/y
-                return {
-                    ...cursor,
-                    x: Math.max(0, Math.min(100, cursor.x + (Math.random() * 10 - 5))),
-                    y: Math.max(0, Math.min(100, cursor.y + (Math.random() * 10 - 5))),
-                };
-            }));
-        }, 2000);
-
-        return () => clearInterval(interval);
-    };
 
     return (
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-50 mix-blend-screen">

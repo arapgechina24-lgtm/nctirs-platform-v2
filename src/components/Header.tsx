@@ -14,14 +14,11 @@ interface HeaderProps {
 
 export function Header({ currentView, onViewChange }: HeaderProps) {
   const { user, isAuthenticated, logout } = useAuth()
-  const [sessionId, setSessionId] = useState<string>("")
   const [currentTime, setCurrentTime] = useState<string>("")
 
   useEffect(() => {
     // Functional initializations to avoid sync setState warning
     const initialize = () => {
-      setSessionId(`NIS-${Math.random().toString(36).substr(2, 9).toUpperCase()}`)
-
       const updateTime = () => {
         setCurrentTime(new Date().toLocaleString('en-KE', {
           dateStyle: 'medium',
@@ -131,9 +128,9 @@ export function Header({ currentView, onViewChange }: HeaderProps) {
                     <div className="flex items-center gap-2">
                       <span className="text-[8px] text-green-700 font-mono">{user.agency || 'AGENCY'}</span>
                       <span className={`text-[8px] px-1 py-0.5 font-bold rounded-none ${user.role === 'L4' ? 'bg-red-950 text-red-400 border border-red-700/50' :
-                          user.role === 'L3' ? 'bg-orange-950 text-orange-400 border border-orange-700/50' :
-                            user.role === 'L2' ? 'bg-yellow-950 text-yellow-400 border border-yellow-700/50' :
-                              'bg-green-950 text-green-400 border border-green-700/50'
+                        user.role === 'L3' ? 'bg-orange-950 text-orange-400 border border-orange-700/50' :
+                          user.role === 'L2' ? 'bg-yellow-950 text-yellow-400 border border-yellow-700/50' :
+                            'bg-green-950 text-green-400 border border-green-700/50'
                         }`}>{user.role}</span>
                     </div>
                   </div>
@@ -167,7 +164,7 @@ export function Header({ currentView, onViewChange }: HeaderProps) {
               { icon: AlertTriangle, label: 'THREAT_MATRIX', display: 'THREATS', shortDesc: 'Live Matrix' },
               { icon: TrendingUp, label: 'ANALYTICS', display: 'ANALYTICS', shortDesc: 'AI Insights' },
               { icon: Shield, label: 'OPERATIONS', display: 'OPS', shortDesc: 'Response' },
-            ].map((item, index) => (
+            ].map((item) => (
               <button
                 key={item.label}
                 onClick={() => onViewChange(item.label as ViewType)}

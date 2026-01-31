@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { XAIExplanation } from '@/lib/mockData'
-import { Brain, ChevronDown, ChevronUp, Check, X, AlertTriangle, User } from 'lucide-react'
+import { Brain, ChevronDown, ChevronUp, Check, AlertTriangle } from 'lucide-react'
 
 interface ExplainableAIPanelProps {
     explanations: XAIExplanation[]
