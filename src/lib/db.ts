@@ -1,6 +1,5 @@
 import { PrismaClient } from '@prisma/client'
 import { PrismaLibSql } from '@prisma/adapter-libsql'
-import { createClient } from '@libsql/client'
 
 const globalForPrisma = globalThis as unknown as {
     prisma: PrismaClient | undefined
@@ -15,11 +14,10 @@ const createPrismaClient = () => {
             throw new Error('DATABASE_URL and TURSO_AUTH_TOKEN must be set in production')
         }
 
-        const libsql = createClient({
+        const adapter = new PrismaLibSql({
             url,
             authToken,
         })
-        const adapter = new PrismaLibSql(libsql)
         return new PrismaClient({ adapter })
     }
 
