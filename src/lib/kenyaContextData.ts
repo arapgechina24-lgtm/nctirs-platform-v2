@@ -142,6 +142,7 @@ export function getCurrentNairobiWeather(): WeatherLog {
 
     if (isRainySeason && rand > 0.4) condition = 'Heavy Rain';
     else if (!isRainySeason && rand > 0.8) condition = 'Cloudy';
+    else if (rand < 0.1) condition = 'Fog'; // 10% chance of Fog generally
 
     // Correlations
     let correlation = 1.0;

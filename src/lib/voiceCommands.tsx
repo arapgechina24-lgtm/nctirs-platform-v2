@@ -1,289 +1,219 @@
-// Voice Commands utility using Web Speech API
-'use client'
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
-// Type declarations for Web Speech API (not included in standard TypeScript lib)
-interface SpeechRecognitionAlternative {
-    transcript: string
-    confidence: number
-}
-
-interface SpeechRecognitionResult {
-    isFinal: boolean
-    length: number
-    [index: number]: SpeechRecognitionAlternative
-}
-
-interface SpeechRecognitionResultList {
-    length: number
-    [index: number]: SpeechRecognitionResult
-}
-
-// Removed unused SpeechRecognitionEventMap
-
-interface SpeechRecognitionEvent extends Event {
-    results: SpeechRecognitionResultList
-    resultIndex: number
-}
-
-interface SpeechRecognitionErrorEvent extends Event {
-    error: string
-    message: string
-}
-
-interface ISpeechRecognition extends EventTarget {
-    continuous: boolean
-    interimResults: boolean
-    lang: string
-    start(): void
-    stop(): void
-    abort(): void
-    onstart: ((this: ISpeechRecognition, ev: Event) => void) | null
-    onresult: ((this: ISpeechRecognition, ev: SpeechRecognitionEvent) => void) | null
-    onerror: ((this: ISpeechRecognition, ev: SpeechRecognitionErrorEvent) => void) | null
-    onend: ((this: ISpeechRecognition, ev: Event) => void) | null
-}
-
-interface ISpeechRecognitionConstructor {
-    new(): ISpeechRecognition
-}
-
+// === TYPES ===
+// Extend Window interface for Web Speech API
 declare global {
     interface Window {
-        SpeechRecognition?: ISpeechRecognitionConstructor
-        webkitSpeechRecognition?: ISpeechRecognitionConstructor
+        SpeechRecognition: any;
+        webkitSpeechRecognition: any;
     }
 }
 
-// Voice command definitions
-export const VOICE_COMMANDS = {
+export const VOICE_COMMANDS: Record<string, string> = {
+    'navigate to command center': 'navigate:COMMAND_CENTER',
     'go to command center': 'navigate:COMMAND_CENTER',
+    'show command center': 'navigate:COMMAND_CENTER',
+
+    'navigate to fusion center': 'navigate:FUSION_CENTER',
     'go to fusion center': 'navigate:FUSION_CENTER',
+    'show fusion center': 'navigate:FUSION_CENTER',
+
+    'navigate to threat matrix': 'navigate:THREAT_MATRIX',
     'go to threat matrix': 'navigate:THREAT_MATRIX',
+    'show threat matrix': 'navigate:THREAT_MATRIX',
+
+    'navigate to analytics': 'navigate:ANALYTICS',
+    'show analytics': 'navigate:ANALYTICS',
     'go to analytics': 'navigate:ANALYTICS',
+
+    'navigate to operations': 'navigate:OPERATIONS',
+    'show operations': 'navigate:OPERATIONS',
     'go to operations': 'navigate:OPERATIONS',
-    'show incidents': 'action:show_incidents',
-    'show threats': 'action:show_threats',
+
     'trigger emergency': 'action:emergency',
+    'simulate breach': 'action:emergency',
     'refresh data': 'action:refresh',
-    'generate report': 'action:generate_report',
-    'close': 'action:close',
+    'reload': 'action:refresh',
+
     'help': 'action:help',
-} as const
+    'show help': 'action:help',
+    'close': 'action:close',
+    'stop': 'action:close',
+};
 
-type VoiceCommand = keyof typeof VOICE_COMMANDS
-type VoiceAction = typeof VOICE_COMMANDS[VoiceCommand]
-
-interface VoiceRecognitionState {
-    isListening: boolean
-    transcript: string
-    confidence: number
-    error: string | null
-    isSupported: boolean
-}
-
-// Check for Web Speech API support
-const isSpeechRecognitionSupported = () => {
-    if (typeof window === 'undefined') return false
-    return 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window
-}
-
-// Create speech recognition instance
-const createRecognition = (): ISpeechRecognition | null => {
-    if (!isSpeechRecognitionSupported()) return null
-
-    const SpeechRecognitionCtor = window.webkitSpeechRecognition || window.SpeechRecognition
-    if (!SpeechRecognitionCtor) return null
-
-    const recognition = new SpeechRecognitionCtor()
-
-    recognition.continuous = true
-    recognition.interimResults = true
-    recognition.lang = 'en-US'
-
-    return recognition
-}
-
-// Voice commands hook
-export function useVoiceCommands(
-    onCommand: (action: VoiceAction, transcript: string) => void,
-    enabled: boolean = false
-) {
-    const [state, setState] = useState<VoiceRecognitionState>({
-        isListening: false,
-        transcript: '',
-        confidence: 0,
-        error: null,
-        isSupported: false, // Will be updated on mount
-    })
-
-    const recognitionRef = useRef<ISpeechRecognition | null>(null)
-    const isListeningRef = useRef(false)
-
-    // Check support on mount
-    useEffect(() => {
-        setState(prev => ({ ...prev, isSupported: isSpeechRecognitionSupported() }))
-    }, [])
-
-    const startListening = useCallback(() => {
-        // Prevent multiple starts
-        if (isListeningRef.current) return
-
-        if (!isSpeechRecognitionSupported()) {
-            setState(prev => ({ ...prev, error: 'Speech recognition not supported' }))
-            return
-        }
-
-        const recognition = createRecognition()
-        if (!recognition) return
-
-        recognitionRef.current = recognition
-
-        recognition.onstart = () => {
-            isListeningRef.current = true
-            setState(prev => ({ ...prev, isListening: true, error: null }))
-        }
-
-        recognition.onresult = (event: SpeechRecognitionEvent) => {
-            const result = event.results[event.results.length - 1]
-            const transcript = result[0].transcript.toLowerCase().trim()
-            const confidence = result[0].confidence
-
-            setState(prev => ({ ...prev, transcript, confidence }))
-
-            // Check if transcript matches any command
-            if (result.isFinal) {
-                for (const [command, action] of Object.entries(VOICE_COMMANDS)) {
-                    if (transcript.includes(command)) {
-                        onCommand(action as VoiceAction, transcript)
-                        break
-                    }
-                }
-            }
-        }
-
-        recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-            // Ignore "no-speech" errors as they are common
-            if (event.error !== 'no-speech') {
-                setState(prev => ({ ...prev, error: event.error }))
-            }
-            if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
-                isListeningRef.current = false
-                setState(prev => ({ ...prev, isListening: false }))
-            }
-        }
-
-        recognition.onend = () => {
-            // If we are supposed to be listening (and didn't stop manually), restart
-            // This mimics 'continuous' beyond the browser's session limit
-            if (enabled && isListeningRef.current) {
-                try {
-                    recognition.start()
-                } catch {
-                    isListeningRef.current = false
-                    setState(prev => ({ ...prev, isListening: false }))
-                }
-            } else {
-                isListeningRef.current = false
-                setState(prev => ({ ...prev, isListening: false }))
-            }
-        }
-
-        try {
-            recognition.start()
-        } catch {
-            // Ignore start errors
-        }
-    }, [enabled, onCommand])
-
-    const stopListening = useCallback(() => {
-        isListeningRef.current = false
-        if (recognitionRef.current) {
-            recognitionRef.current.stop()
-        }
-        setState(prev => ({ ...prev, isListening: false }))
-    }, [])
-
-    const toggleListening = useCallback(() => {
-        if (state.isListening) {
-            stopListening()
-        } else {
-            startListening()
-        }
-    }, [state.isListening, startListening, stopListening])
-
-    // Handle enabled prop changes
-    useEffect(() => {
-        if (enabled && !state.isListening) {
-            startListening()
-        } else if (!enabled && state.isListening) {
-            stopListening()
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [enabled]) // Only trigger when enabled changes
-
-    // Cleanup on unmount
-    useEffect(() => {
-        return () => {
-            isListeningRef.current = false
-            recognitionRef.current?.stop()
-        }
-    }, [])
-
-    return {
-        ...state,
-        startListening,
-        stopListening,
-        toggleListening,
-    }
-}
-
-// Text-to-speech for announcements
+// === HOOK: Text to Speech ===
 export function useTextToSpeech() {
-    const speak = useCallback((text: string, options?: SpeechSynthesisUtterance) => {
-        if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
-            console.warn('Text-to-speech not supported')
-            return
+    const speak = useCallback((text: string) => {
+        if ('speechSynthesis' in window) {
+            // Cancel any ongoing speech
+            window.speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+            utterance.volume = 1.0;
+
+            // Try to find a "computer" sounding voice
+            const voices = window.speechSynthesis.getVoices();
+            const preferredVoice = voices.find(v =>
+                v.name.includes('Google US English') ||
+                v.name.includes('Samantha') ||
+                v.lang === 'en-US'
+            );
+            if (preferredVoice) utterance.voice = preferredVoice;
+
+            window.speechSynthesis.speak(utterance);
         }
-
-        // Cancel any ongoing speech
-        window.speechSynthesis.cancel()
-
-        const utterance = new SpeechSynthesisUtterance(text)
-        utterance.rate = options?.rate || 1
-        utterance.pitch = options?.pitch || 1
-        utterance.volume = options?.volume || 1
-        utterance.lang = 'en-US'
-
-        window.speechSynthesis.speak(utterance)
-    }, [])
+    }, []);
 
     const stop = useCallback(() => {
-        if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-            window.speechSynthesis.cancel()
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
         }
-    }, [])
+    }, []);
 
-    return { speak, stop }
+    return { speak, stop };
 }
 
-// Voice command indicator component
-export function VoiceCommandIndicator({
-    isListening,
-    transcript,
-}: {
-    isListening: boolean
-    transcript: string
-}) {
-    if (!isListening) return null
+// === HOOK: Voice Recognition ===
+export function useVoiceCommands(
+    onCommand: (action: string, transcript: string) => void,
+    isEnabled: boolean
+) {
+    const [isListening, setIsListening] = useState(false);
+    const [transcript, setTranscript] = useState('');
+    const [error, setError] = useState<string | null>(null);
+    const [isSupported, setIsSupported] = useState(false);
+
+    const recognitionRef = useRef<any>(null);
+
+    // Initialize Recognition
+    useEffect(() => {
+        if (typeof window !== 'undefined' && (window.SpeechRecognition || window.webkitSpeechRecognition)) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setIsSupported(true);
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognitionRef.current = new SpeechRecognition();
+            recognitionRef.current.continuous = true; // Keep listening
+            recognitionRef.current.interimResults = true; // Show words as spoken
+            recognitionRef.current.lang = 'en-US';
+
+            recognitionRef.current.onstart = () => setIsListening(true);
+            recognitionRef.current.onend = () => {
+                // Auto-restart if it stops but should be enabled
+                if (isEnabled) {
+                    try {
+                        recognitionRef.current?.start();
+                    } catch {
+                        setIsListening(false);
+                    }
+                } else {
+                    setIsListening(false);
+                }
+            };
+
+            recognitionRef.current.onerror = (event: any) => {
+                console.error('Speech recognition error', event.error);
+                if (event.error === 'not-allowed') {
+                    setError('Microphone blocked');
+                    setIsListening(false);
+                } else {
+                    setError(event.error);
+                }
+            };
+
+            recognitionRef.current.onresult = (event: any) => {
+                let interimTranscript = '';
+                let finalTranscript = '';
+
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript;
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
+                    }
+                }
+
+                // Update UI state
+                const currentText = finalTranscript || interimTranscript;
+                setTranscript(currentText);
+
+                // Check for commands in final transcript
+                if (finalTranscript) {
+                    const normalizedText = finalTranscript.trim().toLowerCase().replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, "");
+                    console.log("Heard:", normalizedText);
+
+                    // Direct match check
+                    if (VOICE_COMMANDS[normalizedText]) {
+                        onCommand(VOICE_COMMANDS[normalizedText], normalizedText);
+                        setTranscript(''); // Clear after success
+                    } else {
+                        // Fuzzy search or partial match could go here
+                        // For now, clear quickly to be ready for next
+                        setTimeout(() => setTranscript(''), 2000);
+                    }
+                }
+            };
+        } else {
+            setError('Browser not supported');
+        }
+    }, [isEnabled, onCommand]);
+
+    // Toggle Listening
+    useEffect(() => {
+        if (!recognitionRef.current) return;
+
+        if (isEnabled) {
+            try {
+                recognitionRef.current.start();
+            } catch {
+                // Already started or busy
+            }
+        } else {
+            recognitionRef.current.stop();
+        }
+    }, [isEnabled]);
+
+    return { isListening, transcript, isSupported, error };
+}
+
+// === COMPONENT: Visual Indicator ===
+export function VoiceCommandIndicator({ isListening, transcript }: { isListening: boolean, transcript: string }) {
+    if (!isListening && !transcript) return null;
 
     return (
-        <div className="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-green-900/90 border border-green-500 rounded-lg px-6 py-3 flex items-center gap-3 z-50">
-            <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
-            <span className="text-green-400 text-sm font-mono">
-                {transcript || 'Listening...'}
-            </span>
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 pointer-events-none z-50 flex flex-col items-center gap-2" >
+            {/* Waveform Animation */}
+            {
+                isListening && (
+                    <div className="flex items-center gap-1 h-8" >
+                        {
+                            [...Array(5)].map((_, i) => (
+                                <div
+                                    key={i}
+                                    className="w-1 bg-green-500 rounded-full animate-voice-wave"
+                                    style={{
+                                        height: '100%',
+                                        animationDelay: `${i * 0.1}s`,
+                                        opacity: transcript ? 1 : 0.5
+                                    }}
+                                />
+                            ))
+                        }
+                    </div>
+                )
+            }
+
+            {/* Transcript Display */}
+            {
+                transcript && (
+                    <div className="bg-black/80 backdrop-blur border border-green-500/50 px-4 py-2 rounded-full text-green-400 font-mono text-sm shadow-[0_0_20px_rgba(0,255,0,0.2)]" >
+                        & quot; {transcript}& quot;
+                    </div>
+                )
+            }
         </div>
-    )
+    );
 }
