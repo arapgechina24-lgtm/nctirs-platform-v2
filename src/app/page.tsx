@@ -26,6 +26,7 @@ import AdversarialDefensePanel from "@/components/AdversarialDefensePanel"
 import FederatedLearningHub from "@/components/FederatedLearningHub"
 import ExplainableAIPanel from "@/components/ExplainableAIPanel"
 import SovereignAIStatusPanel from "@/components/SovereignAIStatusPanel"
+import KenyaContextPanel from "@/components/KenyaContextPanel"
 // Analytics tracking
 import { trackPageView, trackAction, trackPerformance } from "@/lib/analytics"
 // API Client for real data
@@ -72,6 +73,24 @@ import {
   XAIExplanation,
   SovereignAIStatus,
 } from "@/lib/mockData"
+import {
+  generateNairobiTraffic,
+  generateMpesaData,
+  getCurrentNairobiWeather,
+  TrafficNode,
+  MpesaTransaction,
+  WeatherLog
+} from "@/lib/kenyaContextData"
+import {
+  generateBorderLogs,
+  generateWildlifeData,
+  generateSocialSentiment,
+  generateCyberAttribution,
+  BorderLog,
+  WildlifePing,
+  SocialSentiment,
+  ISPTrace
+} from "@/lib/kenyaExtendedData"
 import { createNC4Report } from "@/lib/soar-logic"
 
 interface DashboardData {
@@ -96,6 +115,15 @@ interface DashboardData {
   federatedStatus: FederatedLearningStatus;
   xaiExplanations: XAIExplanation[];
   sovereignAIStatus: SovereignAIStatus;
+  // Kenya Context "Golden Data"
+  kenyaWeather: WeatherLog;
+  kenyaTraffic: TrafficNode[];
+  mpesaTransactions: MpesaTransaction[];
+  // Extended Metadata
+  borderLogs: BorderLog[];
+  wildlife: WildlifePing[];
+  sentiment: SocialSentiment[];
+  cyberTraces: ISPTrace[];
 }
 
 // KeyMetrics Component
@@ -199,6 +227,15 @@ export default function Home() {
       const xaiExplanations = generateXAIExplanations(8);
       const sovereignAIStatus = generateSovereignAIStatus();
 
+      // Kenya 'Golden Data'
+      const kenyaWeather = getCurrentNairobiWeather();
+      const kenyaTraffic = generateNairobiTraffic(30);
+      const mpesaTransactions = generateMpesaData(40);
+      const borderLogs = generateBorderLogs();
+      const wildlife = generateWildlifeData();
+      const sentiment = generateSocialSentiment();
+      const cyberTraces = generateCyberAttribution();
+
       setData({
         incidents,
         predictions,
@@ -220,6 +257,13 @@ export default function Home() {
         federatedStatus,
         xaiExplanations,
         sovereignAIStatus,
+        kenyaWeather,
+        kenyaTraffic,
+        mpesaTransactions,
+        borderLogs,
+        wildlife,
+        sentiment,
+        cyberTraces
       })
       setMounted(true)
 
@@ -247,11 +291,7 @@ export default function Home() {
     )
   }
 
-
-
-  // Calculate stats
-  // Calculate stats
-  // (Stats variables removed as they were unused)
+  // Calculate stats logic was removed here
 
   const handleMitigation = async () => {
     // 1. Orchestration: Simulate Air-Gap
@@ -287,6 +327,19 @@ export default function Home() {
 
     // 3. Return report for visualization
     return report;
+  };
+
+  const {
+    highThreatCount = 0,
+    activeResponses = 0,
+    criticalCyber = 0,
+    activeCoordinated = 0
+  } = {
+    // Recalculating these cheaply for display since we removed the vars before
+    highThreatCount: data.incidents.filter(i => i.threatLevel === 'CRITICAL' || i.threatLevel === 'HIGH').length,
+    activeResponses: data.emergencyResponses.filter(r => r.status !== 'RESOLVED').length,
+    criticalCyber: data.cyberThreats.filter(t => t.severity === 'CRITICAL').length,
+    activeCoordinated: data.coordinatedAttacks.filter(a => a.status !== 'RESOLVED').length
   };
 
   return (
@@ -339,6 +392,15 @@ export default function Home() {
                   perception={data.perceptionLayer}
                   cognition={data.cognitionLayer}
                   integrity={data.integrityLayer}
+                />
+                <KenyaContextPanel
+                  weather={data.kenyaWeather}
+                  traffic={data.kenyaTraffic}
+                  transactions={data.mpesaTransactions}
+                  borderLogs={data.borderLogs}
+                  wildlife={data.wildlife}
+                  sentiment={data.sentiment}
+                  cyberTraces={data.cyberTraces}
                 />
                 <DataLakeMonitor sources={data.dataLakeSources} />
               </div>
