@@ -451,12 +451,16 @@ export default function Home() {
                 />
 
                 <IncidentList incidents={data.incidents} maxItems={8} />
-                <SurveillanceMonitor feeds={data.surveillanceFeeds} maxItems={6} />
                 <CommunityReports reports={data.communityReports} maxItems={5} />
 
                 <AIAssistantPanel />
               </div>
 
+            </div>
+
+            {/* FULL WIDTH: Surveillance Network */}
+            <div className="flex flex-col gap-4">
+              <SurveillanceMonitor feeds={data.surveillanceFeeds} maxItems={12} />
             </div>
           </div>
         )}
