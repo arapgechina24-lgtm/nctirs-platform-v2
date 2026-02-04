@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Verifying Environment for Vercel Deployment..."
+echo "Verifying Environment for Vercel Deployment... (CI Check)"
 
 if [ -z "$DATABASE_URL" ]; then
   echo "❌ Error: DATABASE_URL is not set."
