@@ -1,16 +1,7 @@
 // Threats API: CRUD operations with demo mode fallback
 import { NextRequest, NextResponse } from 'next/server'
 import { createHash } from 'crypto'
-
-// Dynamic import to avoid build errors
-const getPrisma = async () => {
-    try {
-        const { default: prisma } = await import('@/lib/db')
-        return prisma
-    } catch {
-        return null
-    }
-}
+import { getPrismaClient } from '@/lib/db'
 
 // Mock threats for demo mode
 const mockThreats = [
@@ -67,7 +58,7 @@ const mockThreats = [
 // GET /api/threats - List all threats
 export async function GET(request: NextRequest) {
     try {
-        const prisma = await getPrisma()
+        const prisma = await getPrismaClient()
 
         // Demo mode fallback
         if (!prisma) {
@@ -80,6 +71,9 @@ export async function GET(request: NextRequest) {
             })
         }
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const db = prisma as any
+
         const searchParams = request.nextUrl.searchParams
         const type = searchParams.get('type')
         const severity = searchParams.get('severity')
@@ -91,24 +85,17 @@ export async function GET(request: NextRequest) {
         if (severity) where.severity = severity
 
         const [threats, total] = await Promise.all([
-            prisma.threat.findMany({
+            db.threat.findMany({
                 where,
                 take: limit,
                 skip: offset,
                 orderBy: { createdAt: 'desc' },
-                include: {
-                    incident: true,
-                }
+                include: { incident: true }
             }),
-            prisma.threat.count({ where })
+            db.threat.count({ where })
         ])
 
-        return NextResponse.json({
-            threats,
-            total,
-            limit,
-            offset,
-        })
+        return NextResponse.json({ threats, total, limit, offset })
 
     } catch (error) {
         console.error('[API] Get threats error:', error)
@@ -125,20 +112,12 @@ export async function GET(request: NextRequest) {
 // POST /api/threats - Create new threat
 export async function POST(request: NextRequest) {
     try {
-        const prisma = await getPrisma()
+        const prisma = await getPrismaClient()
         const data = await request.json()
 
         const {
-            name,
-            type,
-            severity,
-            source,
-            targetSector,
-            confidence,
-            mitreId,
-            description,
-            indicators,
-            incidentId,
+            name, type, severity, source, targetSector,
+            confidence, mitreId, description, indicators, incidentId
         } = data
 
         if (!name || !type || !severity) {
@@ -155,40 +134,27 @@ export async function POST(request: NextRequest) {
                 success: true,
                 demo: true,
                 threat: {
-                    id,
-                    name,
-                    type,
-                    severity,
-                    source,
-                    targetSector,
-                    confidence,
-                    mitreId,
-                    description,
-                    createdAt: new Date()
+                    id, name, type, severity, source, targetSector,
+                    confidence, mitreId, description, createdAt: new Date()
                 }
             }, { status: 201 })
         }
 
-        const threat = await prisma.threat.create({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const db = prisma as any
+
+        const threat = await db.threat.create({
             data: {
-                name,
-                type,
-                severity,
-                source,
-                targetSector,
+                name, type, severity, source, targetSector,
                 confidence: confidence ? parseFloat(confidence) : 0,
-                mitreId,
-                description,
+                mitreId, description,
                 indicators: indicators ? JSON.stringify(indicators) : null,
-                incidentId,
+                incidentId
             },
-            include: {
-                incident: true,
-            }
+            include: { incident: true }
         })
 
-        // Create audit log
-        await prisma.auditLog.create({
+        await db.auditLog.create({
             data: {
                 action: 'CREATE',
                 resource: 'threats',
@@ -198,16 +164,10 @@ export async function POST(request: NextRequest) {
             }
         })
 
-        return NextResponse.json({
-            success: true,
-            threat,
-        }, { status: 201 })
+        return NextResponse.json({ success: true, threat }, { status: 201 })
 
     } catch (error) {
         console.error('[API] Create threat error:', error)
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        )
+        return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
 }

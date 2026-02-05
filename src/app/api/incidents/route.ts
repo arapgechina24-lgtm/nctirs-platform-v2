@@ -1,15 +1,7 @@
 // Incidents API: CRUD operations with demo mode
 import { NextRequest, NextResponse } from 'next/server'
 import { createHash } from 'crypto'
-
-const getPrisma = async () => {
-    try {
-        const { default: prisma } = await import('@/lib/db')
-        return prisma
-    } catch {
-        return null
-    }
-}
+import { getPrismaClient } from '@/lib/db'
 
 // Mock incidents for demo
 const mockIncidents = [
@@ -44,7 +36,7 @@ const mockIncidents = [
 // GET /api/incidents - List all incidents
 export async function GET(request: NextRequest) {
     try {
-        const prisma = await getPrisma()
+        const prisma = await getPrismaClient()
 
         if (!prisma) {
             return NextResponse.json({
@@ -55,6 +47,9 @@ export async function GET(request: NextRequest) {
                 demo: true
             })
         }
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const db = prisma as any
 
         const searchParams = request.nextUrl.searchParams
         const status = searchParams.get('status')
@@ -67,28 +62,21 @@ export async function GET(request: NextRequest) {
         if (severity) where.severity = severity
 
         const [incidents, total] = await Promise.all([
-            prisma.incident.findMany({
+            db.incident.findMany({
                 where,
                 take: limit,
                 skip: offset,
                 orderBy: { createdAt: 'desc' },
                 include: {
-                    createdBy: {
-                        select: { id: true, name: true, email: true, role: true }
-                    },
+                    createdBy: { select: { id: true, name: true, email: true, role: true } },
                     threats: true,
                     responses: true,
                 }
             }),
-            prisma.incident.count({ where })
+            db.incident.count({ where })
         ])
 
-        return NextResponse.json({
-            incidents,
-            total,
-            limit,
-            offset,
-        })
+        return NextResponse.json({ incidents, total, limit, offset })
 
     } catch (error) {
         console.error('[API] Get incidents error:', error)
@@ -103,20 +91,12 @@ export async function GET(request: NextRequest) {
 // POST /api/incidents - Create new incident
 export async function POST(request: NextRequest) {
     try {
-        const prisma = await getPrisma()
+        const prisma = await getPrismaClient()
         const data = await request.json()
 
         const {
-            title,
-            description,
-            type,
-            severity,
-            location,
-            county,
-            targetAsset,
-            attackVector,
-            indicators,
-            createdById,
+            title, description, type, severity, location,
+            county, targetAsset, attackVector, indicators, createdById
         } = data
 
         if (!title || !type || !severity) {
@@ -132,38 +112,28 @@ export async function POST(request: NextRequest) {
                 demo: true,
                 incident: {
                     id: `inc-${Date.now()}`,
-                    title,
-                    type,
-                    severity,
-                    status: 'ACTIVE',
+                    title, type, severity, status: 'ACTIVE',
                     createdAt: new Date()
                 }
             }, { status: 201 })
         }
 
-        const incident = await prisma.incident.create({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const db = prisma as any
+
+        const incident = await db.incident.create({
             data: {
-                title,
-                description,
-                type,
-                severity,
-                status: 'ACTIVE',
-                location,
-                county,
-                targetAsset,
-                attackVector,
+                title, description, type, severity, status: 'ACTIVE',
+                location, county, targetAsset, attackVector,
                 indicators: indicators ? JSON.stringify(indicators) : null,
-                createdById,
+                createdById
             },
             include: {
-                createdBy: {
-                    select: { id: true, name: true, email: true, role: true }
-                },
+                createdBy: { select: { id: true, name: true, email: true, role: true } }
             }
         })
 
-        // Audit log
-        await prisma.auditLog.create({
+        await db.auditLog.create({
             data: {
                 action: 'CREATE',
                 resource: 'incidents',
@@ -174,16 +144,10 @@ export async function POST(request: NextRequest) {
             }
         })
 
-        return NextResponse.json({
-            success: true,
-            incident,
-        }, { status: 201 })
+        return NextResponse.json({ success: true, incident }, { status: 201 })
 
     } catch (error) {
         console.error('[API] Create incident error:', error)
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        )
+        return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
 }

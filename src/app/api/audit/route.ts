@@ -1,16 +1,7 @@
 // Audit Log API: Blockchain-style immutable logging
 import { NextRequest, NextResponse } from 'next/server'
 import { createHash } from 'crypto'
-
-// Dynamic import to avoid build errors
-const getPrisma = async () => {
-    try {
-        const { default: prisma } = await import('@/lib/db')
-        return prisma
-    } catch {
-        return null
-    }
-}
+import { getPrismaClient } from '@/lib/db'
 
 // Mock data for demo mode
 const mockAuditLogs = [
@@ -47,9 +38,8 @@ const mockAuditLogs = [
 // GET /api/audit - List audit logs
 export async function GET(request: NextRequest) {
     try {
-        const prisma = await getPrisma()
+        const prisma = await getPrismaClient()
         
-        // If no database, return mock data for demo
         if (!prisma) {
             return NextResponse.json({
                 logs: mockAuditLogs,
@@ -59,6 +49,9 @@ export async function GET(request: NextRequest) {
                 demo: true
             })
         }
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const db = prisma as any
 
         const searchParams = request.nextUrl.searchParams
         const action = searchParams.get('action')
@@ -73,30 +66,22 @@ export async function GET(request: NextRequest) {
         if (userId) where.userId = userId
 
         const [logs, total] = await Promise.all([
-            prisma.auditLog.findMany({
+            db.auditLog.findMany({
                 where,
                 take: limit,
                 skip: offset,
                 orderBy: { createdAt: 'desc' },
                 include: {
-                    user: {
-                        select: { id: true, name: true, email: true, role: true }
-                    },
+                    user: { select: { id: true, name: true, email: true, role: true } }
                 }
             }),
-            prisma.auditLog.count({ where })
+            db.auditLog.count({ where })
         ])
 
-        return NextResponse.json({
-            logs,
-            total,
-            limit,
-            offset,
-        })
+        return NextResponse.json({ logs, total, limit, offset })
 
     } catch (error) {
         console.error('[API] Get audit logs error:', error)
-        // Return mock data on error for demo
         return NextResponse.json({
             logs: mockAuditLogs,
             total: mockAuditLogs.length,
@@ -110,18 +95,10 @@ export async function GET(request: NextRequest) {
 // POST /api/audit - Create audit log with blockchain-style hashing
 export async function POST(request: NextRequest) {
     try {
-        const prisma = await getPrisma()
+        const prisma = await getPrismaClient()
         const data = await request.json()
 
-        const {
-            action,
-            resource,
-            resourceId,
-            userId,
-            details,
-            ipAddress,
-            userAgent,
-        } = data
+        const { action, resource, resourceId, userId, details, ipAddress, userAgent } = data
 
         if (!action || !resource) {
             return NextResponse.json(
@@ -130,7 +107,6 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        // If no database, return mock success for demo
         if (!prisma) {
             const timestamp = Date.now()
             const hash = createHash('sha256').update(`${action}-${resource}-${timestamp}`).digest('hex')
@@ -138,34 +114,25 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({
                 success: true,
                 demo: true,
-                auditLog: {
-                    id: `audit-${timestamp}`,
-                    action,
-                    resource,
-                    resourceId,
-                    hash,
-                    createdAt: new Date()
-                }
+                auditLog: { id: `audit-${timestamp}`, action, resource, resourceId, hash, createdAt: new Date() }
             }, { status: 201 })
         }
 
-        // Get the last audit log entry to chain hashes
-        const lastLog = await prisma.auditLog.findFirst({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const db = prisma as any
+
+        const lastLog = await db.auditLog.findFirst({
             orderBy: { createdAt: 'desc' },
             select: { hash: true }
         })
 
-        // Create hash for this entry (includes previous hash for chain)
         const timestamp = Date.now()
         const hashContent = `${action}-${resource}-${resourceId || ''}-${userId || ''}-${timestamp}-${lastLog?.hash || 'genesis'}`
         const hash = createHash('sha256').update(hashContent).digest('hex')
 
-        const auditLog = await prisma.auditLog.create({
+        const auditLog = await db.auditLog.create({
             data: {
-                action,
-                resource,
-                resourceId,
-                userId,
+                action, resource, resourceId, userId,
                 details: details ? JSON.stringify(details) : null,
                 ipAddress: ipAddress || request.headers.get('x-forwarded-for') || 'unknown',
                 userAgent: userAgent || request.headers.get('user-agent') || 'unknown',
@@ -174,14 +141,10 @@ export async function POST(request: NextRequest) {
             }
         })
 
-        return NextResponse.json({
-            success: true,
-            auditLog,
-        }, { status: 201 })
+        return NextResponse.json({ success: true, auditLog }, { status: 201 })
 
     } catch (error) {
         console.error('[API] Create audit log error:', error)
-        // Return mock success for demo
         const timestamp = Date.now()
         return NextResponse.json({
             success: true,

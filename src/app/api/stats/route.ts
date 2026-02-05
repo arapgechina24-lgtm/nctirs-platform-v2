@@ -1,14 +1,6 @@
 // Stats API: Dashboard statistics with demo mode
 import { NextResponse } from 'next/server'
-
-const getPrisma = async () => {
-    try {
-        const { default: prisma } = await import('@/lib/db')
-        return prisma
-    } catch {
-        return null
-    }
-}
+import { getPrismaClient } from '@/lib/db'
 
 // Mock stats for demo
 const mockStats = {
@@ -49,8 +41,9 @@ const mockStats = {
 // GET /api/stats - Get dashboard statistics
 export async function GET() {
     try {
-        const prisma = await getPrisma()
+        const prisma = await getPrismaClient()
 
+        // Demo mode - no database
         if (!prisma) {
             return NextResponse.json({
                 stats: mockStats,
@@ -59,42 +52,28 @@ export async function GET() {
             })
         }
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const db = prisma as any
+
         const [
             incidentStats,
             threatStats,
             responseStats,
             userStats,
         ] = await Promise.all([
-            // Incident statistics
-            prisma.incident.groupBy({
-                by: ['status'],
-                _count: true,
-            }),
-            // Threat statistics
-            prisma.threat.groupBy({
-                by: ['type'],
-                _count: true,
-            }),
-            // Response statistics
-            prisma.response.groupBy({
-                by: ['status'],
-                _count: true,
-            }),
-            // User statistics
-            prisma.user.groupBy({
-                by: ['role'],
-                _count: true,
-            }),
+            db.incident.groupBy({ by: ['status'], _count: true }),
+            db.threat.groupBy({ by: ['type'], _count: true }),
+            db.response.groupBy({ by: ['status'], _count: true }),
+            db.user.groupBy({ by: ['role'], _count: true }),
         ])
 
-        // Calculate totals
-        const totalIncidents = incidentStats.reduce((sum, s) => sum + s._count, 0)
-        const activeIncidents = incidentStats.find(s => s.status === 'ACTIVE')?._count || 0
-        const criticalIncidents = await prisma.incident.count({ where: { severity: 'CRITICAL', status: 'ACTIVE' } })
+        const totalIncidents = incidentStats.reduce((sum: number, s: { _count: number }) => sum + s._count, 0)
+        const activeIncidents = incidentStats.find((s: { status: string }) => s.status === 'ACTIVE')?._count || 0
+        const criticalIncidents = await db.incident.count({ where: { severity: 'CRITICAL', status: 'ACTIVE' } })
 
-        const totalThreats = threatStats.reduce((sum, s) => sum + s._count, 0)
-        const totalResponses = responseStats.reduce((sum, s) => sum + s._count, 0)
-        const totalUsers = userStats.reduce((sum, s) => sum + s._count, 0)
+        const totalThreats = threatStats.reduce((sum: number, s: { _count: number }) => sum + s._count, 0)
+        const totalResponses = responseStats.reduce((sum: number, s: { _count: number }) => sum + s._count, 0)
+        const totalUsers = userStats.reduce((sum: number, s: { _count: number }) => sum + s._count, 0)
 
         return NextResponse.json({
             stats: {
@@ -127,7 +106,8 @@ export async function GET() {
         })
 
     } catch (error) {
-        console.error('[API] Get stats error:', error)
+        console.error('[API] Stats error:', error)
+        // Fallback to demo data on any error
         return NextResponse.json({
             stats: mockStats,
             timestamp: new Date().toISOString(),

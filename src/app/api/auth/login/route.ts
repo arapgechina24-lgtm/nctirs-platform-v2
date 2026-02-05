@@ -1,8 +1,20 @@
-// Authentication API: Login
+// Authentication API: Login with demo mode
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/db'
+import { getPrismaClient } from '@/lib/db'
 import bcrypt from 'bcryptjs'
 import { createHash } from 'crypto'
+
+// Demo user for demo mode
+const demoUser = {
+    id: 'demo-001',
+    email: 'demo@nctirs.go.ke',
+    name: 'Demo Analyst',
+    role: 'L2',
+    agency: 'NIS',
+    department: 'Cyber Division',
+    clearanceLevel: 2,
+    isActive: true,
+}
 
 export async function POST(request: NextRequest) {
     try {
@@ -15,53 +27,49 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        // Find user by email
-        const user = await prisma.user.findUnique({
+        const prisma = await getPrismaClient()
+
+        // Demo mode - accept any credentials
+        if (!prisma) {
+            return NextResponse.json({
+                success: true,
+                demo: true,
+                user: { ...demoUser, email },
+                token: createHash('sha256').update(`demo-${Date.now()}`).digest('hex'),
+            })
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const db = prisma as any
+
+        const user = await db.user.findUnique({
             where: { email },
             select: {
-                id: true,
-                email: true,
-                name: true,
-                password: true,
-                role: true,
-                agency: true,
-                department: true,
-                clearanceLevel: true,
-                isActive: true,
+                id: true, email: true, name: true, password: true,
+                role: true, agency: true, department: true,
+                clearanceLevel: true, isActive: true,
             }
         })
 
         if (!user) {
-            return NextResponse.json(
-                { error: 'Invalid credentials' },
-                { status: 401 }
-            )
+            return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 })
         }
 
         if (!user.isActive) {
-            return NextResponse.json(
-                { error: 'Account is disabled' },
-                { status: 403 }
-            )
+            return NextResponse.json({ error: 'Account is disabled' }, { status: 403 })
         }
 
-        // Verify password
         const isValid = await bcrypt.compare(password, user.password)
         if (!isValid) {
-            return NextResponse.json(
-                { error: 'Invalid credentials' },
-                { status: 401 }
-            )
+            return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 })
         }
 
-        // Update last login
-        await prisma.user.update({
+        await db.user.update({
             where: { id: user.id },
             data: { lastLogin: new Date() }
         })
 
-        // Create audit log
-        await prisma.auditLog.create({
+        await db.auditLog.create({
             data: {
                 action: 'LOGIN',
                 resource: 'auth',
@@ -73,12 +81,9 @@ export async function POST(request: NextRequest) {
             }
         })
 
-        // Return user data (without password)
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { password: _, ...userWithoutPassword } = user
 
-        // In production, you would set a secure HTTP-only cookie here
-        // For now, return user data as JSON
         return NextResponse.json({
             success: true,
             user: userWithoutPassword,
@@ -87,9 +92,6 @@ export async function POST(request: NextRequest) {
 
     } catch (error) {
         console.error('[API] Login error:', error)
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        )
+        return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
 }

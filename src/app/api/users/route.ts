@@ -1,14 +1,6 @@
 // Users API: with demo mode fallback
 import { NextRequest, NextResponse } from 'next/server'
-
-const getPrisma = async () => {
-    try {
-        const { default: prisma } = await import('@/lib/db')
-        return prisma
-    } catch {
-        return null
-    }
-}
+import { getPrismaClient } from '@/lib/db'
 
 // Mock users for demo
 const mockUsers = [
@@ -37,7 +29,7 @@ const mockUsers = [
 // GET /api/users - List users (admin only)
 export async function GET(request: NextRequest) {
     try {
-        const prisma = await getPrisma()
+        const prisma = await getPrismaClient()
 
         if (!prisma) {
             return NextResponse.json({
@@ -46,6 +38,9 @@ export async function GET(request: NextRequest) {
                 demo: true
             })
         }
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const db = prisma as any
 
         const searchParams = request.nextUrl.searchParams
         const role = searchParams.get('role')
@@ -58,32 +53,21 @@ export async function GET(request: NextRequest) {
         if (agency) where.agency = agency
 
         const [users, total] = await Promise.all([
-            prisma.user.findMany({
+            db.user.findMany({
                 where,
                 take: limit,
                 skip: offset,
                 orderBy: { createdAt: 'desc' },
                 select: {
-                    id: true,
-                    email: true,
-                    name: true,
-                    role: true,
-                    agency: true,
-                    department: true,
-                    isActive: true,
-                    createdAt: true,
-                    lastLogin: true,
+                    id: true, email: true, name: true, role: true,
+                    agency: true, department: true, isActive: true,
+                    createdAt: true, lastLogin: true
                 }
             }),
-            prisma.user.count({ where })
+            db.user.count({ where })
         ])
 
-        return NextResponse.json({
-            users,
-            total,
-            limit,
-            offset,
-        })
+        return NextResponse.json({ users, total, limit, offset })
 
     } catch (error) {
         console.error('[API] Get users error:', error)

@@ -1,6 +1,6 @@
-// Authentication API: Register
+// Authentication API: Register with demo mode
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/db'
+import { getPrismaClient } from '@/lib/db'
 import bcrypt from 'bcryptjs'
 import { createHash } from 'crypto'
 
@@ -15,30 +15,45 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        // Check if user already exists
-        const existingUser = await prisma.user.findUnique({
-            where: { email }
-        })
+        const prisma = await getPrismaClient()
 
-        if (existingUser) {
-            return NextResponse.json(
-                { error: 'User already exists' },
-                { status: 409 }
-            )
+        // Demo mode - simulate registration
+        if (!prisma) {
+            const validRoles = ['L1', 'L2', 'L3', 'L4']
+            const userRole = validRoles.includes(role) ? role : 'L1'
+            const clearanceLevels: Record<string, number> = { L1: 1, L2: 2, L3: 3, L4: 4 }
+
+            return NextResponse.json({
+                success: true,
+                demo: true,
+                user: {
+                    id: `user-${Date.now()}`,
+                    email,
+                    name: name || email.split('@')[0],
+                    role: userRole,
+                    agency: agency || 'NIS',
+                    department: department || 'Cyber Division',
+                    clearanceLevel: clearanceLevels[userRole] || 1,
+                    createdAt: new Date()
+                }
+            }, { status: 201 })
         }
 
-        // Hash password
-        const hashedPassword = await bcrypt.hash(password, 12)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const db = prisma as any
 
-        // Validate role (default to L1 if not specified or invalid)
+        const existingUser = await db.user.findUnique({ where: { email } })
+
+        if (existingUser) {
+            return NextResponse.json({ error: 'User already exists' }, { status: 409 })
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 12)
         const validRoles = ['L1', 'L2', 'L3', 'L4']
         const userRole = validRoles.includes(role) ? role : 'L1'
-
-        // Map role to clearance level
         const clearanceLevels: Record<string, number> = { L1: 1, L2: 2, L3: 3, L4: 4 }
 
-        // Create user
-        const user = await prisma.user.create({
+        const user = await db.user.create({
             data: {
                 email,
                 password: hashedPassword,
@@ -49,19 +64,12 @@ export async function POST(request: NextRequest) {
                 clearanceLevel: clearanceLevels[userRole] || 1,
             },
             select: {
-                id: true,
-                email: true,
-                name: true,
-                role: true,
-                agency: true,
-                department: true,
-                clearanceLevel: true,
-                createdAt: true,
+                id: true, email: true, name: true, role: true,
+                agency: true, department: true, clearanceLevel: true, createdAt: true
             }
         })
 
-        // Create audit log
-        await prisma.auditLog.create({
+        await db.auditLog.create({
             data: {
                 action: 'REGISTER',
                 resource: 'auth',
@@ -73,16 +81,10 @@ export async function POST(request: NextRequest) {
             }
         })
 
-        return NextResponse.json({
-            success: true,
-            user,
-        }, { status: 201 })
+        return NextResponse.json({ success: true, user }, { status: 201 })
 
     } catch (error) {
         console.error('[API] Register error:', error)
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        )
+        return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
 }
