@@ -173,3 +173,134 @@ body::after {
 .animate-glitch {
   animation: glitch-pulse 0.2s ease-in-out infinite;
 }
+
+/* Mobile Responsive Improvements */
+@media (max-width: 768px) {
+  /* Reduce grid pattern on mobile for performance */
+  body::before {
+    background-size: 60px 60px;
+    opacity: 0.5;
+  }
+  
+  /* Simpler scrollbar on mobile */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  /* Reduce scan line effect */
+  .scan-line {
+    height: 1px;
+  }
+  
+  /* Better touch targets */
+  button, a {
+    min-height: 44px;
+  }
+  
+  /* Improve text readability */
+  .terminal-text {
+    text-shadow: 0 0 3px rgba(0, 255, 65, 0.4);
+  }
+}
+
+/* Tablet adjustments */
+@media (min-width: 769px) and (max-width: 1024px) {
+  body::before {
+    background-size: 50px 50px;
+  }
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .scan-line,
+  .animate-scanline,
+  .animate-glitch,
+  .animate-pulse,
+  .animate-ping {
+    animation: none !important;
+  }
+  
+  body::after {
+    display: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --foreground: #00ff00;
+    --accent: #00ff00;
+  }
+  
+  body {
+    background: #000000;
+  }
+}
+
+/* Dark mode is default, but ensure system preferences work */
+@media (prefers-color-scheme: light) {
+  /* Keep dark theme regardless - this is a security dashboard */
+  :root {
+    --background: #000000;
+    --foreground: #00ff41;
+  }
+}
+
+/* Print styles */
+@media print {
+  body::before,
+  body::after,
+  .scan-line {
+    display: none !important;
+  }
+  
+  body {
+    background: white !important;
+    color: black !important;
+  }
+}
+
+/* Custom scrollbar for smaller screens */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 65, 0.3);
+  border-radius: 2px;
+}
+
+/* Glow text effect */
+.glow-text {
+  text-shadow: 
+    0 0 5px rgba(0, 255, 65, 0.5),
+    0 0 10px rgba(0, 255, 65, 0.3),
+    0 0 20px rgba(0, 255, 65, 0.2);
+}
+
+/* Focus visible styles for accessibility */
+:focus-visible {
+  outline: 2px solid #00ff41;
+  outline-offset: 2px;
+}
+
+/* Skip link for accessibility */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #000;
+  color: #00ff41;
+  padding: 8px;
+  z-index: 10000;
+  transition: top 0.3s;
+}
+
+.skip-link:focus {
+  top: 0;
+}

@@ -1,20 +1,27 @@
 'use client'
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
+import dynamic from 'next/dynamic'
 import { Header, ViewType } from "@/components/Header"
 import { IncidentList } from "@/components/IncidentList"
 import { SurveillanceMonitor } from "@/components/SurveillanceMonitor"
 import { CommunityReports } from "@/components/CommunityReports"
 import { ThreatAnalyticsChart } from "@/components/ThreatAnalyticsChart"
-import { ThreatMap } from "@/components/ThreatMap"
 import { IncidentTrendsChart } from "@/components/IncidentTrendsChart"
 // NCTIRS Unified Components
 import { DataLakeMonitor } from "@/components/DataLakeMonitor"
 import { ThreatAnalyticsEngine } from "@/components/ThreatAnalyticsEngine"
 import { AutomatedResponsePanel } from "@/components/AutomatedResponsePanel"
 import { SystemArchitecture } from "@/components/SystemArchitecture"
-// NEW Components
-import CNIHeatmap from "@/components/CNIHeatmap"
+// NEW Components - Lazy loaded for performance
+const CNIHeatmap = dynamic(() => import("@/components/CNIHeatmap"), { 
+  ssr: false,
+  loading: () => <div className="h-64 bg-black border border-green-900/30 animate-pulse flex items-center justify-center text-green-800 text-xs">Loading CNI Heatmap...</div>
+})
+const ThreatMap = dynamic(() => import("@/components/ThreatMap").then(mod => ({ default: mod.ThreatMap })), { 
+  ssr: false,
+  loading: () => <div className="h-64 bg-black border border-green-900/30 animate-pulse flex items-center justify-center text-green-800 text-xs">Loading Threat Map...</div>
+})
 import AIAssistantPanel from "@/components/AIAssistantPanel"
 import MultiplayerSession from "@/components/MultiplayerSession"
 import EmergencyOverlay from "@/components/EmergencyOverlay"
@@ -27,6 +34,10 @@ import FederatedLearningHub from "@/components/FederatedLearningHub"
 import ExplainableAIPanel from "@/components/ExplainableAIPanel"
 import SovereignAIStatusPanel from "@/components/SovereignAIStatusPanel"
 import KenyaContextPanel from "@/components/KenyaContextPanel"
+// Demo Mode Banner
+import DemoModeBanner from "@/components/DemoModeBanner"
+// Threat Simulation
+import ThreatSimulationPanel from "@/components/ThreatSimulationPanel"
 // Analytics tracking
 import { trackPageView, trackAction, trackPerformance } from "@/lib/analytics"
 // API Client for real data
@@ -171,11 +182,183 @@ function KeyMetrics({ metrics }: KeyMetricsProps) {
   )
 }
 
+// Loading Skeleton with timeout fallback
+function LoadingSkeleton({ onTimeout }: { onTimeout: () => void }) {
+  const [dots, setDots] = useState('');
+  const [loadTime, setLoadTime] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDots(prev => prev.length >= 3 ? '' : prev + '.');
+      setLoadTime(prev => prev + 0.5);
+    }, 500);
+
+    // Timeout fallback - load demo data after 3 seconds
+    const timeout = setTimeout(() => {
+      onTimeout();
+    }, 3000);
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
+  }, [onTimeout]);
+
+  return (
+    <div className="min-h-screen bg-black flex items-center justify-center font-mono text-green-500">
+      <div className="text-center max-w-md px-4">
+        {/* Logo */}
+        <div className="mb-6">
+          <div className="text-4xl font-black tracking-tight text-green-400 animate-pulse">
+            NCTIRS
+          </div>
+          <div className="text-xs text-green-700 mt-1">
+            National Cyber Threat Intelligence & Response System
+          </div>
+        </div>
+
+        {/* Status */}
+        <div className="bg-black border border-green-900/50 p-4 mb-4">
+          <div className="text-sm text-green-600 mb-2">
+            INITIALIZING SECURE CONNECTION{dots}
+          </div>
+          <div className="w-full bg-green-950 h-2 rounded overflow-hidden">
+            <div 
+              className="h-full bg-green-500 transition-all duration-500"
+              style={{ width: `${Math.min(loadTime / 3 * 100, 95)}%` }}
+            />
+          </div>
+          <div className="text-[10px] text-green-800 mt-2">
+            {loadTime < 1 ? 'Authenticating...' : loadTime < 2 ? 'Loading threat data...' : 'Establishing secure channel...'}
+          </div>
+        </div>
+
+        {/* Loading Indicators */}
+        <div className="flex items-center justify-center gap-2">
+          <div className="h-2 w-2 bg-green-500 rounded-full animate-ping" />
+          <div className="h-2 w-2 bg-green-500 rounded-full animate-ping" style={{ animationDelay: '0.2s' }} />
+          <div className="h-2 w-2 bg-green-500 rounded-full animate-ping" style={{ animationDelay: '0.4s' }} />
+        </div>
+
+        {/* Skip Button */}
+        <button
+          onClick={onTimeout}
+          className="mt-6 text-xs text-green-700 hover:text-green-500 transition-colors underline"
+        >
+          Load Demo Mode →
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
   const [currentView, setCurrentView] = useState<ViewType>('COMMAND_CENTER')
   const [isEmergency, setIsEmergency] = useState(false)
   const [mounted, setMounted] = useState(false)
   const [data, setData] = useState<DashboardData | null>(null)
+  const [isDemoMode, setIsDemoMode] = useState(false)
+  const [showDemoBanner, setShowDemoBanner] = useState(true)
+
+  // Generate mock data immediately for fallback
+  const generateMockData = useCallback((): DashboardData => {
+    const predictions = generateCrimePredictions(15);
+    const surveillanceFeeds = generateSurveillanceFeeds(40);
+    const communityReports = generateCommunityReports(25);
+    const emergencyResponses = generateEmergencyResponses(12);
+    const threatAnalytics = generateThreatAnalytics();
+    const timeSeriesData = generateTimeSeriesData(30);
+    const dataLakeSources = generateDataLakeSources();
+    const blockchainLedger = generateBlockchainLedger(25);
+    const coordinatedAttacks = generateCoordinatedAttacks(5);
+    const automatedResponses = generateAutomatedResponses(15);
+    const perceptionLayer = generatePerceptionLayerStatus();
+    const cognitionLayer = generateCognitionLayerStatus();
+    const integrityLayer = generateIntegrityLayerStatus();
+    const adversarialMetrics = generateAdversarialMetrics();
+    const federatedStatus = generateFederatedNodes();
+    const xaiExplanations = generateXAIExplanations(8);
+    const sovereignAIStatus = generateSovereignAIStatus();
+    const kenyaWeather = getCurrentNairobiWeather();
+    const kenyaTraffic = generateNairobiTraffic(30);
+    const mpesaTransactions = generateMpesaData(40);
+    const borderLogs = generateBorderLogs();
+    const wildlife = generateWildlifeData();
+    const sentiment = generateSocialSentiment();
+    const cyberTraces = generateCyberAttribution();
+
+    // Generate mock incidents and threats
+    const incidents: SecurityIncident[] = Array.from({ length: 20 }, (_, i) => ({
+      id: `INC-${1000 + i}`,
+      type: ['CYBER_ATTACK', 'TERRORISM', 'ORGANIZED_CRIME', 'TRAFFICKING'][Math.floor(Math.random() * 4)] as SecurityIncident['type'],
+      title: ['APT Campaign Detected', 'Suspicious Activity', 'Network Intrusion', 'Data Exfiltration Attempt'][Math.floor(Math.random() * 4)],
+      description: 'Automated threat detection triggered',
+      location: {
+        name: ['Nairobi CBD', 'Mombasa Port', 'JKIA', 'Kisumu', 'Nakuru'][Math.floor(Math.random() * 5)],
+        region: 'NAIROBI' as const,
+        coordinates: [-1.286389 + Math.random() * 0.1, 36.817223 + Math.random() * 0.1] as [number, number]
+      },
+      threatLevel: ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'][Math.floor(Math.random() * 4)] as SecurityIncident['threatLevel'],
+      status: ['ACTIVE', 'INVESTIGATING', 'MONITORING'][Math.floor(Math.random() * 3)] as SecurityIncident['status'],
+      timestamp: new Date(Date.now() - Math.random() * 86400000),
+      affectedArea: Math.floor(Math.random() * 100),
+      aiConfidence: 70 + Math.random() * 30,
+      sources: ['OSINT', 'HUMINT', 'SIGINT']
+    }));
+
+    const cyberThreats: CyberThreat[] = Array.from({ length: 15 }, (_, i) => ({
+      id: `THR-${2000 + i}`,
+      name: ['Lazarus Group', 'APT-29', 'Charming Kitten', 'Sandworm'][Math.floor(Math.random() * 4)],
+      type: ['APT', 'RANSOMWARE', 'DDOS', 'PHISHING'][Math.floor(Math.random() * 4)] as CyberThreat['type'],
+      severity: ['CRITICAL', 'HIGH', 'MEDIUM'][Math.floor(Math.random() * 3)] as CyberThreat['severity'],
+      targetSector: ['GOVERNMENT', 'FINANCIAL', 'TELECOM'][Math.floor(Math.random() * 3)] as CyberThreat['targetSector'],
+      targetSystem: ['eCitizen', 'M-Pesa', 'KRA iTax', 'Banking Sector'][Math.floor(Math.random() * 4)],
+      status: ['DETECTED', 'ANALYZING', 'CONTAINED'][Math.floor(Math.random() * 3)] as CyberThreat['status'],
+      aiConfidence: 80 + Math.random() * 20,
+      timestamp: new Date(Date.now() - Math.random() * 86400000),
+      sourceIP: `${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`,
+      aptSignature: 'T1566.001',
+      iocIndicators: ['malicious-domain.com', '192.168.1.100'],
+      description: 'Sophisticated attack campaign targeting critical infrastructure'
+    }));
+
+    return {
+      incidents,
+      predictions,
+      surveillanceFeeds,
+      communityReports,
+      emergencyResponses,
+      threatAnalytics,
+      timeSeriesData,
+      cyberThreats,
+      dataLakeSources,
+      blockchainLedger,
+      coordinatedAttacks,
+      automatedResponses,
+      perceptionLayer,
+      cognitionLayer,
+      integrityLayer,
+      adversarialMetrics,
+      federatedStatus,
+      xaiExplanations,
+      sovereignAIStatus,
+      kenyaWeather,
+      kenyaTraffic,
+      mpesaTransactions,
+      borderLogs,
+      wildlife,
+      sentiment,
+      cyberTraces
+    };
+  }, []);
+
+  // Handle timeout - load demo data
+  const handleLoadTimeout = useCallback(() => {
+    console.log('⚡ Loading demo data (timeout or user request)');
+    setIsDemoMode(true);
+    setData(generateMockData());
+    setMounted(true);
+  }, [generateMockData]);
 
   // Track page views and view changes
   useEffect(() => {
@@ -200,113 +383,122 @@ export default function Home() {
     async function loadData() {
       const startTime = performance.now()
 
-      // Fetch from API (with fallback to mock data)
-      const [incidents, cyberThreats] = await Promise.all([
-        fetchIncidents({ limit: 30 }),
-        fetchThreats({ limit: 20 }),
-      ])
+      try {
+        // Fetch from API (with fallback to mock data)
+        const [incidents, cyberThreats] = await Promise.all([
+          fetchIncidents({ limit: 30 }),
+          fetchThreats({ limit: 20 }),
+        ])
 
-      // Generate remaining mock data for components without API yet
-      const predictions = generateCrimePredictions(15);
-      const surveillanceFeeds = generateSurveillanceFeeds(40);
-      const communityReports = generateCommunityReports(25);
-      const emergencyResponses = generateEmergencyResponses(12);
-      const threatAnalytics = generateThreatAnalytics();
-      const timeSeriesData = generateTimeSeriesData(30);
-      // NCTIRS data (mock for now)
-      const dataLakeSources = generateDataLakeSources();
-      const blockchainLedger = generateBlockchainLedger(25);
-      const coordinatedAttacks = generateCoordinatedAttacks(5);
-      const automatedResponses = generateAutomatedResponses(15);
-      const perceptionLayer = generatePerceptionLayerStatus();
-      const cognitionLayer = generateCognitionLayerStatus();
-      const integrityLayer = generateIntegrityLayerStatus();
-      // 4 WINNING PILLARS data
-      const adversarialMetrics = generateAdversarialMetrics();
-      const federatedStatus = generateFederatedNodes();
-      const xaiExplanations = generateXAIExplanations(8);
-      const sovereignAIStatus = generateSovereignAIStatus();
+        // Generate remaining mock data for components without API yet
+        const predictions = generateCrimePredictions(15);
+        const surveillanceFeeds = generateSurveillanceFeeds(40);
+        const communityReports = generateCommunityReports(25);
+        const emergencyResponses = generateEmergencyResponses(12);
+        const threatAnalytics = generateThreatAnalytics();
+        const timeSeriesData = generateTimeSeriesData(30);
+        const dataLakeSources = generateDataLakeSources();
+        const blockchainLedger = generateBlockchainLedger(25);
+        const coordinatedAttacks = generateCoordinatedAttacks(5);
+        const automatedResponses = generateAutomatedResponses(15);
+        const perceptionLayer = generatePerceptionLayerStatus();
+        const cognitionLayer = generateCognitionLayerStatus();
+        const integrityLayer = generateIntegrityLayerStatus();
+        const adversarialMetrics = generateAdversarialMetrics();
+        const federatedStatus = generateFederatedNodes();
+        const xaiExplanations = generateXAIExplanations(8);
+        const sovereignAIStatus = generateSovereignAIStatus();
+        const kenyaWeather = getCurrentNairobiWeather();
+        const kenyaTraffic = generateNairobiTraffic(30);
+        const mpesaTransactions = generateMpesaData(40);
+        const borderLogs = generateBorderLogs();
+        const wildlife = generateWildlifeData();
+        const sentiment = generateSocialSentiment();
+        const cyberTraces = generateCyberAttribution();
 
-      // Kenya 'Golden Data'
-      const kenyaWeather = getCurrentNairobiWeather();
-      const kenyaTraffic = generateNairobiTraffic(30);
-      const mpesaTransactions = generateMpesaData(40);
-      const borderLogs = generateBorderLogs();
-      const wildlife = generateWildlifeData();
-      const sentiment = generateSocialSentiment();
-      const cyberTraces = generateCyberAttribution();
+        setData({
+          incidents,
+          predictions,
+          surveillanceFeeds,
+          communityReports,
+          emergencyResponses,
+          threatAnalytics,
+          timeSeriesData,
+          cyberThreats,
+          dataLakeSources,
+          blockchainLedger,
+          coordinatedAttacks,
+          automatedResponses,
+          perceptionLayer,
+          cognitionLayer,
+          integrityLayer,
+          adversarialMetrics,
+          federatedStatus,
+          xaiExplanations,
+          sovereignAIStatus,
+          kenyaWeather,
+          kenyaTraffic,
+          mpesaTransactions,
+          borderLogs,
+          wildlife,
+          sentiment,
+          cyberTraces
+        })
+        setMounted(true)
 
-      setData({
-        incidents,
-        predictions,
-        surveillanceFeeds,
-        communityReports,
-        emergencyResponses,
-        threatAnalytics,
-        timeSeriesData,
-        cyberThreats,
-        dataLakeSources,
-        blockchainLedger,
-        coordinatedAttacks,
-        automatedResponses,
-        perceptionLayer,
-        cognitionLayer,
-        integrityLayer,
-        // 4 WINNING PILLARS
-        adversarialMetrics,
-        federatedStatus,
-        xaiExplanations,
-        sovereignAIStatus,
-        kenyaWeather,
-        kenyaTraffic,
-        mpesaTransactions,
-        borderLogs,
-        wildlife,
-        sentiment,
-        cyberTraces
-      })
-      setMounted(true)
-
-      // Track render performance
-      const renderTime = performance.now() - startTime
-      trackPerformance('initial_render', { renderTime })
+        // Track render performance
+        const renderTime = performance.now() - startTime
+        trackPerformance('initial_render', { renderTime })
+      } catch (error) {
+        console.error('Failed to load data from API, using demo data:', error)
+        handleLoadTimeout()
+      }
     }
 
     loadData()
-  }, [])
+  }, [handleLoadTimeout])
+
+  // Auto-start demo after inactivity
+  useEffect(() => {
+    if (!mounted || !data) return;
+
+    let inactivityTimer: NodeJS.Timeout;
+    
+    const resetTimer = () => {
+      clearTimeout(inactivityTimer);
+      inactivityTimer = setTimeout(() => {
+        // Auto-trigger demo after 30 seconds of inactivity
+        if (!isEmergency) {
+          setShowDemoBanner(true);
+        }
+      }, 30000);
+    };
+
+    // Listen for user activity
+    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
+    events.forEach(event => window.addEventListener(event, resetTimer));
+    resetTimer();
+
+    return () => {
+      clearTimeout(inactivityTimer);
+      events.forEach(event => window.removeEventListener(event, resetTimer));
+    };
+  }, [mounted, data, isEmergency]);
 
   if (!mounted || !data) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center font-mono text-green-500">
-        <div className="text-center">
-          <div className="animate-pulse text-xl mb-2">NCTIRS</div>
-          <div className="text-sm text-green-800">INITIALIZING_SECURE_CONNECTION...</div>
-          <div className="mt-4 flex items-center justify-center gap-2">
-            <div className="h-2 w-2 bg-green-500 rounded-full animate-ping" />
-            <div className="h-2 w-2 bg-green-500 rounded-full animate-ping" style={{ animationDelay: '0.2s' }} />
-            <div className="h-2 w-2 bg-green-500 rounded-full animate-ping" style={{ animationDelay: '0.4s' }} />
-          </div>
-        </div>
-      </div>
-    )
+    return <LoadingSkeleton onTimeout={handleLoadTimeout} />;
   }
 
-  // Calculate stats logic was removed here
-
   const handleMitigation = async () => {
-    // 1. Orchestration: Simulate Air-Gap
     console.log("⚡ INITIATING EMERGENCY AIR-GAP PROTOCOL...");
 
-    // 2. Response: Generate NC4 Report
     const report = createNC4Report(
       "SEACOM SUBMARINE CABLE - MOMBASA",
       "CRITICAL",
-      "T1098.004", // SSH Authorized Keys or similar technique
+      "T1098.004",
       "Mombasa"
     );
 
-    // 2b. PERSISTENCE: Save to "Real" Database (JSON File)
-    // This proves backend integration
     try {
       const { addAuditLog } = await import('@/lib/actions/audit');
       await addAuditLog({
@@ -325,7 +517,6 @@ export default function Home() {
     console.log("📄 NC4 COMPLIANCE REPORT GENERATED:", report);
     console.log("📡 TRANSMITTING TO KE-CIRT/CC...");
 
-    // 3. Return report for visualization
     return report;
   };
 
@@ -335,22 +526,34 @@ export default function Home() {
     criticalCyber = 0,
     activeCoordinated = 0
   } = {
-    // Recalculating these cheaply for display since we removed the vars before
     highThreatCount: data.incidents.filter(i => i.threatLevel === 'CRITICAL' || i.threatLevel === 'HIGH').length,
     activeResponses: data.emergencyResponses.filter(r => r.status !== 'RESOLVED').length,
     criticalCyber: data.cyberThreats.filter(t => t.severity === 'CRITICAL').length,
     activeCoordinated: data.coordinatedAttacks.filter(a => a.status !== 'RESOLVED').length
   };
 
-  return (
+  const startDemo = () => {
+    setIsEmergency(true);
+    setShowDemoBanner(false);
+  };
 
+  return (
     <div className={`min-h-screen bg-black text-green-500 font-mono selection:bg-green-900 selection:text-white`}>
       <div className="fixed inset-0 pointer-events-none z-50 bg-[url('/scanline.png')] opacity-10 mix-blend-overlay"></div>
       <div className="fixed inset-0 pointer-events-none z-50 bg-gradient-to-b from-transparent via-green-900/5 to-green-900/10"></div>
 
+      {/* Demo Mode Banner */}
+      {showDemoBanner && (
+        <DemoModeBanner 
+          isDemoMode={isDemoMode} 
+          onStartDemo={startDemo}
+          onDismiss={() => setShowDemoBanner(false)}
+        />
+      )}
+
       <Header currentView={currentView} onViewChange={setCurrentView} />
 
-      <main className="p-6 relative z-0">
+      <main className="p-4 md:p-6 relative z-0">
         <MultiplayerSession />
 
         {/* View Routing */}
@@ -358,7 +561,7 @@ export default function Home() {
           <div className="flex flex-col gap-4 overflow-y-auto" style={{ height: 'calc(100vh - 9rem)' }}>
 
             {/* TOP ROW: Metrics Bar with Emergency Button */}
-            <div className="flex items-stretch gap-4 shrink-0">
+            <div className="flex flex-col md:flex-row items-stretch gap-4 shrink-0">
               <div className="flex-1">
                 <KeyMetrics metrics={{
                   threatLevel: activeCoordinated > 0 ? 'CRITICAL' : highThreatCount > 5 ? 'HIGH' : 'MEDIUM',
@@ -371,14 +574,14 @@ export default function Home() {
               </div>
               <button
                 onClick={() => setIsEmergency(true)}
-                className="bg-red-950/50 text-red-400 text-xs border-2 border-red-800 px-5 hover:bg-red-900/60 uppercase font-bold transition-all flex items-center gap-2 shrink-0"
+                className="bg-red-950/50 text-red-400 text-xs border-2 border-red-800 px-5 py-3 md:py-0 hover:bg-red-900/60 uppercase font-bold transition-all flex items-center justify-center gap-2 shrink-0"
               >
                 <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
                 SIMULATE BREACH
               </button>
             </div>
 
-            {/* MAIN CONTENT: 3-Column Grid */}
+            {/* MAIN CONTENT: 3-Column Grid - Responsive */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
               {/* COLUMN 1: Infrastructure Status */}
@@ -472,7 +675,7 @@ export default function Home() {
                   surveillance={data.surveillanceFeeds}
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <CNIHeatmap />
                 <DataLakeMonitor sources={data.dataLakeSources} />
               </div>
@@ -561,7 +764,7 @@ export default function Home() {
         {currentView === 'OPERATIONS' && (
           <div className="flex flex-col gap-4 overflow-y-auto" style={{ height: 'calc(100vh - 9rem)' }}>
             {/* 4 PILLARS HEADER */}
-            <div className="flex items-center justify-between px-1 shrink-0">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between px-1 shrink-0 gap-2">
               <div className="text-xs text-green-500 uppercase tracking-widest font-bold flex items-center gap-2">
                 <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
                 MAJESTIC SHIELD: 4 Winning Pillars
@@ -584,6 +787,11 @@ export default function Home() {
 
               {/* Pillar 4: Sovereign AI */}
               <SovereignAIStatusPanel status={data.sovereignAIStatus} />
+            </div>
+
+            {/* Threat Simulation Lab - AI-Powered */}
+            <div className="shrink-0">
+              <ThreatSimulationPanel />
             </div>
 
             {/* Response Panel - Full Width */}
