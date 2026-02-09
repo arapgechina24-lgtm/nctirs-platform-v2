@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📖 Documentation
+    url: https://github.com/arapgechina24-lgtm/nctirs-platform-v2/wiki
+    about: Check our documentation for guides and references
+  - name: 💬 Discussions
+    url: https://github.com/arapgechina24-lgtm/nctirs-platform-v2/discussions
+    about: Ask questions and share ideas in GitHub Discussions
+  - name: 🔒 Security Issues
+    url: https://github.com/arapgechina24-lgtm/nctirs-platform-v2/security/advisories/new
+    about: Report security vulnerabilities privately
