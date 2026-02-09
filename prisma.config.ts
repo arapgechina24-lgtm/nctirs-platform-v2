@@ -9,6 +9,9 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
-    url: process.env["DATABASE_URL"],
+    // Use local file for CLI operations (migrations, db push)
+    // Runtime uses libsql adapter in lib/db.ts
+    url: "file:./dev.db",
   },
 });
+
