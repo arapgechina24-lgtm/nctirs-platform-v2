@@ -43,3 +43,7 @@ STACK.md
 .env*.local
 
 /src/generated/prisma
+
+# Local database files
+dev.db
+audit-db.json

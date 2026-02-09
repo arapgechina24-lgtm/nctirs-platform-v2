@@ -1,8 +1,0 @@
-INFO:__main__:🐂 Starting AEGIS Trading System Dashboard on port 3000
-INFO:     Started server process [2457]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     Uvicorn running on http://0.0.0.0:3000 (Press CTRL+C to quit)
-INFO:     127.0.0.1:45412 - "GET /api/health HTTP/1.1" 200 OK
-INFO:     34.44.28.102:45496 - "GET / HTTP/1.1" 200 OK
-INFO:     34.44.28.102:45496 - "GET /favicon.ico HTTP/1.1" 404 Not Found
