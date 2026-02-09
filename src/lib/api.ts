@@ -11,21 +11,29 @@ import {
 // Base API URL
 const API_BASE = '/api'
 
-// Generic fetch wrapper with error handling
+// Generic fetch wrapper with error handling and timeout
 async function apiFetch<T>(endpoint: string, options?: RequestInit): Promise<T> {
-    const response = await fetch(`${API_BASE}${endpoint} `, {
-        headers: {
-            'Content-Type': 'application/json',
-            ...options?.headers,
-        },
-        ...options,
-    })
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 10000) // 10s timeout
 
-    if (!response.ok) {
-        throw new Error(`API Error: ${response.status} ${response.statusText} `)
+    try {
+        const response = await fetch(`${API_BASE}${endpoint}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                ...options?.headers,
+            },
+            ...options,
+            signal: controller.signal,
+        })
+
+        if (!response.ok) {
+            throw new Error(`API Error: ${response.status} ${response.statusText}`)
+        }
+
+        return await response.json()
+    } finally {
+        clearTimeout(timeoutId)
     }
-
-    return response.json()
 }
 
 // ===== INCIDENTS API =====
@@ -63,7 +71,7 @@ export async function fetchIncidents(options?: {
         if (options?.limit) params.set('limit', options.limit.toString())
 
         const queryString = params.toString()
-        const endpoint = queryString ? `/ incidents ? ${queryString} ` : '/incidents'
+        const endpoint = queryString ? `/incidents?${queryString}` : '/incidents'
 
         const data = await apiFetch<{ incidents: DBIncident[], total: number }>(endpoint)
 
@@ -107,7 +115,7 @@ function mapDBIncidentToSecurityIncident(db: DBIncident): SecurityIncident {
         timestamp: new Date(db.createdAt),
         affectedArea: Math.floor(Math.random() * 50) + 1, // Not stored in DB, generate placeholder
         casualties: undefined, // Not stored in DB
-        suspects: undefined, // Not stored in DB  
+        suspects: undefined, // Not stored in DB
         aiConfidence: 75 + Math.floor(Math.random() * 20), // Not stored in DB, generate realistic value
         sources: ['Database', 'API'].slice(0, Math.floor(Math.random() * 2) + 1), // Placeholder
     }
@@ -151,7 +159,7 @@ export async function fetchThreats(options?: {
         if (options?.limit) params.set('limit', options.limit.toString())
 
         const queryString = params.toString()
-        const endpoint = queryString ? `/ threats ? ${queryString} ` : '/threats'
+        const endpoint = queryString ? `/threats?${queryString}` : '/threats'
 
         const data = await apiFetch<{ threats: DBThreat[], total: number }>(endpoint)
 

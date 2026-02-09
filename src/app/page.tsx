@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from "react"
-import { Header, ViewType } from "@/components/Header"
+import { Header } from "@/components/Header"
 import { IncidentList } from "@/components/IncidentList"
 import { SurveillanceMonitor } from "@/components/SurveillanceMonitor"
 import { CommunityReports } from "@/components/CommunityReports"
@@ -172,7 +172,10 @@ function KeyMetrics({ metrics }: KeyMetricsProps) {
 }
 
 export default function Home() {
-  const [currentView, setCurrentView] = useState<ViewType>('COMMAND_CENTER')
+  /* 
+   * View State
+   */
+  const [currentView, setCurrentView] = useState<'COMMAND_CENTER' | 'FUSION_CENTER' | 'THREAT_MATRIX' | 'ANALYTICS' | 'OPERATIONS'>('COMMAND_CENTER')
   const [isEmergency, setIsEmergency] = useState(false)
   const [mounted, setMounted] = useState(false)
   const [data, setData] = useState<DashboardData | null>(null)
@@ -200,76 +203,81 @@ export default function Home() {
     async function loadData() {
       const startTime = performance.now()
 
-      // Fetch from API (with fallback to mock data)
-      const [incidents, cyberThreats] = await Promise.all([
-        fetchIncidents({ limit: 30 }),
-        fetchThreats({ limit: 20 }),
-      ])
+      try {
+        // Fetch from API (with fallback to mock data)
+        const [incidents, cyberThreats] = await Promise.all([
+          fetchIncidents({ limit: 30 }),
+          fetchThreats({ limit: 20 }),
+        ])
 
-      // Generate remaining mock data for components without API yet
-      const predictions = generateCrimePredictions(15);
-      const surveillanceFeeds = generateSurveillanceFeeds(40);
-      const communityReports = generateCommunityReports(25);
-      const emergencyResponses = generateEmergencyResponses(12);
-      const threatAnalytics = generateThreatAnalytics();
-      const timeSeriesData = generateTimeSeriesData(30);
-      // NCTIRS data (mock for now)
-      const dataLakeSources = generateDataLakeSources();
-      const blockchainLedger = generateBlockchainLedger(25);
-      const coordinatedAttacks = generateCoordinatedAttacks(5);
-      const automatedResponses = generateAutomatedResponses(15);
-      const perceptionLayer = generatePerceptionLayerStatus();
-      const cognitionLayer = generateCognitionLayerStatus();
-      const integrityLayer = generateIntegrityLayerStatus();
-      // 4 WINNING PILLARS data
-      const adversarialMetrics = generateAdversarialMetrics();
-      const federatedStatus = generateFederatedNodes();
-      const xaiExplanations = generateXAIExplanations(8);
-      const sovereignAIStatus = generateSovereignAIStatus();
+        // Generate remaining mock data for components without API yet
+        const predictions = generateCrimePredictions(15);
+        const surveillanceFeeds = generateSurveillanceFeeds(40);
+        const communityReports = generateCommunityReports(25);
+        const emergencyResponses = generateEmergencyResponses(12);
+        const threatAnalytics = generateThreatAnalytics();
+        const timeSeriesData = generateTimeSeriesData(30);
+        // NCTIRS data (mock for now)
+        const dataLakeSources = generateDataLakeSources();
+        const blockchainLedger = generateBlockchainLedger(25);
+        const coordinatedAttacks = generateCoordinatedAttacks(5);
+        const automatedResponses = generateAutomatedResponses(15);
+        const perceptionLayer = generatePerceptionLayerStatus();
+        const cognitionLayer = generateCognitionLayerStatus();
+        const integrityLayer = generateIntegrityLayerStatus();
+        // 4 WINNING PILLARS data
+        const adversarialMetrics = generateAdversarialMetrics();
+        const federatedStatus = generateFederatedNodes();
+        const xaiExplanations = generateXAIExplanations(8);
+        const sovereignAIStatus = generateSovereignAIStatus();
 
-      // Kenya 'Golden Data'
-      const kenyaWeather = getCurrentNairobiWeather();
-      const kenyaTraffic = generateNairobiTraffic(30);
-      const mpesaTransactions = generateMpesaData(40);
-      const borderLogs = generateBorderLogs();
-      const wildlife = generateWildlifeData();
-      const sentiment = generateSocialSentiment();
-      const cyberTraces = generateCyberAttribution();
+        // Kenya 'Golden Data'
+        const kenyaWeather = getCurrentNairobiWeather();
+        const kenyaTraffic = generateNairobiTraffic(30);
+        const mpesaTransactions = generateMpesaData(40);
+        const borderLogs = generateBorderLogs();
+        const wildlife = generateWildlifeData();
+        const sentiment = generateSocialSentiment();
+        const cyberTraces = generateCyberAttribution();
 
-      setData({
-        incidents,
-        predictions,
-        surveillanceFeeds,
-        communityReports,
-        emergencyResponses,
-        threatAnalytics,
-        timeSeriesData,
-        cyberThreats,
-        dataLakeSources,
-        blockchainLedger,
-        coordinatedAttacks,
-        automatedResponses,
-        perceptionLayer,
-        cognitionLayer,
-        integrityLayer,
-        // 4 WINNING PILLARS
-        adversarialMetrics,
-        federatedStatus,
-        xaiExplanations,
-        sovereignAIStatus,
-        kenyaWeather,
-        kenyaTraffic,
-        mpesaTransactions,
-        borderLogs,
-        wildlife,
-        sentiment,
-        cyberTraces
-      })
-      setMounted(true)
-
-      // Track render performance
-      const renderTime = performance.now() - startTime
-      trackPerformance('initial_render', { renderTime })
+        setData({
+          incidents,
+          predictions,
+          surveillanceFeeds,
+          communityReports,
+          emergencyResponses,
+          threatAnalytics,
+          timeSeriesData,
+          cyberThreats,
+          dataLakeSources,
+          blockchainLedger,
+          coordinatedAttacks,
+          automatedResponses,
+          perceptionLayer,
+          cognitionLayer,
+          integrityLayer,
+          // 4 WINNING PILLARS
+          adversarialMetrics,
+          federatedStatus,
+          xaiExplanations,
+          sovereignAIStatus,
+          kenyaWeather,
+          kenyaTraffic,
+          mpesaTransactions,
+          borderLogs,
+          wildlife,
+          sentiment,
+          cyberTraces
+        })
+      } catch (error) {
+        console.error('Critical Error loading dashboard data:', error);
+        // Fallback to entirely mock data if critical failure (though individual fetches should handle this)
+      } finally {
+        setMounted(true)
+        // Track render performance
+        const renderTime = performance.now() - startTime
+        trackPerformance('initial_render', { renderTime })
+      }
     }
 
     loadData()
