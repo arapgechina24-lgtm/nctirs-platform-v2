@@ -1,57 +1,43 @@
 'use client'
 
 import { useState, useEffect } from "react"
-import { Header } from "@/components/Header"
-import { IncidentList } from "@/components/IncidentList"
-import { SurveillanceMonitor } from "@/components/SurveillanceMonitor"
-import { CommunityReports } from "@/components/CommunityReports"
-import { ThreatAnalyticsChart } from "@/components/ThreatAnalyticsChart"
-import { ThreatMap } from "@/components/ThreatMap"
-import { IncidentTrendsChart } from "@/components/IncidentTrendsChart"
-// NCTIRS Unified Components
-import { DataLakeMonitor } from "@/components/DataLakeMonitor"
-import { ThreatAnalyticsEngine } from "@/components/ThreatAnalyticsEngine"
-import { AutomatedResponsePanel } from "@/components/AutomatedResponsePanel"
-import { SystemArchitecture } from "@/components/SystemArchitecture"
-// NEW Components
-import CNIHeatmap from "@/components/CNIHeatmap"
-import AIAssistantPanel from "@/components/AIAssistantPanel"
-import MultiplayerSession from "@/components/MultiplayerSession"
-import EmergencyOverlay from "@/components/EmergencyOverlay"
-import { ThreatMonitor } from "@/components/ThreatMonitor"
-import DemoModeController from "@/components/DemoModeController"
-import { VoiceCommandPanel } from "@/components/VoiceCommandPanel"
-// 4 WINNING PILLARS: MAJESTIC SHIELD
-import AdversarialDefensePanel from "@/components/AdversarialDefensePanel"
-import FederatedLearningHub from "@/components/FederatedLearningHub"
-import ExplainableAIPanel from "@/components/ExplainableAIPanel"
-import SovereignAIStatusPanel from "@/components/SovereignAIStatusPanel"
-import KenyaContextPanel from "@/components/KenyaContextPanel"
+// Layout components
+import { Header } from "@/components/layout/Header"
+// Threat components
+import { ThreatAnalyticsChart } from "@/components/threat/ThreatAnalyticsChart"
+import { ThreatMap } from "@/components/threat/ThreatMap"
+import { ThreatMonitor } from "@/components/threat/ThreatMonitor"
+import { ThreatAnalyticsEngine } from "@/components/threat/ThreatAnalyticsEngine"
+import AdversarialDefensePanel from "@/components/threat/AdversarialDefensePanel"
+// Incident components
+import { IncidentList } from "@/components/incident/IncidentList"
+import { IncidentTrendsChart } from "@/components/incident/IncidentTrendsChart"
+import EmergencyOverlay from "@/components/incident/EmergencyOverlay"
+import { AutomatedResponsePanel } from "@/components/incident/AutomatedResponsePanel"
+// Surveillance components
+import { SurveillanceMonitor } from "@/components/surveillance/SurveillanceMonitor"
+import { CommunityReports } from "@/components/surveillance/CommunityReports"
+// Infrastructure components
+import { DataLakeMonitor } from "@/components/infrastructure/DataLakeMonitor"
+import { SystemArchitecture } from "@/components/infrastructure/SystemArchitecture"
+import CNIHeatmap from "@/components/infrastructure/CNIHeatmap"
+// Intelligence components
+import AIAssistantPanel from "@/components/intelligence/AIAssistantPanel"
+import FederatedLearningHub from "@/components/intelligence/FederatedLearningHub"
+import ExplainableAIPanel from "@/components/intelligence/ExplainableAIPanel"
+import SovereignAIStatusPanel from "@/components/intelligence/SovereignAIStatusPanel"
+// Compliance components
+import KenyaContextPanel from "@/components/compliance/KenyaContextPanel"
+// Shared components
+import MultiplayerSession from "@/components/shared/MultiplayerSession"
+import DemoModeController from "@/components/shared/DemoModeController"
+import { VoiceCommandPanel } from "@/components/shared/VoiceCommandPanel"
 // Analytics tracking
 import { trackPageView, trackAction, trackPerformance } from "@/lib/analytics"
 // API Client for real data
 import { fetchIncidents, fetchThreats } from "@/lib/api"
-
-import {
-  generateCrimePredictions,
-  generateSurveillanceFeeds,
-  generateCommunityReports,
-  generateEmergencyResponses,
-  generateThreatAnalytics,
-  generateTimeSeriesData,
-  // NCTIRS generators
-  generateDataLakeSources,
-  generateBlockchainLedger,
-  generateCoordinatedAttacks,
-  generateAutomatedResponses,
-  generatePerceptionLayerStatus,
-  generateCognitionLayerStatus,
-  generateIntegrityLayerStatus,
-  // 4 WINNING PILLARS generators
-  generateAdversarialMetrics,
-  generateFederatedNodes,
-  generateXAIExplanations,
-  generateSovereignAIStatus,
+// Types
+import type {
   SecurityIncident,
   CrimePrediction,
   SurveillanceFeed,
@@ -67,11 +53,30 @@ import {
   PerceptionLayerStatus,
   CognitionLayerStatus,
   IntegrityLayerStatus,
-  // 4 WINNING PILLARS types
   AdversarialMetrics,
   FederatedLearningStatus,
   XAIExplanation,
   SovereignAIStatus,
+} from "@/types"
+// Mock data generators
+import {
+  generateCrimePredictions,
+  generateSurveillanceFeeds,
+  generateCommunityReports,
+  generateEmergencyResponses,
+  generateThreatAnalytics,
+  generateTimeSeriesData,
+  generateDataLakeSources,
+  generateBlockchainLedger,
+  generateCoordinatedAttacks,
+  generateAutomatedResponses,
+  generatePerceptionLayerStatus,
+  generateCognitionLayerStatus,
+  generateIntegrityLayerStatus,
+  generateAdversarialMetrics,
+  generateFederatedNodes,
+  generateXAIExplanations,
+  generateSovereignAIStatus,
 } from "@/lib/mockData"
 import {
   generateNairobiTraffic,

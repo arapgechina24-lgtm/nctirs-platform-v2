@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import GlobalStatusBanner from "@/components/GlobalStatusBanner";
-import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
+import GlobalStatusBanner from "@/components/layout/GlobalStatusBanner";
+import { ServiceWorkerRegistration } from "@/components/shared/ServiceWorkerRegistration";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { AuthProvider } from "@/contexts/AuthContext";
 
