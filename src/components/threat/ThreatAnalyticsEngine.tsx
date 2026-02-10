@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { Brain, Cpu, Target, TrendingUp, AlertTriangle, Zap } from "lucide-react"
 import { CyberThreat, CoordinatedAttack } from "@/lib/mockData"
+import { AIAnalysisPanel } from "@/components/intelligence/AIAnalysisPanel"
 
 interface ThreatAnalyticsEngineProps {
     cyberThreats: CyberThreat[];
@@ -139,6 +140,20 @@ export function ThreatAnalyticsEngine({ cyberThreats, coordinatedAttacks }: Thre
                         </div>
                         <div className="text-[8px] text-green-900 font-mono mt-1">
                             {threat.iocIndicators[0]}
+                        </div>
+                        <div className="mt-2">
+                            <AIAnalysisPanel
+                                type="threat"
+                                data={{
+                                    name: threat.name,
+                                    type: threat.type,
+                                    severity: threat.severity,
+                                    description: threat.description,
+                                    targetSystem: threat.targetSystem,
+                                    indicators: threat.iocIndicators
+                                }}
+                                compact
+                            />
                         </div>
                     </div>
                 ))}

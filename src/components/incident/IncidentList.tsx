@@ -5,6 +5,7 @@ import { ThreatBadge, StatusBadge, Badge } from "@/components/ui/badge"
 import { SecurityIncident } from "@/lib/mockData"
 import { MapPin, Clock, Users, AlertCircle } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
+import { AIAnalysisPanel } from "@/components/intelligence/AIAnalysisPanel"
 
 interface IncidentListProps {
   incidents: SecurityIncident[];
@@ -70,6 +71,22 @@ export function IncidentList({ incidents, maxItems = 10 }: IncidentListProps) {
                     {source}
                   </Badge>
                 ))}
+              </div>
+
+              <div className="mt-2">
+                <AIAnalysisPanel
+                  type="incident"
+                  data={{
+                    title: incident.title,
+                    type: incident.type,
+                    severity: incident.threatLevel,
+                    description: incident.description,
+                    location: incident.location.name,
+                    region: incident.location.region,
+                    status: incident.status
+                  }}
+                  compact
+                />
               </div>
             </div>
           ))}
