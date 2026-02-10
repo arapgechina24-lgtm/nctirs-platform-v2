@@ -1,204 +1,58 @@
-// Types for the security intelligence platform
-export type ThreatLevel = 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
-export type IncidentType = 'TERRORISM' | 'ORGANIZED_CRIME' | 'CYBER_ATTACK' | 'VIOLENT_CRIME' | 'TRAFFICKING' | 'RADICALIZATION' | 'BORDER_SECURITY' | 'PUBLIC_DISORDER';
-export type IncidentStatus = 'ACTIVE' | 'INVESTIGATING' | 'RESOLVED' | 'MONITORING';
-export type Region = 'NAIROBI' | 'MOMBASA' | 'KISUMU' | 'NAKURU' | 'ELDORET' | 'TURKANA' | 'GARISSA' | 'MANDERA';
+// Types re-exported from @/types for backward compatibility
+// All type definitions now live in src/types/index.ts
+export type {
+  ThreatLevel,
+  IncidentType,
+  IncidentStatus,
+  Region,
+  SecurityIncident,
+  CrimePrediction,
+  SurveillanceFeed,
+  CommunityReport,
+  EmergencyResponse,
+  ThreatAnalytics,
+  TimeSeriesData,
+  CyberThreatType,
+  CyberThreatSeverity,
+  CyberTargetType,
+  CyberThreat,
+  DataSourceType,
+  DataLakeSource,
+  BlockchainLedgerEntry,
+  CoordinatedAttack,
+  ResponseType,
+  AutomatedResponse,
+  PerceptionLayerStatus,
+  CognitionLayerStatus,
+  IntegrityLayerStatus,
+} from '@/types';
 
-export interface SecurityIncident {
-  id: string;
-  type: IncidentType;
-  title: string;
-  description: string;
-  location: {
-    name: string;
-    region: Region;
-    coordinates: [number, number]; // [lat, lng]
-  };
-  threatLevel: ThreatLevel;
-  status: IncidentStatus;
-  timestamp: Date;
-  affectedArea: number; // in km²
-  casualties?: number;
-  suspects?: number;
-  aiConfidence: number; // 0-100
-  sources: string[];
-}
-
-export interface CrimePrediction {
-  id: string;
-  location: {
-    name: string;
-    region: Region;
-    coordinates: [number, number];
-  };
-  crimeTypes: IncidentType[];
-  probability: number; // 0-100
-  timeWindow: string;
-  riskFactors: string[];
-  recommendedActions: string[];
-}
-
-export interface SurveillanceFeed {
-  id: string;
-  location: string;
-  region: Region;
-  coordinates: [number, number];
-  status: 'ACTIVE' | 'INACTIVE' | 'ALERT';
-  lastActivity?: string;
-  alerts: number;
-  type: 'CCTV' | 'DRONE' | 'IOT_SENSOR';
-}
-
-export interface CommunityReport {
-  id: string;
-  type: IncidentType;
-  description: string;
-  location: {
-    name: string;
-    region: Region;
-    coordinates: [number, number];
-  };
-  timestamp: Date;
-  verified: boolean;
-  urgency: ThreatLevel;
-  mediaAttachments: number;
-}
-
-export interface EmergencyResponse {
-  id: string;
-  incident: string;
-  location: string;
-  region: Region;
-  unitsDispatched: number;
-  eta: number; // minutes
-  status: 'DISPATCHED' | 'EN_ROUTE' | 'ON_SCENE' | 'RESOLVED';
-  coordinatingAgencies: string[];
-  timestamp: Date;
-}
-
-export interface ThreatAnalytics {
-  region: Region;
-  threatLevel: ThreatLevel;
-  activeIncidents: number;
-  resolvedIncidents: number;
-  crimeTrend: 'INCREASING' | 'STABLE' | 'DECREASING';
-  riskScore: number; // 0-100
-}
-
-export interface TimeSeriesData {
-  date: string;
-  total: number;
-  [key: string]: string | number;
-}
-
-// === NCTIRS UNIFIED PLATFORM TYPES ===
-
-// Cyber Threat Types
-export type CyberThreatType = 'APT' | 'ZERO_DAY' | 'DDOS' | 'RANSOMWARE' | 'PHISHING' | 'DATA_BREACH' | 'MALWARE' | 'SQL_INJECTION';
-export type CyberThreatSeverity = 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
-export type CyberTargetType = 'GOVERNMENT' | 'FINANCIAL' | 'INFRASTRUCTURE' | 'HEALTHCARE' | 'TELECOM' | 'ENERGY' | 'TRANSPORT';
-
-export interface CyberThreat {
-  id: string;
-  type: CyberThreatType;
-  name: string;
-  description: string;
-  severity: CyberThreatSeverity;
-  targetSector: CyberTargetType;
-  sourceIP?: string;
-  targetSystem: string;
-  aptSignature?: string;
-  timestamp: Date;
-  aiConfidence: number;
-  status: 'DETECTED' | 'ANALYZING' | 'CONTAINED' | 'NEUTRALIZED';
-  iocIndicators: string[];
-}
-
-// Data Lake Sources
-export type DataSourceType = 'NETWORK_LOGS' | 'DARK_WEB' | 'CCTV_STREAM' | 'CITIZEN_REPORT' | 'OSINT' | 'SIGINT' | 'HUMINT';
-
-export interface DataLakeSource {
-  id: string;
-  type: DataSourceType;
-  name: string;
-  status: 'ACTIVE' | 'INACTIVE' | 'PROCESSING';
-  dataRate: number; // MB/s
-  lastUpdate: Date;
-  recordsProcessed: number;
-  alertsGenerated: number;
-}
-
-// Blockchain Integrity Ledger
-export interface BlockchainLedgerEntry {
-  id: string;
-  blockHash: string;
-  previousHash: string;
-  timestamp: Date;
-  dataType: 'THREAT_ALERT' | 'EVIDENCE' | 'RESPONSE_ACTION' | 'AUDIT_LOG';
-  content: string;
-  agencyId: string;
-  verified: boolean;
-  courtAdmissible: boolean;
-}
-
-// Coordinated Attack Detection (Cyber + Physical)
-export interface CoordinatedAttack {
-  id: string;
-  cyberId: string;
-  physicalId: string;
-  correlationScore: number;
-  attackVector: string;
-  targetFacility: string;
-  region: Region;
-  timestamp: Date;
-  status: 'DETECTED' | 'RESPONDING' | 'CONTAINED' | 'RESOLVED';
-  responseActions: string[];
-}
-
-// Automated Response Actions
-export type ResponseType = 'IP_BLOCK' | 'SYSTEM_ISOLATE' | 'POLICE_DISPATCH' | 'ALERT_AGENCY' | 'LOCKDOWN' | 'EVIDENCE_PRESERVE';
-
-export interface AutomatedResponse {
-  id: string;
-  triggerThreatId: string;
-  responseType: ResponseType;
-  description: string;
-  timestamp: Date;
-  status: 'PENDING' | 'EXECUTING' | 'COMPLETED' | 'FAILED';
-  executionTimeMs: number;
-  targetSystem?: string;
-  unitsDispatched?: number;
-  coordinatingAgencies: string[];
-}
-
-// System Layer Status
-export interface PerceptionLayerStatus {
-  iotSensorsActive: number;
-  iotSensorsTotal: number;
-  dronesActive: number;
-  dronesTotal: number;
-  networkSniffersActive: number;
-  cctvFeeds: number;
-  dataIngestionRate: number; // GB/hour
-}
-
-export interface CognitionLayerStatus {
-  mlModelsActive: number;
-  aptSignaturesLoaded: number;
-  threatClassificationsToday: number;
-  averageProcessingTimeMs: number;
-  falsePositiveRate: number;
-  modelAccuracy: number;
-}
-
-export interface IntegrityLayerStatus {
-  blockchainHeight: number;
-  lastBlockHash: string;
-  pendingTransactions: number;
-  nodesOnline: number;
-  dataProtectionCompliant: boolean;
-  lastAuditDate: Date;
-}
+import type {
+  ThreatLevel,
+  IncidentType,
+  IncidentStatus,
+  Region,
+  SecurityIncident,
+  CrimePrediction,
+  SurveillanceFeed,
+  CommunityReport,
+  EmergencyResponse,
+  ThreatAnalytics,
+  TimeSeriesData,
+  CyberThreatType,
+  CyberThreatSeverity,
+  CyberTargetType,
+  CyberThreat,
+  DataSourceType,
+  DataLakeSource,
+  BlockchainLedgerEntry,
+  CoordinatedAttack,
+  ResponseType,
+  AutomatedResponse,
+  PerceptionLayerStatus,
+  CognitionLayerStatus,
+  IntegrityLayerStatus,
+} from '@/types';
 
 // Kenyan locations with realistic coordinates
 const kenyaLocations = {
@@ -776,34 +630,16 @@ export function generateIntegrityLayerStatus(): IntegrityLayerStatus {
   };
 }
 
-// === NEW MULTIPLAYER INCIDENT TYPES ===
+// === NEW MULTIPLAYER INCIDENT TYPES (re-exported from @/types) ===
 
-export type AgencyID = 'ICT_MINISTRY' | 'CENTRAL_BANK' | 'KE_CIRT' | 'ENERGY_REGULATOR';
+export type {
+  AgencyID,
+  IncidentParticipant,
+  AuditEntry,
+  ThreatIncident,
+} from '@/types';
 
-export interface IncidentParticipant {
-  id: string;
-  agency: AgencyID;
-  activeStatus: 'VIEWING' | 'REMEDIATING' | 'IDLE';
-  lastSeen: Date;
-}
-
-export interface AuditEntry {
-  timestamp: string;
-  actor: string;
-  action: string;
-  previousState: string;
-  newState: string;
-}
-
-export interface ThreatIncident {
-  id: string;
-  mitreAttackId: string; // e.g., T1566 (Phishing)
-  severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
-  status: 'DETECTED' | 'TRIAGED' | 'CONTAINED' | 'RESOLVED';
-  assignedAgencies: AgencyID[];
-  activeWarRoom: IncidentParticipant[];
-  auditTrail: AuditEntry[];
-}
+import type { AgencyID, IncidentParticipant, ThreatIncident } from '@/types';
 
 // Generate advanced threat incidents
 export function generateThreatIncidents(count: number = 5): ThreatIncident[] {
@@ -843,30 +679,28 @@ export function generateThreatIncidents(count: number = 5): ThreatIncident[] {
   return incidents;
 }
 
-// === 4 WINNING PILLARS: MAJESTIC SHIELD ===
+// === 4 WINNING PILLARS: MAJESTIC SHIELD (types re-exported from @/types) ===
+
+export type {
+  AdversarialMetrics,
+  FederatedNode,
+  FederatedLearningStatus,
+  XAIExplanation,
+  SovereignLLM,
+  EdgeNode,
+  SovereignAIStatus,
+} from '@/types';
+
+import type {
+  AdversarialMetrics,
+  FederatedLearningStatus,
+  XAIExplanation,
+  SovereignLLM,
+  EdgeNode,
+  SovereignAIStatus,
+} from '@/types';
 
 // Pillar 1: Adversarial Robustness Layer
-export interface AdversarialMetrics {
-  attacksDetected: number;
-  attacksBlocked: number;
-  evasionAttempts: number;
-  poisoningAttempts: number;
-  modelExtractionAttempts: number;
-  defenseStatus: {
-    gradientMasking: 'ACTIVE' | 'INACTIVE';
-    noiseInjection: 'ACTIVE' | 'INACTIVE';
-    adversarialTraining: 'ACTIVE' | 'INACTIVE';
-    ensembleVoting: 'ACTIVE' | 'INACTIVE';
-    certifiedRobustness: 'ACTIVE' | 'INACTIVE';
-  };
-  redTeamCycle: {
-    lastRun: Date;
-    attacksGenerated: number;
-    failuresAnalyzed: number;
-    modelsRetrained: number;
-  };
-  hardeningProgress: number; // 0-100
-}
 
 export function generateAdversarialMetrics(): AdversarialMetrics {
   return {
@@ -893,27 +727,6 @@ export function generateAdversarialMetrics(): AdversarialMetrics {
 }
 
 // Pillar 2: Federated Learning Architecture
-export interface FederatedNode {
-  id: string;
-  agency: string;
-  status: 'ONLINE' | 'TRAINING' | 'SYNCING' | 'OFFLINE';
-  lastSync: Date;
-  localDataPoints: number;
-  gradientsSent: number;
-  modelVersion: string;
-  privacyBudget: number; // ε value for differential privacy
-}
-
-export interface FederatedLearningStatus {
-  globalModelVersion: string;
-  trainingRound: number;
-  totalRounds: number;
-  nodes: FederatedNode[];
-  aggregationProgress: number;
-  differentialPrivacyEpsilon: number;
-  dataTransferred: 'GRADIENTS_ONLY' | 'NONE';
-  lastGlobalUpdate: Date;
-}
 
 export function generateFederatedNodes(): FederatedLearningStatus {
   const agencies = [
@@ -948,22 +761,6 @@ export function generateFederatedNodes(): FederatedLearningStatus {
 }
 
 // Pillar 3: Explainable AI (XAI)
-export interface XAIExplanation {
-  id: string;
-  threatId: string;
-  threatType: string;
-  action: string;
-  confidence: number;
-  factors: {
-    name: string;
-    weight: number;
-    description: string;
-  }[];
-  naturalLanguage: string;
-  timestamp: Date;
-  overrideLevel: 'L1' | 'L2' | 'L3' | 'L4' | null;
-  analystApproved: boolean;
-}
 
 export function generateXAIExplanations(count: number = 5): XAIExplanation[] {
   const explanations: XAIExplanation[] = [];
@@ -1019,35 +816,6 @@ export function generateXAIExplanations(count: number = 5): XAIExplanation[] {
 }
 
 // Pillar 4: Sovereign AI Status
-export interface SovereignLLM {
-  id: string;
-  name: string;
-  version: string;
-  status: 'ONLINE' | 'LOADING' | 'OFFLINE' | 'UPDATING';
-  gpuUtilization: number;
-  inferenceLatencyMs: number;
-  requestsPerSecond: number;
-  memoryUsageGB: number;
-}
-
-export interface EdgeNode {
-  id: string;
-  location: string;
-  status: 'ONLINE' | 'OFFLINE' | 'MAINTENANCE';
-  lastHeartbeat: Date;
-  inferenceCount: number;
-}
-
-export interface SovereignAIStatus {
-  llms: SovereignLLM[];
-  edgeNodes: EdgeNode[];
-  foreignAPICallsToday: number; // Should always be 0
-  dataEgressToday: number; // Should always be 0
-  onPremisePercentage: number; // Should be 100
-  sovereignCloudProvider: string;
-  lastSecurityAudit: Date;
-  dpaCompliant: boolean;
-}
 
 export function generateSovereignAIStatus(): SovereignAIStatus {
   const llms: SovereignLLM[] = [

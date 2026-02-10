@@ -1,7 +1,7 @@
 'use client';
 
 import { createNC4Report } from '@/lib/soar-logic';
-import EmergencyOverlay from './EmergencyOverlay';
+import EmergencyOverlay from '@/components/incident/EmergencyOverlay';
 
 export default function GlobalOverlayWrapper() {
     // In a real app, this would perform a server action or update context

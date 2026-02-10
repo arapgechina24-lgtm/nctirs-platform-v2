@@ -6,8 +6,7 @@
 [![CI](https://github.com/arapgechina24-lgtm/nctirs-dashboard/actions/workflows/ci.yml/badge.svg)](https://github.com/arapgechina24-lgtm/nctirs-dashboard/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/arapgechina24-lgtm/nctirs-dashboard/actions/workflows/codeql.yml/badge.svg)](https://github.com/arapgechina24-lgtm/nctirs-dashboard/actions/workflows/codeql.yml)
 [![Scorecard](https://github.com/arapgechina24-lgtm/nctirs-dashboard/actions/workflows/scorecard.yml/badge.svg)](https://github.com/arapgechina24-lgtm/nctirs-dashboard/actions/workflows/scorecard.yml)
-[![License](https://img.shields.io/github/license/arapgechina24-lgtm/nctirs-dashboard?style=flat-square)](LICENSE)
-
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 **AI-Powered National Security & Smart Policing Intelligence Platform**
 
@@ -22,6 +21,7 @@
 > **[Read the Full Unified Master Proposal](./docs/MAJESTIC_SHIELD_PROPOSAL.md)** - AI-Driven National Cyber-Intelligence & Zero-Trust Response System for Kenya's National Intelligence Service.
 
 The proposal outlines:
+
 - 🧠 **AI Threat Analytics Engine (ATAE)** - Deep Learning, NLP, Behavioral Biometrics
 - 🏛️ **National Cyber Fusion Center (NCFC)** - Multi-agency intelligence integration
 - 🔐 **Continuous Adaptive Authentication (CAA)** - Zero-Trust Architecture
@@ -34,6 +34,7 @@ The proposal outlines:
 ![Emergency Overlay Demo](./public/demo.webp)
 
 The platform simulates a Level 5 National Cyber Emergency with:
+
 - 🔴 Cinematic "National Emergency" overlay with glitch effects
 - 🔊 Voice narration using Web Speech API
 - 📄 Real-time NC4 Compliance Report generation
@@ -44,21 +45,25 @@ The platform simulates a Level 5 National Cyber Emergency with:
 ## 🚀 Features
 
 ### 🎯 Command Center
+
 - **Real-time Threat Map**: Visualize active threats across Kenya's 47 counties
 - **CNI Heatmap**: Monitor Critical National Infrastructure (SEACOM, KPLC, M-Pesa)
 - **AI Threat Analytics**: MITRE ATT&CK framework integration
 
 ### 🛡️ SOAR Automation
+
 - **Automated Response Protocols**: One-click Air-Gap isolation
 - **NC4 Compliance Reporting**: Aligned with Kenya Computer Misuse Act (2018)
 - **SHA-256 Integrity Hashing**: Tamper-proof audit logs
 
 ### 📊 Compliance & Audit
+
 - **National Audit Trail**: Immutable log of all security actions
 - **Partial Prerendering (PPR)**: Optimized performance with Next.js 16
 - **KDPA 2019 Compliance**: Data protection indicators
 
 ### 🎭 Demo Mode
+
 - **Auto-Trigger Simulation**: Watch the system respond to threats automatically
 - **Keyboard Shortcuts**: `Ctrl+Shift+E` for Emergency, `Ctrl+Shift+A` for Audit
 
@@ -111,6 +116,7 @@ Visit [http://localhost:3000](http://localhost:3000) to see the dashboard.
 ## 📜 Legal Compliance
 
 This system is designed to comply with:
+
 - 🇰🇪 **Kenya Computer Misuse and Cybercrime Act (2018)** - Section 11: CII Protection
 - 🇰🇪 **Kenya Data Protection Act (2019)** - PII exposure monitoring
 - 🌍 **NIST SP 800-53** - Security controls framework
@@ -158,6 +164,7 @@ We welcome contributions! Please see our community resources:
 | [CHANGELOG.md](CHANGELOG.md) | Version history and changes |
 
 ### Quick Contribution Steps
+
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
@@ -176,4 +183,4 @@ We welcome contributions! Please see our community resources:
 
 ## 📄 License
 
-MIT License - See [LICENSE](LICENSE) for details.
+Apache License 2.0 - See [LICENSE](LICENSE) for details.

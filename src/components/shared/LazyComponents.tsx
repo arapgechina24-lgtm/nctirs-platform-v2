@@ -2,11 +2,11 @@
 
 import dynamic from 'next/dynamic'
 import { Suspense } from 'react'
-import { ChartSkeleton, MapSkeleton, PanelSkeleton } from './ui/Skeleton'
+import { ChartSkeleton, MapSkeleton, PanelSkeleton } from '../ui/Skeleton'
 
 // Lazy load heavy chart components with loading skeletons
 export const LazyThreatAnalyticsChart = dynamic(
-    () => import('./ThreatAnalyticsChart').then(mod => ({ default: mod.ThreatAnalyticsChart })),
+    () => import('../threat/ThreatAnalyticsChart').then(mod => ({ default: mod.ThreatAnalyticsChart })),
     {
         loading: () => <ChartSkeleton height={280} />,
         ssr: false,
@@ -14,7 +14,7 @@ export const LazyThreatAnalyticsChart = dynamic(
 )
 
 export const LazyIncidentTrendsChart = dynamic(
-    () => import('./IncidentTrendsChart').then(mod => ({ default: mod.IncidentTrendsChart })),
+    () => import('../incident/IncidentTrendsChart').then(mod => ({ default: mod.IncidentTrendsChart })),
     {
         loading: () => <ChartSkeleton height={280} />,
         ssr: false,
@@ -23,7 +23,7 @@ export const LazyIncidentTrendsChart = dynamic(
 
 // Lazy load map components (heavy due to Leaflet)
 export const LazyThreatMap = dynamic(
-    () => import('./ThreatMap').then(mod => ({ default: mod.ThreatMap })),
+    () => import('../threat/ThreatMap').then(mod => ({ default: mod.ThreatMap })),
     {
         loading: () => <MapSkeleton height={300} />,
         ssr: false, // Leaflet doesn't work on server
@@ -31,7 +31,7 @@ export const LazyThreatMap = dynamic(
 )
 
 export const LazyCNIHeatmap = dynamic(
-    () => import('./CNIHeatmap'),
+    () => import('../infrastructure/CNIHeatmap'),
     {
         loading: () => <MapSkeleton height={400} />,
         ssr: false,
@@ -40,7 +40,7 @@ export const LazyCNIHeatmap = dynamic(
 
 // Lazy load complex panels
 export const LazySystemArchitecture = dynamic(
-    () => import('./SystemArchitecture').then(mod => ({ default: mod.SystemArchitecture })),
+    () => import('../infrastructure/SystemArchitecture').then(mod => ({ default: mod.SystemArchitecture })),
     {
         loading: () => <PanelSkeleton rows={6} />,
         ssr: false,
@@ -48,7 +48,7 @@ export const LazySystemArchitecture = dynamic(
 )
 
 export const LazyThreatAnalyticsEngine = dynamic(
-    () => import('./ThreatAnalyticsEngine').then(mod => ({ default: mod.ThreatAnalyticsEngine })),
+    () => import('../threat/ThreatAnalyticsEngine').then(mod => ({ default: mod.ThreatAnalyticsEngine })),
     {
         loading: () => <PanelSkeleton rows={5} />,
         ssr: false,
@@ -56,7 +56,7 @@ export const LazyThreatAnalyticsEngine = dynamic(
 )
 
 export const LazyAutomatedResponsePanel = dynamic(
-    () => import('./AutomatedResponsePanel').then(mod => ({ default: mod.AutomatedResponsePanel })),
+    () => import('../incident/AutomatedResponsePanel').then(mod => ({ default: mod.AutomatedResponsePanel })),
     {
         loading: () => <PanelSkeleton rows={4} />,
         ssr: false,
@@ -65,7 +65,7 @@ export const LazyAutomatedResponsePanel = dynamic(
 
 // Lazy load 4 Pillars components
 export const LazyAdversarialDefensePanel = dynamic(
-    () => import('./AdversarialDefensePanel'),
+    () => import('../threat/AdversarialDefensePanel'),
     {
         loading: () => <PanelSkeleton rows={4} />,
         ssr: false,
@@ -73,7 +73,7 @@ export const LazyAdversarialDefensePanel = dynamic(
 )
 
 export const LazyFederatedLearningHub = dynamic(
-    () => import('./FederatedLearningHub'),
+    () => import('../intelligence/FederatedLearningHub'),
     {
         loading: () => <PanelSkeleton rows={4} />,
         ssr: false,
@@ -81,7 +81,7 @@ export const LazyFederatedLearningHub = dynamic(
 )
 
 export const LazyExplainableAIPanel = dynamic(
-    () => import('./ExplainableAIPanel'),
+    () => import('../intelligence/ExplainableAIPanel'),
     {
         loading: () => <PanelSkeleton rows={4} />,
         ssr: false,
@@ -89,7 +89,7 @@ export const LazyExplainableAIPanel = dynamic(
 )
 
 export const LazySovereignAIStatusPanel = dynamic(
-    () => import('./SovereignAIStatusPanel'),
+    () => import('../intelligence/SovereignAIStatusPanel'),
     {
         loading: () => <PanelSkeleton rows={4} />,
         ssr: false,

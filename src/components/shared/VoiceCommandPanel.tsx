@@ -3,7 +3,7 @@
 import { useState, useCallback } from 'react'
 import { Mic, MicOff, Volume2, VolumeX, HelpCircle, X, AlertTriangle } from 'lucide-react'
 import { useVoiceCommands, useTextToSpeech, VOICE_COMMANDS, VoiceCommandIndicator } from '@/lib/voiceCommands'
-import { ViewType } from '@/components/Header'
+import { ViewType } from '@/components/layout/Header'
 
 interface VoiceCommandPanelProps {
     onNavigate: (view: ViewType) => void

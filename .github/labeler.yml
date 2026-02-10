@@ -1,0 +1,21 @@
+backend:
+  - changed-files:
+      - any-glob-to-any-file:
+          ["src/app/api/**", "prisma/**", "src/lib/**", "src/server/**"]
+
+frontend:
+  - changed-files:
+      - any-glob-to-any-file:
+          ["src/app/**", "src/components/**", "src/styles/**"]
+
+documentation:
+  - changed-files:
+      - any-glob-to-any-file: ["**/*.md", "docs/**"]
+
+cicd:
+  - changed-files:
+      - any-glob-to-any-file: [".github/workflows/**"]
+
+dependencies:
+  - changed-files:
+      - any-glob-to-any-file: ["package.json", "package-lock.json"]
