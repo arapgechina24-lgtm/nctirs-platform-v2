@@ -1,4 +1,4 @@
-import { danger, warn, fail } from "danger";
+import { danger, warn } from "danger";
 
 // Check for PR description
 if (danger.github.pr.body.length < 10) {

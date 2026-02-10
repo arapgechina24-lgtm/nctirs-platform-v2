@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { KENYA_CNI_ASSETS, CNIAsset } from '@/lib/cni-sim'
+import { KENYA_CNI_ASSETS } from '@/lib/cni-sim'
 
 describe('CNI Simulation Data', () => {
     it('should export KENYA_CNI_ASSETS array', () => {
