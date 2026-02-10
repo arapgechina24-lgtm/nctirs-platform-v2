@@ -53,7 +53,7 @@ const ConfidenceGauge: React.FC<{ score: number }> = ({ score }) => {
     );
 };
 
-const AIAnalysisPanel: React.FC<AIAnalysisPanelProps> = ({ type, data, compact = false }) => {
+export function AIAnalysisPanel({ type, data, compact = false }: AIAnalysisPanelProps) {
     const [analysis, setAnalysis] = useState<AIAnalysisResult | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -157,8 +157,8 @@ const AIAnalysisPanel: React.FC<AIAnalysisPanelProps> = ({ type, data, compact =
                     <Brain className="w-4 h-4 text-purple-400" />
                     <h3 className="text-purple-300 text-xs font-mono font-bold">SENTINEL AI ANALYSIS</h3>
                     <span className={`text-[10px] px-1.5 py-0.5 rounded font-mono ${analysis.source === 'gemini'
-                            ? 'bg-purple-900/50 text-purple-300 border border-purple-700/50'
-                            : 'bg-gray-800 text-gray-400 border border-gray-700/50'
+                        ? 'bg-purple-900/50 text-purple-300 border border-purple-700/50'
+                        : 'bg-gray-800 text-gray-400 border border-gray-700/50'
                         }`}>
                         {analysis.source === 'gemini' ? '🤖 GEMINI 2.0' : '⚙ RULE-BASED'}
                     </span>
@@ -245,4 +245,4 @@ const AIAnalysisPanel: React.FC<AIAnalysisPanelProps> = ({ type, data, compact =
     );
 };
 
-export default AIAnalysisPanel;
+

@@ -2,6 +2,8 @@
 // Provides real-time AI threat and incident analysis via Google Gemini
 
 import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@/auth';
+import { z } from 'zod';
 import {
     analyzeThreat,
     analyzeIncident,
@@ -35,9 +37,15 @@ function checkRateLimit(ip: string): boolean {
 
 export async function POST(req: NextRequest) {
     try {
+        const session = await auth();
+        if (!session) {
+            return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+        }
+
         // Rate limiting
-        const clientIP = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
-        if (!checkRateLimit(clientIP)) {
+        const clientIP = req.headers.get('x-forwarded-for') || 'unknown';
+        // Simple distinct rate limit for authenticated users (could use user ID instead of IP)
+        if (!checkRateLimit(session.user?.email || clientIP)) {
             return NextResponse.json(
                 { success: false, error: 'Rate limit exceeded. Try again in 60 seconds.' },
                 { status: 429 }
@@ -45,30 +53,46 @@ export async function POST(req: NextRequest) {
         }
 
         const body = await req.json();
-        const { type, data } = body;
 
-        if (!type || !data) {
+        // Zod Schema Definition
+        const AnalysisSchema = z.object({
+            type: z.enum(['threat', 'incident']),
+            data: z.object({
+                // Common fields
+                name: z.string().optional(),
+                title: z.string().optional(),
+                type: z.string().optional(),
+                severity: z.string().optional(),
+                description: z.string().optional(),
+                // Threat specific
+                indicators: z.array(z.string()).optional(),
+                targetSector: z.string().optional(),
+                sourceIP: z.string().optional(),
+                targetSystem: z.string().optional(),
+                // Incident specific
+                location: z.string().optional(),
+                region: z.string().optional(),
+                status: z.string().optional(),
+            })
+        });
+
+        const parseResult = AnalysisSchema.safeParse(body);
+        if (!parseResult.success) {
             return NextResponse.json(
-                { success: false, error: 'Missing required fields: type and data' },
+                { success: false, error: 'Invalid input', details: parseResult.error.format() },
                 { status: 400 }
             );
         }
 
-        if (type !== 'threat' && type !== 'incident') {
-            return NextResponse.json(
-                { success: false, error: 'Invalid type. Must be "threat" or "incident".' },
-                { status: 400 }
-            );
-        }
-
+        const { type, data } = parseResult.data;
         let analysis;
 
         if (type === 'threat') {
             const input: ThreatAnalysisInput = {
                 name: data.name || 'Unknown Threat',
                 type: data.type || 'CYBER_ATTACK',
-                severity: data.severity || 'MEDIUM',
-                description: data.description,
+                severity: data.severity as any || 'MEDIUM',
+                description: data.description || '',
                 indicators: data.indicators,
                 targetSector: data.targetSector,
                 sourceIP: data.sourceIP,
@@ -79,11 +103,11 @@ export async function POST(req: NextRequest) {
             const input: IncidentAnalysisInput = {
                 title: data.title || 'Unknown Incident',
                 type: data.type || 'CYBER_ATTACK',
-                severity: data.severity || 'MEDIUM',
-                description: data.description,
-                location: data.location,
-                region: data.region,
-                status: data.status,
+                severity: data.severity as any || 'MEDIUM',
+                description: data.description || '',
+                location: data.location || '',
+                region: data.region || '',
+                status: data.status || 'OPEN',
             };
             analysis = await analyzeIncident(input);
         }
