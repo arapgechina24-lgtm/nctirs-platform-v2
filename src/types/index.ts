@@ -107,6 +107,9 @@ export interface TimeSeriesData {
 // ============================================================
 
 export type CyberThreatType = 'APT' | 'ZERO_DAY' | 'DDOS' | 'RANSOMWARE' | 'PHISHING' | 'DATA_BREACH' | 'MALWARE' | 'SQL_INJECTION';
+export type RansomwareVariant = 'LOCKBIT' | 'BLACKCAT' | 'CLOP' | 'ROYAL' | 'PLAY' | 'AKIRA' | 'UNKNOWN';
+export type DecryptorStatus = 'AVAILABLE' | 'PARTIAL' | 'NONE' | 'UNKNOWN';
+
 export type CyberThreatSeverity = 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
 export type CyberTargetType = 'GOVERNMENT' | 'FINANCIAL' | 'INFRASTRUCTURE' | 'HEALTHCARE' | 'TELECOM' | 'ENERGY' | 'TRANSPORT';
 
@@ -124,6 +127,24 @@ export interface CyberThreat {
     aiConfidence: number;
     status: 'DETECTED' | 'ANALYZING' | 'CONTAINED' | 'NEUTRALIZED';
     iocIndicators: string[];
+}
+
+export interface RansomwareCampaign {
+    id: string;
+    name: string;
+    variant: RansomwareVariant;
+    firstSeen: Date;
+    lastSeen: Date;
+    active: boolean;
+    victimCount: number;
+    targetSectors: CyberTargetType[];
+    averageRansomDemandUSD: number;
+    encryptionMethod: string;
+    decryptorStatus: DecryptorStatus;
+    decryptorLink?: string;
+    attributionConfidence: number;
+    description: string;
+    iocIndicators?: string[];
 }
 
 // ============================================================

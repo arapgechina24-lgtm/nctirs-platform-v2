@@ -1,0 +1,94 @@
+'use client';
+
+import React from 'react';
+import { ShieldCheck, BrainCircuit } from 'lucide-react';
+import { DesignSystem } from '@/lib/designSystem';
+import {
+    RansomwareTracker,
+    SovereignAIStatusPanel,
+    FederatedLearningHub,
+    RansomwareAnalytics,
+    RansomwareNegotiator
+} from '@/components/intelligence';
+import { generateSovereignAIStatus, generateFederatedNodes } from '@/lib/mockData';
+
+// Generate mock campaigns for analytics (replicating from RansomwareTracker for now, ideally shared)
+// In a real app, this would come from a context or API.
+const MOCK_CAMPAIGNS_ANALYTICS: any[] = [
+    {
+        id: 'RW-2026-001',
+        active: true,
+        targetSectors: ['FINANCIAL', 'HEALTHCARE', 'INFRASTRUCTURE'],
+        averageRansomDemandUSD: 2500000,
+        encryptionMethod: 'AES-256 + RSA-4096'
+    },
+    {
+        id: 'RW-2026-002',
+        active: true,
+        targetSectors: ['ENERGY', 'TRANSPORT'],
+        averageRansomDemandUSD: 5000000,
+        encryptionMethod: 'Rust-based bespoke encryption'
+    },
+    {
+        id: 'RW-2025-045',
+        active: false,
+        targetSectors: ['GOVERNMENT', 'TELECOM'],
+        averageRansomDemandUSD: 500000,
+        encryptionMethod: 'ChaCha20'
+    }
+];
+
+export default function IntelligencePage() {
+    const sovereignStatus = generateSovereignAIStatus();
+    const federatedStatus = generateFederatedNodes();
+
+    return (
+        <div className="p-6 space-y-6 h-full overflow-hidden flex flex-col">
+            <div className="flex items-center justify-between mb-2 flex-shrink-0">
+                <div>
+                    <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 font-mono tracking-tight">
+                        INTELLIGENCE OVERSIGHT
+                    </h1>
+                    <p className="text-gray-400 text-sm font-mono mt-1">
+                        Real-time threat actor tracking, AI governance, and advanced analytics.
+                    </p>
+                </div>
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-purple-900/20 border border-purple-500/30 rounded text-xs font-mono text-purple-300">
+                    <BrainCircuit className="w-4 h-4" />
+                    <span>COGNITION LAYER ACTIVE</span>
+                </div>
+            </div>
+
+            {/* Grid Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 min-h-0">
+
+                {/* Column 1: Ransomware Campaign Tracking (4 cols) */}
+                <div className="lg:col-span-4 h-full flex flex-col gap-6 overflow-hidden">
+                    <div className="flex-1 min-h-0">
+                        <RansomwareTracker />
+                    </div>
+                </div>
+
+                {/* Column 2: Analytics & Negotiation (4 cols) */}
+                <div className="lg:col-span-4 h-full flex flex-col gap-6 overflow-hidden">
+                    <div className="flex-1 min-h-[300px]">
+                        <RansomwareAnalytics campaigns={MOCK_CAMPAIGNS_ANALYTICS} />
+                    </div>
+                    <div className="flex-1 min-h-[300px]">
+                        <RansomwareNegotiator />
+                    </div>
+                </div>
+
+                {/* Column 3: AI Governance & Federated Learning (4 cols) */}
+                <div className="lg:col-span-4 h-full flex flex-col gap-6 overflow-hidden">
+                    <div className="flex-1 min-h-[300px]">
+                        <SovereignAIStatusPanel status={sovereignStatus} />
+                    </div>
+                    <div className="flex-1 min-h-[300px]">
+                        <FederatedLearningHub status={federatedStatus} />
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
