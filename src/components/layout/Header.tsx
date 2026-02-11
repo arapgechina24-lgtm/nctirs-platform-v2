@@ -124,7 +124,7 @@ export function Header({ currentView, onViewChange }: HeaderProps) {
                     <User className="h-4 w-4 text-green-400" />
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-[10px] font-bold text-green-400">{user.name || user.email.split('@')[0]}</span>
+                    <span className="text-[10px] font-bold text-green-400">{user.name || user.email?.split('@')[0] || 'USER'}</span>
                     <div className="flex items-center gap-2">
                       <span className="text-[8px] text-green-700 font-mono">{user.agency || 'AGENCY'}</span>
                       <span className={`text-[8px] px-1 py-0.5 font-bold rounded-none ${user.role === 'L4' ? 'bg-red-950 text-red-400 border border-red-700/50' :

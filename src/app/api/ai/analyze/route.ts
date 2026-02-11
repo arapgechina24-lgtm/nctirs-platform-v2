@@ -10,6 +10,7 @@ import {
     type ThreatAnalysisInput,
     type IncidentAnalysisInput,
 } from '@/lib/ai';
+import { CyberThreatSeverity } from '@/types';
 
 export const dynamic = 'force-dynamic';
 
@@ -91,7 +92,7 @@ export async function POST(req: NextRequest) {
             const input: ThreatAnalysisInput = {
                 name: data.name || 'Unknown Threat',
                 type: data.type || 'CYBER_ATTACK',
-                severity: data.severity as any || 'MEDIUM',
+                severity: (data.severity as CyberThreatSeverity) || 'MEDIUM',
                 description: data.description || '',
                 indicators: data.indicators,
                 targetSector: data.targetSector,
@@ -103,7 +104,7 @@ export async function POST(req: NextRequest) {
             const input: IncidentAnalysisInput = {
                 title: data.title || 'Unknown Incident',
                 type: data.type || 'CYBER_ATTACK',
-                severity: data.severity as any || 'MEDIUM',
+                severity: (data.severity as CyberThreatSeverity) || 'MEDIUM',
                 description: data.description || '',
                 location: data.location || '',
                 region: data.region || '',

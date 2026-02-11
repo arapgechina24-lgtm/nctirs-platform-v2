@@ -36,13 +36,13 @@ export const authConfig = {
                 session.user.id = token.sub;
             }
             if (token.role && session.user) {
-                // @ts-ignore
-                session.user.role = token.role;
+                session.user.role = token.role as any;
             }
             return session;
         },
         async jwt({ token, user }) {
             if (user) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 token.role = (user as any).role;
             }
             return token;

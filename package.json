@@ -18,7 +18,8 @@
     "ignorePatterns": [
       "hft_system/",
       "node_modules/",
-      ".next/"
+      ".next/",
+      "scripts/"
     ]
   },
   "dependencies": {

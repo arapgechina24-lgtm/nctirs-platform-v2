@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { BarChart3, TrendingUp, AlertTriangle, ShieldAlert } from 'lucide-react';
+import { Shield, Brain, Activity, Lock, Globe, ShieldAlert, BarChart3 } from 'lucide-react';
 import { DesignSystem } from '@/lib/designSystem';
 import type { RansomwareCampaign, CyberTargetType } from '@/types';
 

@@ -12,9 +12,11 @@ import {
 } from '@/components/intelligence';
 import { generateSovereignAIStatus, generateFederatedNodes } from '@/lib/mockData';
 
+import type { RansomwareCampaign } from '@/types';
+
 // Generate mock campaigns for analytics (replicating from RansomwareTracker for now, ideally shared)
 // In a real app, this would come from a context or API.
-const MOCK_CAMPAIGNS_ANALYTICS: any[] = [
+const MOCK_CAMPAIGNS_ANALYTICS: Partial<RansomwareCampaign>[] = [
     {
         id: 'RW-2026-001',
         active: true,
@@ -72,7 +74,7 @@ export default function IntelligencePage() {
                 {/* Column 2: Analytics & Negotiation (4 cols) */}
                 <div className="lg:col-span-4 h-full flex flex-col gap-6 overflow-hidden">
                     <div className="flex-1 min-h-[300px]">
-                        <RansomwareAnalytics campaigns={MOCK_CAMPAIGNS_ANALYTICS} />
+                        <RansomwareAnalytics campaigns={MOCK_CAMPAIGNS_ANALYTICS as RansomwareCampaign[]} />
                     </div>
                     <div className="flex-1 min-h-[300px]">
                         <RansomwareNegotiator />

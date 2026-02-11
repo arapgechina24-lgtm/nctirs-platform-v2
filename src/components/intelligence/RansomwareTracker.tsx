@@ -7,11 +7,10 @@ import {
     Unlock,
     LockKeyhole,
     Activity,
-    TrendingUp,
-    Link as LinkIcon
+    TrendingUp
 } from 'lucide-react';
 import { DesignSystem } from '@/lib/designSystem';
-import type { RansomwareCampaign, DecryptorStatus, CyberTargetType, RansomwareVariant } from '@/types';
+import { RansomwareCampaign, DecryptorStatus, CyberTargetType, RansomwareVariant } from '@/types';
 
 import { CampaignDetailModal } from './CampaignDetailModal';
 

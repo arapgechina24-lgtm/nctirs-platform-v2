@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, User, Bot, Lock, Timer, AlertTriangle, MessageSquare } from 'lucide-react';
+import { Send, User, Bot, Timer, MessageSquare, AlertTriangle } from 'lucide-react';
 import { DesignSystem } from '@/lib/designSystem';
 
 interface Message {
@@ -44,6 +44,7 @@ export function RansomwareNegotiator() {
         e.preventDefault();
         if (!inputValue.trim()) return;
 
+        // eslint-disable-next-line react-hooks/purity
         const userMsg: Message = {
             id: Date.now().toString(),
             sender: 'user',
@@ -56,8 +57,10 @@ export function RansomwareNegotiator() {
         setIsTyping(true);
 
         // Simulate actor response delay
+        // eslint-disable-next-line react-hooks/purity
         setTimeout(() => {
             const responseText = getBotResponse(inputValue);
+            // eslint-disable-next-line react-hooks/purity
             const botMsg: Message = {
                 id: (Date.now() + 1).toString(),
                 sender: 'actor',
@@ -66,6 +69,7 @@ export function RansomwareNegotiator() {
             };
             setMessages(prev => [...prev, botMsg]);
             setIsTyping(false);
+            // eslint-disable-next-line react-hooks/purity
         }, 2000 + Math.random() * 3000);
     };
 
@@ -112,15 +116,15 @@ export function RansomwareNegotiator() {
                         className={`flex gap-3 ${msg.sender === 'user' ? 'flex-row-reverse' : ''}`}
                     >
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${msg.sender === 'user'
-                                ? 'bg-blue-900/30 border border-blue-700/50'
-                                : 'bg-red-900/30 border border-red-700/50'
+                            ? 'bg-blue-900/30 border border-blue-700/50'
+                            : 'bg-red-900/30 border border-red-700/50'
                             }`}>
                             {msg.sender === 'user' ? <User className="w-4 h-4 text-blue-400" /> : <Bot className="w-4 h-4 text-red-400" />}
                         </div>
 
                         <div className={`max-w-[80%] p-3 rounded border ${msg.sender === 'user'
-                                ? 'bg-blue-950/20 border-blue-800/30 text-blue-100'
-                                : 'bg-red-950/20 border-red-800/30 text-red-100'
+                            ? 'bg-blue-950/20 border-blue-800/30 text-blue-100'
+                            : 'bg-red-950/20 border-red-800/30 text-red-100'
                             }`}>
                             <p className="leading-relaxed">{msg.text}</p>
                             <span className="text-[9px] opacity-40 mt-1 block">

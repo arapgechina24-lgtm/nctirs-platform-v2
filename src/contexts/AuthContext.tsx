@@ -2,50 +2,51 @@
 
 import React, { createContext, useContext, ReactNode } from 'react'
 import { useSession, signIn, signOut } from 'next-auth/react'
-import { User } from '@/lib/api' // Assuming User type is compatible or I need to adjust
+
+import { User } from 'next-auth';
 
 interface AuthContextType {
-    user: any | null // Relaxing type for now to match NextAuth session user
-    token: string | null // NextAuth handles token, so this might be null or dummy
-    isAuthenticated: boolean
-    isLoading: boolean
-    login: (credentials: any) => Promise<{ success: boolean; error?: string }>
-    register: (data: any) => Promise<{ success: boolean; error?: string }>
-    logout: () => void
+    user: User | null;
+    token: string | null;
+    isAuthenticated: boolean;
+    isLoading: boolean;
+    login: (credentials: Record<string, string>) => Promise<{ success: boolean; error?: string }>;
+    register: (data: Record<string, string>) => Promise<{ success: boolean; error?: string }>;
+    logout: () => void;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined)
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const { data: session, status } = useSession()
+    const { data: session, status } = useSession();
 
-    const login = async (credentials: any) => {
+    const login = async (credentials: Record<string, string>) => {
         try {
             const result = await signIn('credentials', {
                 ...credentials,
                 redirect: false
-            }) as any
+            });
 
             if (result?.error) {
-                return { success: false, error: 'Invalid credentials' }
+                return { success: false, error: 'Invalid credentials' };
             }
-            return { success: true }
-        } catch (error) {
-            return { success: false, error: 'Login failed' }
+            return { success: true };
+        } catch (_error) {
+            return { success: false, error: 'Login failed' };
         }
-    }
+    };
 
-    const register = async (data: any) => {
+    const register = async (_data: Record<string, string>) => {
         // We still use the custom register API because NextAuth doesn't handle registration
         // But after register, we might want to auto-login
         try {
             // Re-implement apiRegister call or keep importing it
             // For now, let's assuming strict migration of just Login
-            return { success: false, error: 'Registration not fully migrated yet' }
-        } catch (error) {
-            return { success: false, error: 'Registration failed' }
+            return { success: false, error: 'Registration not fully migrated yet' };
+        } catch (_error) {
+            return { success: false, error: 'Registration failed' };
         }
-    }
+    };
 
     return (
         <AuthContext.Provider
@@ -61,7 +62,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         >
             {children}
         </AuthContext.Provider>
-    )
+    );
 }
 
 export function useAuth() {

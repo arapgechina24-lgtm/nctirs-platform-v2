@@ -43,7 +43,6 @@ import type {
   CyberThreatSeverity,
   CyberTargetType,
   CyberThreat,
-  DataSourceType,
   DataLakeSource,
   BlockchainLedgerEntry,
   CoordinatedAttack,
@@ -639,7 +638,8 @@ export type {
   ThreatIncident,
 } from '@/types';
 
-import type { AgencyID, IncidentParticipant, ThreatIncident } from '@/types';
+// Removed unused IncidentParticipant import
+import type { AgencyID, ThreatIncident } from '@/types';
 
 // Generate advanced threat incidents
 export function generateThreatIncidents(count: number = 5): ThreatIncident[] {
