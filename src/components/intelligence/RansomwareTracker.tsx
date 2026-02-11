@@ -10,7 +10,7 @@ import {
     TrendingUp
 } from 'lucide-react';
 import { DesignSystem } from '@/lib/designSystem';
-import { RansomwareCampaign, DecryptorStatus, CyberTargetType, RansomwareVariant } from '@/types';
+import { RansomwareCampaign, DecryptorStatus, CyberTargetType } from '@/types';
 
 import { CampaignDetailModal } from './CampaignDetailModal';
 

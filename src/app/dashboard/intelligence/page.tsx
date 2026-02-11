@@ -1,8 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ShieldCheck, BrainCircuit } from 'lucide-react';
-import { DesignSystem } from '@/lib/designSystem';
+import { BrainCircuit } from 'lucide-react';
 import {
     RansomwareTracker,
     SovereignAIStatusPanel,

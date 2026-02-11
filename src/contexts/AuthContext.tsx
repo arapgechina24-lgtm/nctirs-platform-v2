@@ -31,19 +31,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 return { success: false, error: 'Invalid credentials' };
             }
             return { success: true };
-        } catch (_error) {
+        } catch (error) {
+            console.error('Login error:', error);
             return { success: false, error: 'Login failed' };
         }
     };
 
-    const register = async (_data: Record<string, string>) => {
+    const register = async (data: Record<string, string>) => {
         // We still use the custom register API because NextAuth doesn't handle registration
         // But after register, we might want to auto-login
         try {
+            console.debug('Registering:', data);
             // Re-implement apiRegister call or keep importing it
             // For now, let's assuming strict migration of just Login
             return { success: false, error: 'Registration not fully migrated yet' };
-        } catch (_error) {
+        } catch (error) {
+            console.error('Registration error:', error);
             return { success: false, error: 'Registration failed' };
         }
     };

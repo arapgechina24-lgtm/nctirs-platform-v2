@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, User, Bot, Timer, MessageSquare, AlertTriangle } from 'lucide-react';
+import { v4 as uuidv4 } from 'uuid';
 import { DesignSystem } from '@/lib/designSystem';
 
 interface Message {
@@ -44,9 +45,8 @@ export function RansomwareNegotiator() {
         e.preventDefault();
         if (!inputValue.trim()) return;
 
-        // eslint-disable-next-line react-hooks/purity
         const userMsg: Message = {
-            id: Date.now().toString(),
+            id: uuidv4(),
             sender: 'user',
             text: inputValue,
             timestamp: new Date(),
@@ -56,13 +56,10 @@ export function RansomwareNegotiator() {
         setInputValue('');
         setIsTyping(true);
 
-        // Simulate actor response delay
-        // eslint-disable-next-line react-hooks/purity
         setTimeout(() => {
             const responseText = getBotResponse(inputValue);
-            // eslint-disable-next-line react-hooks/purity
             const botMsg: Message = {
-                id: (Date.now() + 1).toString(),
+                id: uuidv4(),
                 sender: 'actor',
                 text: responseText,
                 timestamp: new Date(),

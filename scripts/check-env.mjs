@@ -1,13 +1,14 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import dotenv from 'dotenv';
 
 // Load environment variables from .env.local if present
 const envLocalPath = path.resolve(process.cwd(), '.env.local');
 if (fs.existsSync(envLocalPath)) {
-    require('dotenv').config({ path: envLocalPath });
+    dotenv.config({ path: envLocalPath });
 } else {
     // If no .env.local, try .env
-    require('dotenv').config();
+    dotenv.config();
 }
 
 const requiredEnvVars = [
