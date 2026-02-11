@@ -4,7 +4,6 @@ on:
   push:
     branches: ["main"]
   pull_request:
-    branches: ["main"]
 
 jobs:
   build:
@@ -29,6 +28,9 @@ jobs:
 
       - name: Lint
         run: npm run lint
+
+      - name: Type Check
+        run: npm run type-check
 
       - name: Test
         run: npm run test

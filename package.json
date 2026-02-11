@@ -6,9 +6,11 @@
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
+    "prebuild": "node scripts/check-env.js",
     "postinstall": "prisma generate",
     "start": "next start",
     "lint": "eslint",
+    "type-check": "tsc --noEmit",
     "test": "vitest run"
   },
   "eslintConfig": {
