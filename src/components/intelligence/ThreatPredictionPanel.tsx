@@ -28,6 +28,8 @@ const PIPELINE_STAGES = [
 export function ThreatPredictionPanel() {
     const [activeStage, setActiveStage] = useState(0);
     const [currentPrediction, setCurrentPrediction] = useState(mockThreats[0]);
+    const [aiAnalysis, setAiAnalysis] = useState<any>(null);
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
 
     // Simulate pipeline animation
     useEffect(() => {
@@ -37,17 +39,56 @@ export function ThreatPredictionPanel() {
         return () => clearInterval(interval);
     }, []);
 
-    // Simulate switching predictions
+    // Simulate switching predictions & Trigger Real AI
     useEffect(() => {
         const interval = setInterval(() => {
             const randomThreat = mockThreats[Math.floor(Math.random() * mockThreats.length)];
             setCurrentPrediction(randomThreat);
-        }, 6000); // Change prediction every 4 cycles
+            setAiAnalysis(null); // Reset analysis
+        }, 8000); // Slower rotation to allow for API call
         return () => clearInterval(interval);
     }, []);
 
-    const confidenceScore = currentPrediction.aiConfidence || 85;
+    // Trigger AI Analysis when entering "INFERENCE" stage (index 2)
+    useEffect(() => {
+        if (activeStage === 2 && !aiAnalysis && !isAnalyzing) {
+            const fetchAnalysis = async () => {
+                setIsAnalyzing(true);
+                try {
+                    const response = await fetch('/api/ai/analyze', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            type: 'threat',
+                            data: {
+                                name: currentPrediction.name,
+                                type: currentPrediction.type,
+                                severity: currentPrediction.severity,
+                                description: `Detected anomaly in ${currentPrediction.targetSector} sector.`,
+                                targetSector: currentPrediction.targetSector,
+                            }
+                        })
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        setAiAnalysis(result.analysis);
+                    }
+                } catch (error) {
+                    console.error('AI Analysis failed:', error);
+                } finally {
+                    setIsAnalyzing(false);
+                }
+            };
+            fetchAnalysis();
+        }
+    }, [activeStage, currentPrediction, aiAnalysis, isAnalyzing]);
+
+    const confidenceScore = aiAnalysis?.riskAssessment?.confidenceScore
+        ? Math.round(aiAnalysis.riskAssessment.confidenceScore * 100)
+        : (currentPrediction.aiConfidence || 85);
+
     const isHighRisk = confidenceScore > 80;
+    const isRealAI = aiAnalysis?.source === 'gemini';
 
     return (
         <div className={`h-full flex flex-col ${DesignSystem.layout.cardShadow} bg-black/40 border border-cyan-900/50`}>
@@ -59,9 +100,12 @@ export function ThreatPredictionPanel() {
                         THREAT PREDICTION ENGINE
                     </h2>
                 </div>
-                <div className="flex items-center gap-2 px-2 py-1 bg-cyan-900/20 border border-cyan-700/30 rounded text-xs font-mono text-cyan-400">
-                    <Cpu className="w-3 h-3 animate-pulse" />
-                    <span>MODEL: SENTINEL-V2.1</span>
+                <div className={`flex items-center gap-2 px-2 py-1 rounded text-xs font-mono border transition-colors duration-500
+                    ${isRealAI
+                        ? 'bg-purple-900/40 border-purple-500/50 text-purple-300 shadow-[0_0_10px_purple]'
+                        : 'bg-cyan-900/20 border-cyan-700/30 text-cyan-400'}`}>
+                    {isRealAI ? <Zap className="w-3 h-3 animate-pulse text-purple-400" /> : <Cpu className="w-3 h-3" />}
+                    <span>{isRealAI ? 'MODEL: GEMINI-2.0-FLASH' : 'MODEL: SENTINEL-V2.1 (SIM)'}</span>
                 </div>
             </div>
 
@@ -73,8 +117,6 @@ export function ThreatPredictionPanel() {
 
                     {PIPELINE_STAGES.map((stage, index) => {
                         const isActive = index === activeStage;
-                        const isPast = index < activeStage || (activeStage === 0 && index === 3); // Loop logic simplified
-
                         return (
                             <div key={stage.id} className="flex flex-col items-center gap-2 bg-black/60 p-2 rounded-lg border border-transparent transition-all duration-300">
                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center border transition-all duration-500
@@ -82,7 +124,11 @@ export function ThreatPredictionPanel() {
                                         ? 'bg-cyan-500/20 border-cyan-400 text-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.3)] scale-110'
                                         : 'bg-gray-900 border-gray-700 text-gray-500'
                                     }`}>
-                                    <stage.icon className="w-4 h-4" />
+                                    {stage.id === 'INFERENCE' && isAnalyzing ? (
+                                        <Zap className="w-4 h-4 animate-spin text-yellow-400" />
+                                    ) : (
+                                        <stage.icon className="w-4 h-4" />
+                                    )}
                                 </div>
                                 <span className={`text-[9px] font-mono uppercase transition-colors ${isActive ? 'text-cyan-400' : 'text-gray-600'}`}>
                                     {stage.name}
@@ -123,13 +169,13 @@ export function ThreatPredictionPanel() {
                             <span className="text-xs text-gray-300 font-bold">{currentPrediction.id}</span>
                             <span className="text-[10px] text-gray-500">{currentPrediction.type}</span>
                         </div>
-                        <div className="text-[11px] text-gray-400 leading-snug mb-2">
-                            {currentPrediction.name}
+                        <div className="text-[11px] text-gray-400 leading-snug mb-2 line-clamp-2">
+                            {aiAnalysis ? aiAnalysis.summary : currentPrediction.name}
                         </div>
                         <div className="flex items-center gap-2">
                             <GitBranch className="w-3 h-3 text-purple-400" />
                             <span className="text-[10px] text-purple-300 font-mono">
-                                Vector: {currentPrediction.targetSector}
+                                Vector: {aiAnalysis?.attackVectorAnalysis?.mitreId || 'Analyzing...'}
                             </span>
                         </div>
                     </div>
@@ -137,7 +183,7 @@ export function ThreatPredictionPanel() {
                     <div className="flex items-center gap-2 p-2 rounded bg-green-900/10 border border-green-900/30">
                         <ShieldCheck className="w-4 h-4 text-green-500" />
                         <span className="text-[10px] text-green-400 font-mono">
-                            Auto-Response Ready
+                            {isRealAI ? 'AI Verification Complete' : 'Auto-Response Ready'}
                         </span>
                     </div>
                 </div>
@@ -147,7 +193,7 @@ export function ThreatPredictionPanel() {
             <div className="p-2 border-t border-cyan-900/30 bg-cyan-950/20 text-center">
                 <span className="text-[10px] text-cyan-300/70 font-mono flex items-center justify-center gap-2">
                     <Activity className="w-3 h-3" />
-                    Processing 1.4M events/sec • Latency: 12ms
+                    {isRealAI ? 'Latency: 240ms (Gemini API)' : 'Processing 1.4M events/sec • Latency: 12ms'}
                 </span>
             </div>
         </div>
