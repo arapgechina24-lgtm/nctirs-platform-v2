@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
     FileText,
     Search,
@@ -16,12 +16,8 @@ import { generateBlockchainLedger } from '@/lib/mockData';
 import { BlockchainLedgerEntry } from '@/types';
 
 export function AuditLogViewer() {
-    const [logs, setLogs] = useState<BlockchainLedgerEntry[]>([]);
+    const [logs] = useState<BlockchainLedgerEntry[]>(() => generateBlockchainLedger(50));
     const [filter, setFilter] = useState('');
-
-    useEffect(() => {
-        setLogs(generateBlockchainLedger(50));
-    }, []);
 
     const filteredLogs = logs.filter(log =>
         log.content.toLowerCase().includes(filter.toLowerCase()) ||

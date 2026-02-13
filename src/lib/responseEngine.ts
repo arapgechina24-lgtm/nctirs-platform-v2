@@ -1,4 +1,4 @@
-import { AutomatedResponse, CyberThreatSeverity, ResponseType } from '@/types';
+import { CyberThreatSeverity, ResponseType } from '@/types';
 
 export interface AutomatedResponseTrigger {
     id: string;

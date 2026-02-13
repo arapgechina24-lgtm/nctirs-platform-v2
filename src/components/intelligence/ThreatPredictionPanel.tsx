@@ -7,8 +7,6 @@ import {
     Activity,
     GitBranch,
     Database,
-    ArrowRight,
-    AlertTriangle,
     ShieldCheck,
     Cpu
 } from 'lucide-react';
@@ -28,6 +26,7 @@ const PIPELINE_STAGES = [
 export function ThreatPredictionPanel() {
     const [activeStage, setActiveStage] = useState(0);
     const [currentPrediction, setCurrentPrediction] = useState(mockThreats[0]);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [aiAnalysis, setAiAnalysis] = useState<any>(null);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
 

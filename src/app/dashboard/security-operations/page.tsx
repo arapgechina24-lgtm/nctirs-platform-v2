@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ShieldAlert, FileText, Gavel, Radio } from 'lucide-react';
+import { ShieldAlert, Radio } from 'lucide-react';
 import { AutomatedResponseEngine } from '@/components/SOAR/AutomatedResponseEngine';
 import { AuditLogViewer } from '@/components/compliance/AuditLogViewer';
 

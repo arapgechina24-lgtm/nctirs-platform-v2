@@ -16,13 +16,8 @@ import { generateAutomatedResponses } from '@/lib/mockData';
 import { AutomatedResponse } from '@/types';
 
 export function AutomatedResponseEngine() {
-    const [responses, setResponses] = useState<AutomatedResponse[]>([]);
+    const [responses, setResponses] = useState<AutomatedResponse[]>(() => generateAutomatedResponses(6));
     const [engineStatus, setEngineStatus] = useState<'ACTIVE' | 'PAUSED'>('ACTIVE');
-
-    // Load mock data on mount
-    useEffect(() => {
-        setResponses(generateAutomatedResponses(6));
-    }, []);
 
     // Simulate incoming responses
     useEffect(() => {

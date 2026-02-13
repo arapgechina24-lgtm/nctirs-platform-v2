@@ -13,7 +13,7 @@ const MOCK_LOGS = Array.from({ length: 15 }).map((_, i) => ({
     integrityHash: 'a1b2c3d4e5f67890...' + Math.random().toString(36).substr(2, 8),
 }));
 
-export async function addAuditLog(data: any) {
+export async function addAuditLog(data: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
     // In a real implementation, this would write to a database or blockchain
     console.log('[AUDIT] Logging event:', data);
 
@@ -29,7 +29,7 @@ export async function getAuditLogs() {
     return MOCK_LOGS;
 }
 
-export async function verifyLogIntegrity(log: any) {
+export async function verifyLogIntegrity(log: any) { // eslint-disable-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
     // Simulate cryptographic verification
     await new Promise(resolve => setTimeout(resolve, 50));
     // Fail verification for 10% of logs to demo the feature

@@ -6,7 +6,6 @@ import {
     Search,
     CheckCircle2,
     AlertOctagon,
-    FileText,
     TrendingUp,
     ZoomIn
 } from 'lucide-react';
@@ -48,7 +47,7 @@ export function XAIPanel() {
                             Model Reasoning
                         </h3>
                         <p className="text-sm text-gray-200 leading-relaxed font-mono border-l-2 border-purple-500 pl-3">
-                            "{currentExplanation.naturalLanguage}"
+                            &quot;{currentExplanation.naturalLanguage}&quot;
                         </p>
                     </div>
                 </div>
