@@ -123,6 +123,18 @@ This system is designed to comply with:
 
 ---
 
+## 🧠 Real AI Integration (Gemini)
+
+To enable real-time threat analysis powered by Google Gemini 2.0 Flash:
+
+1. Get an API Key from [Google AI Studio](https://aistudio.google.com/).
+2. Add it to your Vercel Project Settings:
+    - Key: `GEMINI_API_KEY`
+    - Value: `your-api-key-here`
+3. Redeploy the application.
+
+---
+
 ## 🇰🇪 Built for Kenya
 
 <div align="center">
