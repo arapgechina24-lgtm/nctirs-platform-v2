@@ -80,8 +80,8 @@ export const LazyFederatedLearningHub = dynamic(
     }
 )
 
-export const LazyExplainableAIPanel = dynamic(
-    () => import('../intelligence/ExplainableAIPanel'),
+export const LazyXAIPanel = dynamic(
+    () => import('../intelligence/XAIPanel').then(mod => ({ default: mod.XAIPanel })),
     {
         loading: () => <PanelSkeleton rows={4} />,
         ssr: false,

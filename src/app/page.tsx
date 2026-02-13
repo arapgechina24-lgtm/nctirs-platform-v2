@@ -24,7 +24,7 @@ import CNIHeatmap from "@/components/infrastructure/CNIHeatmap"
 // Intelligence components
 import AIAssistantPanel from "@/components/intelligence/AIAssistantPanel"
 import FederatedLearningHub from "@/components/intelligence/FederatedLearningHub"
-import ExplainableAIPanel from "@/components/intelligence/ExplainableAIPanel"
+import { XAIPanel } from "@/components/intelligence/XAIPanel"
 import SovereignAIStatusPanel from "@/components/intelligence/SovereignAIStatusPanel"
 // Compliance components
 import KenyaContextPanel from "@/components/compliance/KenyaContextPanel"
@@ -597,7 +597,7 @@ export default function Home() {
               <FederatedLearningHub status={data.federatedStatus} />
 
               {/* Pillar 3: Explainable AI */}
-              <ExplainableAIPanel explanations={data.xaiExplanations} />
+              <XAIPanel />
 
               {/* Pillar 4: Sovereign AI */}
               <SovereignAIStatusPanel status={data.sovereignAIStatus} />

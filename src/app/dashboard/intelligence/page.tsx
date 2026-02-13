@@ -7,7 +7,8 @@ import {
     SovereignAIStatusPanel,
     FederatedLearningHub,
     RansomwareAnalytics,
-    RansomwareNegotiator
+    ThreatPredictionPanel,
+    XAIPanel
 } from '@/components/intelligence';
 import { generateSovereignAIStatus, generateFederatedNodes } from '@/lib/mockData';
 
@@ -65,7 +66,10 @@ export default function IntelligencePage() {
 
                 {/* Column 1: Ransomware Campaign Tracking (4 cols) */}
                 <div className="lg:col-span-4 h-full flex flex-col gap-6 overflow-hidden">
-                    <div className="flex-1 min-h-0">
+                    <div className="flex-1 min-h-[300px]">
+                        <ThreatPredictionPanel />
+                    </div>
+                    <div className="flex-1 min-h-[200px]">
                         <RansomwareTracker />
                     </div>
                 </div>
@@ -73,10 +77,10 @@ export default function IntelligencePage() {
                 {/* Column 2: Analytics & Negotiation (4 cols) */}
                 <div className="lg:col-span-4 h-full flex flex-col gap-6 overflow-hidden">
                     <div className="flex-1 min-h-[300px]">
-                        <RansomwareAnalytics campaigns={MOCK_CAMPAIGNS_ANALYTICS as RansomwareCampaign[]} />
+                        <XAIPanel />
                     </div>
                     <div className="flex-1 min-h-[300px]">
-                        <RansomwareNegotiator />
+                        <RansomwareAnalytics campaigns={MOCK_CAMPAIGNS_ANALYTICS as RansomwareCampaign[]} />
                     </div>
                 </div>
 
