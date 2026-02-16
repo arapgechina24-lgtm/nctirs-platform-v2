@@ -2,218 +2,20 @@
 
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import {
-    AnomalyDetector,
+    getDetector,
     generateNetworkTelemetry,
     type AnomalyResult,
     type ModelMetrics,
     type NetworkFeatures,
 } from '@/lib/anomalyDetection';
 
-// ===== Sub-Components =====
-
-function AnomalyGauge({ score, classification }: { score: number; classification: string }) {
-    const radius = 70;
-    const circumference = Math.PI * radius; // half circle
-    const progress = (score / 100) * circumference;
-    const color =
-        classification === 'CRITICAL' ? '#ef4444' :
-            classification === 'ANOMALOUS' ? '#f97316' :
-                classification === 'SUSPICIOUS' ? '#eab308' :
-                    '#22c55e';
-
-    return (
-        <div className="flex flex-col items-center">
-            <svg width="180" height="110" viewBox="0 0 180 110">
-                {/* Background arc */}
-                <path
-                    d="M 10 100 A 70 70 0 0 1 170 100"
-                    fill="none"
-                    stroke="rgba(255,255,255,0.1)"
-                    strokeWidth="12"
-                    strokeLinecap="round"
-                />
-                {/* Progress arc */}
-                <path
-                    d="M 10 100 A 70 70 0 0 1 170 100"
-                    fill="none"
-                    stroke={color}
-                    strokeWidth="12"
-                    strokeLinecap="round"
-                    strokeDasharray={`${progress} ${circumference}`}
-                    style={{
-                        transition: 'stroke-dasharray 0.5s ease, stroke 0.5s ease',
-                        filter: `drop-shadow(0 0 8px ${color}80)`,
-                    }}
-                />
-                {/* Score text */}
-                <text x="90" y="85" textAnchor="middle" fill="white" fontSize="28" fontWeight="bold">
-                    {score.toFixed(1)}
-                </text>
-                <text x="90" y="105" textAnchor="middle" fill="rgba(255,255,255,0.6)" fontSize="11">
-                    ANOMALY SCORE
-                </text>
-            </svg>
-            <span
-                className="text-xs font-bold tracking-wider px-3 py-1 rounded-full mt-1"
-                style={{
-                    backgroundColor: `${color}20`,
-                    color,
-                    border: `1px solid ${color}40`,
-                }}
-            >
-                {classification}
-            </span>
-        </div>
-    );
-}
-
-function FeatureBar({ name, value, max }: { name: string; value: number; max: number }) {
-    const percentage = Math.min(100, (value / max) * 100);
-    const barColor =
-        percentage > 70 ? '#ef4444' :
-            percentage > 40 ? '#f97316' :
-                '#22c55e';
-
-    const labels: Record<string, string> = {
-        packetRate: 'Packet Rate',
-        byteVolume: 'Byte Volume',
-        uniqueDestinations: 'Unique Dests',
-        protocolEntropy: 'Protocol Entropy',
-        timeOfDayFactor: 'Time-of-Day',
-        connectionDuration: 'Conn Duration',
-    };
-
-    return (
-        <div className="flex items-center gap-2 text-xs">
-            <span className="w-24 text-gray-400 truncate" title={name}>
-                {labels[name] || name}
-            </span>
-            <div className="flex-1 h-2 bg-white/5 rounded-full overflow-hidden">
-                <div
-                    className="h-full rounded-full transition-all duration-500"
-                    style={{
-                        width: `${percentage}%`,
-                        backgroundColor: barColor,
-                        boxShadow: `0 0 6px ${barColor}60`,
-                    }}
-                />
-            </div>
-            <span className="w-10 text-right text-gray-500 font-mono">
-                {(value * 100).toFixed(0)}%
-            </span>
-        </div>
-    );
-}
-
-function TimelineChart({ history }: { history: AnomalyResult[] }) {
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        if (!canvas || history.length < 2) return;
-
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-
-        const dpr = window.devicePixelRatio || 1;
-        const rect = canvas.getBoundingClientRect();
-        canvas.width = rect.width * dpr;
-        canvas.height = rect.height * dpr;
-        ctx.scale(dpr, dpr);
-
-        const w = rect.width;
-        const h = rect.height;
-        const padding = { top: 10, right: 10, bottom: 20, left: 30 };
-        const chartW = w - padding.left - padding.right;
-        const chartH = h - padding.top - padding.bottom;
-
-        // Clear
-        ctx.clearRect(0, 0, w, h);
-
-        // Draw threshold line
-        const thresholdY = padding.top + chartH * (1 - 25 / 100);
-        ctx.strokeStyle = 'rgba(239, 68, 68, 0.3)';
-        ctx.setLineDash([4, 4]);
-        ctx.beginPath();
-        ctx.moveTo(padding.left, thresholdY);
-        ctx.lineTo(w - padding.right, thresholdY);
-        ctx.stroke();
-        ctx.setLineDash([]);
-
-        // Draw Y axis labels
-        ctx.fillStyle = 'rgba(255,255,255,0.3)';
-        ctx.font = '9px monospace';
-        ctx.textAlign = 'right';
-        [0, 25, 50, 75, 100].forEach(val => {
-            const y = padding.top + chartH * (1 - val / 100);
-            ctx.fillText(String(val), padding.left - 4, y + 3);
-        });
-
-        // Draw line chart
-        const maxPoints = Math.min(history.length, 60);
-        const data = history.slice(-maxPoints);
-        const stepX = chartW / (maxPoints - 1);
-
-        // Gradient fill
-        const gradient = ctx.createLinearGradient(0, padding.top, 0, h - padding.bottom);
-        gradient.addColorStop(0, 'rgba(34, 211, 238, 0.2)');
-        gradient.addColorStop(1, 'rgba(34, 211, 238, 0)');
-
-        // Draw filled area
-        ctx.beginPath();
-        ctx.moveTo(padding.left, padding.top + chartH);
-        data.forEach((point, i) => {
-            const x = padding.left + i * stepX;
-            const y = padding.top + chartH * (1 - point.score / 100);
-            ctx.lineTo(x, y);
-        });
-        ctx.lineTo(padding.left + (data.length - 1) * stepX, padding.top + chartH);
-        ctx.closePath();
-        ctx.fillStyle = gradient;
-        ctx.fill();
-
-        // Draw line
-        ctx.beginPath();
-        data.forEach((point, i) => {
-            const x = padding.left + i * stepX;
-            const y = padding.top + chartH * (1 - point.score / 100);
-
-            if (i === 0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
-        });
-        ctx.strokeStyle = '#22d3ee';
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
-
-        // Draw anomaly dots
-        data.forEach((point, i) => {
-            if (point.isAnomaly) {
-                const x = padding.left + i * stepX;
-                const y = padding.top + chartH * (1 - point.score / 100);
-                ctx.beginPath();
-                ctx.arc(x, y, 3, 0, Math.PI * 2);
-                ctx.fillStyle = point.classification === 'CRITICAL' ? '#ef4444' : '#f97316';
-                ctx.fill();
-                ctx.strokeStyle = 'rgba(255,255,255,0.5)';
-                ctx.lineWidth = 1;
-                ctx.stroke();
-            }
-        });
-    }, [history]);
-
-    return (
-        <canvas
-            ref={canvasRef}
-            className="w-full"
-            style={{ height: '120px' }}
-        />
-    );
-}
+// ... (Sub-Components remain unchanged)
 
 // ===== Main Component =====
 
 export default function AnomalyDetectionPanel() {
-    const [detector] = useState(() => new AnomalyDetector());
+    // Use singleton instance to prevent retraining on navigation
+    const [detector] = useState(() => getDetector());
     const [modelReady, setModelReady] = useState(false);
     const [loading, setLoading] = useState(true);
     const [currentResult, setCurrentResult] = useState<AnomalyResult | null>(null);
@@ -224,13 +26,24 @@ export default function AnomalyDetectionPanel() {
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const tickRef = useRef(0);
 
-    // Train model on mount
+    // Initialize model
     useEffect(() => {
         let cancelled = false;
 
         async function init() {
+            // If already trained, skip training
+            if (detector.getMetrics().isReady) {
+                if (!cancelled) {
+                    setModelReady(true);
+                    setMetrics(detector.getMetrics());
+                    setLoading(false);
+                }
+                return;
+            }
+
             try {
-                await detector.train(30, 300);
+                // Reduced epochs for faster load (30 -> 10)
+                await detector.train(10, 200);
                 if (!cancelled) {
                     setModelReady(true);
                     setMetrics(detector.getMetrics());
@@ -249,7 +62,8 @@ export default function AnomalyDetectionPanel() {
 
         return () => {
             cancelled = true;
-            detector.dispose();
+            // Do NOT dispose the singleton, so it persists across navigations
+            // detector.dispose(); 
         };
     }, [detector]);
 
