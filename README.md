@@ -3,14 +3,14 @@
 <div align="center">
 
 ![NCTIRS Banner](https://img.shields.io/badge/NCTIRS-National%20Security-green?style=for-the-badge&logo=shield&logoColor=white)
-[![CI](https://github.com/arapgechina24-lgtm/nctirs-dashboard/actions/workflows/ci.yml/badge.svg)](https://github.com/arapgechina24-lgtm/nctirs-dashboard/actions/workflows/ci.yml)
-[![CodeQL](https://github.com/arapgechina24-lgtm/nctirs-dashboard/actions/workflows/codeql.yml/badge.svg)](https://github.com/arapgechina24-lgtm/nctirs-dashboard/actions/workflows/codeql.yml)
-[![Scorecard](https://github.com/arapgechina24-lgtm/nctirs-dashboard/actions/workflows/scorecard.yml/badge.svg)](https://github.com/arapgechina24-lgtm/nctirs-dashboard/actions/workflows/scorecard.yml)
+[![CI](https://github.com/arapgechina24-lgtm/nctirs-platform-v2/actions/workflows/ci.yml/badge.svg)](https://github.com/arapgechina24-lgtm/nctirs-platform-v2/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/arapgechina24-lgtm/nctirs-platform-v2/actions/workflows/codeql.yml/badge.svg)](https://github.com/arapgechina24-lgtm/nctirs-platform-v2/actions/workflows/codeql.yml)
+[![Scorecard](https://github.com/arapgechina24-lgtm/nctirs-platform-v2/actions/workflows/scorecard.yml/badge.svg)](https://github.com/arapgechina24-lgtm/nctirs-platform-v2/actions/workflows/scorecard.yml)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 **AI-Powered National Security & Smart Policing Intelligence Platform**
 
-[Live Demo](https://nctirs-dashboard.vercel.app) • [MAJESTIC SHIELD Proposal](./docs/MAJESTIC_SHIELD_PROPOSAL.md) • [Documentation](#features) • [Getting Started](#getting-started)
+[Live Demo](https://nctirs-platform-v2.vercel.app) • [MAJESTIC SHIELD Proposal](./docs/MAJESTIC_SHIELD_PROPOSAL.md) • [Documentation](#features) • [Getting Started](#getting-started)
 
 </div>
 
@@ -29,7 +29,7 @@ The proposal outlines:
 
 ## 🎬 Demo
 
-> **🚀 [Launch Live Demo](https://nctirs-dashboard.vercel.app)** | Press `Ctrl+Shift+E` to trigger the Emergency Protocol simulation!
+> **🚀 [Launch Live Demo](https://nctirs-platform-v2.vercel.app)** | Press `Ctrl+Shift+E` to trigger the Emergency Protocol simulation!
 
 ![Emergency Overlay Demo](./public/demo.webp)
 
@@ -48,7 +48,7 @@ The platform simulates a Level 5 National Cyber Emergency with:
 
 - **Real-time Threat Map**: Visualize active threats across Kenya's 47 counties
 - **CNI Heatmap**: Monitor Critical National Infrastructure (SEACOM, KPLC, M-Pesa)
-- **AI Threat Analytics**: MITRE ATT&CK framework integration
+- **AI Threat Analytics**: MITRE ATT&CK framework integration with Google Gemini 2.0 Flash
 
 ### 🛡️ SOAR Automation
 
@@ -58,7 +58,7 @@ The platform simulates a Level 5 National Cyber Emergency with:
 
 ### 📊 Compliance & Audit
 
-- **National Audit Trail**: Immutable log of all security actions
+- **National Audit Trail**: Immutable blockchain-backed log of all security actions
 - **Partial Prerendering (PPR)**: Optimized performance with Next.js 16
 - **KDPA 2019 Compliance**: Data protection indicators
 
@@ -76,9 +76,13 @@ The platform simulates a Level 5 National Cyber Emergency with:
 | Framework | Next.js 16 (App Router, PPR) |
 | Language | TypeScript 5 |
 | Styling | Tailwind CSS 4 |
+| AI Engine | Google Gemini 2.0 Flash |
+| Database | Turso (LibSQL) + Prisma ORM |
+| Auth | NextAuth.js v5 (Credentials) |
+| Real-time | Ably WebSockets |
 | Maps | Leaflet + React-Leaflet |
 | Charts | Recharts |
-| Security | Node.js Crypto (SHA-256) |
+| Security | Node.js Crypto (SHA-256), bcrypt |
 
 ---
 
@@ -86,11 +90,15 @@ The platform simulates a Level 5 National Cyber Emergency with:
 
 ```bash
 # Clone the repository
-git clone https://github.com/arapgechina24-lgtm/nctirs-dashboard.git
-cd nctirs-dashboard
+git clone https://github.com/arapgechina24-lgtm/nctirs-platform-v2.git
+cd nctirs-platform-v2
 
 # Install dependencies
 npm install
+
+# Set up environment variables
+cp .env.example .env.local
+# Edit .env.local with your API keys (GEMINI_API_KEY, DATABASE_URL, AUTH_SECRET)
 
 # Run development server
 npm run dev
@@ -133,6 +141,8 @@ To enable real-time threat analysis powered by Google Gemini 2.0 Flash:
     - Value: `your-api-key-here`
 3. Redeploy the application.
 
+The AI operates as **SENTINEL-OMEGA**, an elite Director-Level Intelligence Fusion Engine providing CIA/FBI/Mossad-grade threat analysis with specific Kenyan operational context.
+
 ---
 
 ## 🇰🇪 Built for Kenya
@@ -157,10 +167,12 @@ This project was developed for the **NIRU Hackathon** to demonstrate how AI and 
 | ✅ v1.1 | Four Winning Pillars UI | Completed |
 | ✅ v1.2 | Layout & Accessibility Improvements | Completed |
 | ✅ v1.3 | Community Files & Documentation | Completed |
-| 🔄 v1.4 | Real-time WebSocket Integration | In Progress |
-| 📋 v2.0 | Backend API & Authentication | Planned |
-| 📋 v2.1 | Multi-agency Role-Based Access | Planned |
-| 📋 v2.2 | Production Deployment Guides | Planned |
+| ✅ v1.4 | Real-time WebSocket Integration (Ably) | Completed |
+| ✅ v2.0 | Backend API & Authentication (NextAuth v5) | Completed |
+| ✅ v2.1 | AI Intelligence Engine (Gemini 2.0 Flash) | Completed |
+| ✅ v2.2 | SOAR Automation & Audit Compliance | Completed |
+| 📋 v3.0 | Multi-agency Role-Based Access | Planned |
+| 📋 v3.1 | Production Deployment Guides | Planned |
 
 ---
 
@@ -187,8 +199,8 @@ We welcome contributions! Please see our community resources:
 
 ## 👥 Contributors
 
-<a href="https://github.com/arapgechina24-lgtm/nctirs-dashboard/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=arapgechina24-lgtm/nctirs-dashboard" />
+<a href="https://github.com/arapgechina24-lgtm/nctirs-platform-v2/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=arapgechina24-lgtm/nctirs-platform-v2" />
 </a>
 
 ---
