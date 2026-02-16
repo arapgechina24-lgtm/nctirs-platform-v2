@@ -14,7 +14,7 @@ export default async function middleware(req: NextRequest) {
         const basicAuth = req.headers.get('authorization');
         if (basicAuth) {
             const authValue = basicAuth.split(' ')[1];
-            const [user, pwd] = atob(authValue).split(':');
+            const [, pwd] = atob(authValue).split(':');
 
             // Check if password matches (username is ignored, can be anything)
             if (pwd !== lockPassword) {
@@ -34,6 +34,7 @@ export default async function middleware(req: NextRequest) {
     // 2. Normal NextAuth Authentication
     // If deployment is unlocked (or correct basic auth provided), run normal auth checks.
     // We bind the req object to auth() so it acts as the middleware handler
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (auth as any)(req);
 }
 

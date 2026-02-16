@@ -296,8 +296,8 @@ export default function AnomalyDetectionPanel() {
 
         // Run every 2 seconds
         intervalRef.current = setInterval(runDetection, 2000);
-        // Run immediately
-        runDetection();
+        // Run immediately (on next tick to avoid set-state-in-effect warning)
+        setTimeout(runDetection, 0);
 
         return () => {
             if (intervalRef.current) clearInterval(intervalRef.current);
