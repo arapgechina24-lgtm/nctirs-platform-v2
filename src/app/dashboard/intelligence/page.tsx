@@ -10,6 +10,7 @@ import {
     ThreatPredictionPanel,
     XAIPanel
 } from '@/components/intelligence';
+import AnomalyDetectionPanel from '@/components/intelligence/AnomalyDetectionPanel';
 import { generateSovereignAIStatus, generateFederatedNodes } from '@/lib/mockData';
 
 import type { RansomwareCampaign } from '@/types';
@@ -84,12 +85,15 @@ export default function IntelligencePage() {
                     </div>
                 </div>
 
-                {/* Column 3: AI Governance & Federated Learning (4 cols) */}
-                <div className="lg:col-span-4 h-full flex flex-col gap-6 overflow-hidden">
-                    <div className="flex-1 min-h-[300px]">
+                {/* Column 3: AI Governance, Anomaly Detection & Federated Learning (4 cols) */}
+                <div className="lg:col-span-4 h-full flex flex-col gap-6 overflow-y-auto">
+                    <div className="flex-shrink-0">
+                        <AnomalyDetectionPanel />
+                    </div>
+                    <div className="flex-1 min-h-[250px]">
                         <SovereignAIStatusPanel status={sovereignStatus} />
                     </div>
-                    <div className="flex-1 min-h-[300px]">
+                    <div className="flex-1 min-h-[250px]">
                         <FederatedLearningHub status={federatedStatus} />
                     </div>
                 </div>

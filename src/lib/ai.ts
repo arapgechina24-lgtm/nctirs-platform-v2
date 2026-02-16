@@ -340,3 +340,288 @@ export function generateFallbackIncidentAnalysis(input: IncidentAnalysisInput): 
         source: 'fallback',
     };
 }
+
+// ===== MITRE ATT&CK IOC Classifier =====
+
+export interface IOCClassificationInput {
+    indicators: string[];
+    context?: string;
+}
+
+export interface MitreClassification {
+    indicator: string;
+    indicatorType: 'IP' | 'DOMAIN' | 'HASH' | 'CVE' | 'URL' | 'EMAIL' | 'FILE_PATH' | 'UNKNOWN';
+    tactic: string;
+    tacticId: string;
+    technique: string;
+    techniqueId: string;
+    subTechnique?: string;
+    subTechniqueId?: string;
+    confidence: number;
+    killChainPhase: string;
+    severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
+    countermeasures: string[];
+    description: string;
+}
+
+export interface IOCClassificationResult {
+    classifications: MitreClassification[];
+    summary: string;
+    totalIndicators: number;
+    criticalCount: number;
+    timestamp: string;
+    source: 'gemini' | 'fallback';
+}
+
+const MITRE_CLASSIFIER_PROMPT = `You are a MITRE ATT&CK classification engine. Given a list of Indicators of Compromise (IOCs), classify each one against the MITRE ATT&CK framework.
+
+For each indicator, determine:
+1. The type (IP, DOMAIN, HASH, CVE, URL, EMAIL, FILE_PATH)
+2. The most likely MITRE ATT&CK tactic and technique
+3. The kill chain phase
+4. Severity assessment
+5. Specific countermeasures
+
+Always respond with valid JSON (no markdown). Return this exact structure:
+{
+  "classifications": [
+    {
+      "indicator": "the original indicator",
+      "indicatorType": "IP|DOMAIN|HASH|CVE|URL|EMAIL|FILE_PATH|UNKNOWN",
+      "tactic": "Tactic Name",
+      "tacticId": "TA####",
+      "technique": "Technique Name",
+      "techniqueId": "T####",
+      "subTechnique": "Sub-technique if applicable or null",
+      "subTechniqueId": "T####.### or null",
+      "confidence": 0.0-1.0,
+      "killChainPhase": "Reconnaissance|Weaponization|Delivery|Exploitation|Installation|C2|Actions on Objectives",
+      "severity": "CRITICAL|HIGH|MEDIUM|LOW",
+      "countermeasures": ["action1", "action2", "action3"],
+      "description": "brief explanation of the threat"
+    }
+  ],
+  "summary": "executive summary of findings"
+}`;
+
+export async function classifyIOCs(input: IOCClassificationInput): Promise<IOCClassificationResult> {
+    const model = getGeminiClient();
+
+    if (!model) {
+        return generateFallbackIOCClassification(input);
+    }
+
+    try {
+        const prompt = `Classify these IOCs against the MITRE ATT&CK framework:\n\nIndicators:\n${input.indicators.map((ioc, i) => `${i + 1}. ${ioc}`).join('\n')}\n${input.context ? `\nAdditional Context: ${input.context}` : ''}`;
+
+        const result = await model.generateContent({
+            contents: [{ role: 'user', parts: [{ text: prompt }] }],
+            systemInstruction: MITRE_CLASSIFIER_PROMPT,
+        });
+
+        const text = result.response.text();
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+
+        if (!jsonMatch) {
+            console.error('[AI] Failed to extract JSON from MITRE classification:', text);
+            return generateFallbackIOCClassification(input);
+        }
+
+        const parsed = JSON.parse(jsonMatch[0]);
+        const classifications: MitreClassification[] = (parsed.classifications || []).map((c: Record<string, unknown>) => ({
+            indicator: String(c.indicator || ''),
+            indicatorType: String(c.indicatorType || 'UNKNOWN') as MitreClassification['indicatorType'],
+            tactic: String(c.tactic || 'Unknown'),
+            tacticId: String(c.tacticId || 'TA0000'),
+            technique: String(c.technique || 'Unknown'),
+            techniqueId: String(c.techniqueId || 'T0000'),
+            subTechnique: c.subTechnique ? String(c.subTechnique) : undefined,
+            subTechniqueId: c.subTechniqueId ? String(c.subTechniqueId) : undefined,
+            confidence: Number(c.confidence) || 0.5,
+            killChainPhase: String(c.killChainPhase || 'Exploitation'),
+            severity: String(c.severity || 'MEDIUM') as MitreClassification['severity'],
+            countermeasures: Array.isArray(c.countermeasures) ? c.countermeasures.map(String) : ['Investigate further'],
+            description: String(c.description || 'Classification pending.'),
+        }));
+
+        const criticalCount = classifications.filter(c => c.severity === 'CRITICAL').length;
+
+        return {
+            classifications,
+            summary: parsed.summary || `Classified ${classifications.length} indicators. ${criticalCount} critical.`,
+            totalIndicators: classifications.length,
+            criticalCount,
+            timestamp: new Date().toISOString(),
+            source: 'gemini',
+        };
+    } catch (error) {
+        console.error('[AI] MITRE classification failed, using fallback:', error);
+        return generateFallbackIOCClassification(input);
+    }
+}
+
+// ===== Rule-based IOC Classifier Fallback =====
+
+function detectIOCType(indicator: string): MitreClassification['indicatorType'] {
+    const trimmed = indicator.trim();
+    if (/^CVE-\d{4}-\d+$/i.test(trimmed)) return 'CVE';
+    if (/^https?:\/\//i.test(trimmed)) return 'URL';
+    if (/^[a-f0-9]{32,64}$/i.test(trimmed)) return 'HASH';
+    if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(\/\d+)?$/.test(trimmed)) return 'IP';
+    if (/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(trimmed)) return 'EMAIL';
+    if (/^(\/|[A-Z]:\\)/i.test(trimmed)) return 'FILE_PATH';
+    if (/^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*\.[a-z]{2,}$/i.test(trimmed)) return 'DOMAIN';
+    return 'UNKNOWN';
+}
+
+const IOC_TYPE_MITRE_MAP: Record<string, Omit<MitreClassification, 'indicator' | 'indicatorType' | 'confidence'>> = {
+    IP: {
+        tactic: 'Command and Control',
+        tacticId: 'TA0011',
+        technique: 'Application Layer Protocol',
+        techniqueId: 'T1071',
+        killChainPhase: 'C2',
+        severity: 'HIGH',
+        countermeasures: [
+            'Block IP at perimeter firewall',
+            'Add to threat intelligence blacklist',
+            'Scan internal network for connections to this IP',
+            'Check DNS logs for resolution history',
+        ],
+        description: 'Suspicious IP address associated with potential C2 communication.',
+    },
+    DOMAIN: {
+        tactic: 'Initial Access',
+        tacticId: 'TA0001',
+        technique: 'Phishing',
+        techniqueId: 'T1566',
+        subTechnique: 'Spearphishing Link',
+        subTechniqueId: 'T1566.002',
+        killChainPhase: 'Delivery',
+        severity: 'HIGH',
+        countermeasures: [
+            'Block domain in DNS sinkhole',
+            'Add to email gateway blacklist',
+            'Scan email logs for links to this domain',
+            'Check web proxy logs for connections',
+        ],
+        description: 'Suspicious domain potentially used for phishing or malware delivery.',
+    },
+    HASH: {
+        tactic: 'Execution',
+        tacticId: 'TA0002',
+        technique: 'User Execution',
+        techniqueId: 'T1204',
+        subTechnique: 'Malicious File',
+        subTechniqueId: 'T1204.002',
+        killChainPhase: 'Installation',
+        severity: 'CRITICAL',
+        countermeasures: [
+            'Block hash in endpoint protection',
+            'Search for file across all endpoints',
+            'Submit to malware sandbox for analysis',
+            'Update YARA rules with this hash',
+        ],
+        description: 'File hash associated with known or suspected malware.',
+    },
+    CVE: {
+        tactic: 'Initial Access',
+        tacticId: 'TA0001',
+        technique: 'Exploit Public-Facing Application',
+        techniqueId: 'T1190',
+        killChainPhase: 'Exploitation',
+        severity: 'CRITICAL',
+        countermeasures: [
+            'Apply vendor patch immediately',
+            'Implement virtual patching via WAF',
+            'Scan for vulnerable systems in environment',
+            'Monitor for exploitation attempts in IDS/IPS logs',
+        ],
+        description: 'Known vulnerability that may be actively exploited.',
+    },
+    URL: {
+        tactic: 'Initial Access',
+        tacticId: 'TA0001',
+        technique: 'Phishing',
+        techniqueId: 'T1566',
+        subTechnique: 'Spearphishing Link',
+        subTechniqueId: 'T1566.002',
+        killChainPhase: 'Delivery',
+        severity: 'MEDIUM',
+        countermeasures: [
+            'Block URL at web proxy',
+            'Scan email for links to this URL',
+            'Add to threat intelligence feed',
+        ],
+        description: 'Suspicious URL potentially used for credential harvesting or malware delivery.',
+    },
+    EMAIL: {
+        tactic: 'Initial Access',
+        tacticId: 'TA0001',
+        technique: 'Phishing',
+        techniqueId: 'T1566',
+        subTechnique: 'Spearphishing Attachment',
+        subTechniqueId: 'T1566.001',
+        killChainPhase: 'Delivery',
+        severity: 'MEDIUM',
+        countermeasures: [
+            'Block sender in email gateway',
+            'Search for emails from this address',
+            'Alert internal users about this sender',
+        ],
+        description: 'Email address associated with phishing or social engineering campaigns.',
+    },
+    FILE_PATH: {
+        tactic: 'Persistence',
+        tacticId: 'TA0003',
+        technique: 'Boot or Logon Autostart Execution',
+        techniqueId: 'T1547',
+        killChainPhase: 'Installation',
+        severity: 'HIGH',
+        countermeasures: [
+            'Scan file path across all endpoints',
+            'Check for persistence mechanisms',
+            'Analyze file contents in sandbox',
+        ],
+        description: 'File path associated with potential malware persistence.',
+    },
+    UNKNOWN: {
+        tactic: 'Discovery',
+        tacticId: 'TA0007',
+        technique: 'System Information Discovery',
+        techniqueId: 'T1082',
+        killChainPhase: 'Reconnaissance',
+        severity: 'LOW',
+        countermeasures: [
+            'Manually analyze the indicator',
+            'Cross-reference with threat intelligence feeds',
+        ],
+        description: 'Unclassified indicator requiring manual analysis.',
+    },
+};
+
+function generateFallbackIOCClassification(input: IOCClassificationInput): IOCClassificationResult {
+    const classifications: MitreClassification[] = input.indicators.map(indicator => {
+        const iocType = detectIOCType(indicator);
+        const mapping = IOC_TYPE_MITRE_MAP[iocType] || IOC_TYPE_MITRE_MAP['UNKNOWN'];
+
+        return {
+            indicator,
+            indicatorType: iocType,
+            ...mapping,
+            confidence: iocType === 'UNKNOWN' ? 0.3 : 0.65,
+        };
+    });
+
+    const criticalCount = classifications.filter(c => c.severity === 'CRITICAL').length;
+
+    return {
+        classifications,
+        summary: `Rule-based classification of ${classifications.length} indicators. ${criticalCount} rated CRITICAL. AI-powered classification unavailable — using heuristic IOC type mapping.`,
+        totalIndicators: classifications.length,
+        criticalCount,
+        timestamp: new Date().toISOString(),
+        source: 'fallback',
+    };
+}
+
