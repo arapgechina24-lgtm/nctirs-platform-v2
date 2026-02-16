@@ -35,15 +35,13 @@ const createPrismaClient = () => {
     // Ensure we strip ./ if present as it seemed potential cause of URL_INVALID
     const cleanUrl = url.replace("file:./", "file:")
 
-    console.log("DEBUG: Initializing LibSQL Adapter with URL:", cleanUrl);
-
     try {
         const adapter = new PrismaLibSql({
             url: cleanUrl,
         })
         return new PrismaClient({ adapter })
     } catch (e) {
-        console.error("DEBUG: Failed to init client", e);
+        console.error("Failed to initialize database client:", e);
         throw e;
     }
 }

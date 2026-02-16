@@ -1,5 +1,11 @@
 import * as Ably from 'ably';
 
+// SECURITY NOTE: NEXT_PUBLIC_ABLY_API_KEY is exposed to the client bundle.
+// For production, switch to Ably Token Authentication:
+// 1. Create a server-side /api/ably-token endpoint that generates short-lived tokens
+// 2. Use `authUrl` or `authCallback` in the Ably client config instead of `key`
+// See: https://ably.com/docs/auth/token
+
 let ablyInstance: Ably.Realtime | null = null;
 
 export const getAblyClient = () => {

@@ -210,7 +210,7 @@ export function VoiceCommandIndicator({ isListening, transcript }: { isListening
             {
                 transcript && (
                     <div className="bg-black/80 backdrop-blur border border-green-500/50 px-4 py-2 rounded-full text-green-400 font-mono text-sm shadow-[0_0_20px_rgba(0,255,0,0.2)]" >
-                        & quot; {transcript}& quot;
+                        &quot;{transcript}&quot;
                     </div>
                 )
             }

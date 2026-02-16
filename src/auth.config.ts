@@ -11,24 +11,19 @@ export const authConfig = {
             const isOnDashboard = nextUrl.pathname.startsWith('/dashboard') || nextUrl.pathname === '/';
             const isOnAPI = nextUrl.pathname.startsWith('/api') && !nextUrl.pathname.startsWith('/api/auth');
 
-            // Allow access to public routes (login, register, etc.)
-            // But protect dashboard
+            // Protect dashboard routes
             if (isOnDashboard) {
                 if (isLoggedIn) return true;
                 return false; // Redirect unauthenticated users to login page
-            } else if (isLoggedIn) {
-                // Redirect logged-in users to dashboard if they visit login page
-                // (This logic is usually handled in the page itself or middleware redirect)
-                // Here we just return true to allow access
-                return true;
             }
 
-            // API protection
+            // API protection (must be checked before general pass-through)
             if (isOnAPI) {
                 if (isLoggedIn) return true;
                 return Response.json({ error: 'Unauthorized' }, { status: 401 });
             }
 
+            // All other routes (login, register, public pages)
             return true;
         },
         async session({ session, token }) {
@@ -36,15 +31,13 @@ export const authConfig = {
                 session.user.id = token.sub;
             }
             if (token.role && session.user) {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                session.user.role = token.role as any;
+                session.user.role = token.role as string;
             }
             return session;
         },
         async jwt({ token, user }) {
             if (user) {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                token.role = (user as any).role;
+                token.role = user.role;
             }
             return token;
         }
