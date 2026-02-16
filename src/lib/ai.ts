@@ -1,7 +1,8 @@
-// NCTIRS AI Analysis Engine — Powered by Google Gemini
+// NCTIRS AI Analysis Engine — Powered by Google Gemini & Anthropic Claude
 // Provides real AI-driven threat and incident analysis for the Cognition Layer
 
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import Anthropic from '@anthropic-ai/sdk';
 
 // ===== Types =====
 
@@ -41,7 +42,7 @@ export interface AIAnalysisResult {
     recommendedActions: string[];
     kenyaContext: string;
     timestamp: string;
-    source: 'gemini' | 'fallback';
+    source: 'gemini' | 'anthropic' | 'fallback';
 }
 
 const SYSTEM_PROMPT = `You are SENTINEL-OMEGA, the Director-Level AI Intelligence Fusion Engine for Kenya's National Intelligence Service (NCTIRS). You operate at the apex of the "Majestic Shield" doctrine.
@@ -81,7 +82,7 @@ Your mandate is total situational awareness and pre-cognitive threat neutralizat
 
 Always respond in valid JSON. Tone: Authoritative, Clinical, Decisive.`;
 
-// ===== Gemini Client =====
+// ===== AI Clients =====
 
 function getGeminiClient() {
     const apiKey = process.env.GEMINI_API_KEY;
@@ -94,17 +95,23 @@ function getGeminiClient() {
     });
 }
 
+function getAnthropicClient() {
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) return null;
+
+    return new Anthropic({
+        apiKey,
+    });
+}
+
 // ===== Core Analysis Functions =====
 
 export async function analyzeThreat(input: ThreatAnalysisInput): Promise<AIAnalysisResult> {
-    const model = getGeminiClient();
+    const provider = process.env.AI_PROVIDER?.toLowerCase() || 'gemini';
+    const anthropic = getAnthropicClient();
+    const gemini = getGeminiClient();
 
-    if (!model) {
-        return generateFallbackThreatAnalysis(input);
-    }
-
-    try {
-        const prompt = `Analyze this cyber threat and return a JSON object (no markdown, just raw JSON):
+    const prompt = `Analyze this cyber threat and return a JSON object (no markdown, just raw JSON):
 
 Threat: ${input.name}
 Type: ${input.type}
@@ -132,10 +139,39 @@ Return exactly this JSON structure:
   "kenyaContext": "specific relevance to Kenyan infrastructure"
 }`;
 
-        const result = await model.generateContent(prompt);
-        const text = result.response.text();
+    try {
+        let text = '';
+        let source: 'gemini' | 'anthropic' = 'gemini';
 
-        // Extract JSON from the response (handle potential markdown wrapping)
+        // 1. Try Claude if selected
+        if ((provider === 'claude' || provider === 'anthropic') && anthropic) {
+            try {
+                const response = await anthropic.messages.create({
+                    model: 'claude-3-opus-20240229',
+                    max_tokens: 1024,
+                    system: SYSTEM_PROMPT,
+                    messages: [{ role: 'user', content: prompt }],
+                });
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                text = (response.content[0] as any).text;
+                source = 'anthropic';
+            } catch (err) {
+                console.warn('[AI] Claude analysis failed, falling back to Gemini:', err);
+                // Fallback to Gemini handled below if text is empty
+            }
+        }
+
+        // 2. Try Gemini if Claude failed or wasn't selected
+        if (!text && gemini) {
+            const result = await gemini.generateContent(prompt);
+            text = result.response.text();
+            source = 'gemini';
+        }
+
+        // 3. Fallback if both failed
+        if (!text) return generateFallbackThreatAnalysis(input);
+
+        // Extract JSON
         const jsonMatch = text.match(/\{[\s\S]*\}/);
         if (!jsonMatch) {
             console.error('[AI] Failed to extract JSON from response:', text);
@@ -159,23 +195,21 @@ Return exactly this JSON structure:
             recommendedActions: parsed.recommendedActions || ['Investigate further', 'Monitor network traffic'],
             kenyaContext: parsed.kenyaContext || 'Assessment pending for local infrastructure impact.',
             timestamp: new Date().toISOString(),
-            source: 'gemini',
+            source,
         };
+
     } catch (error) {
-        console.error('[AI] Gemini analysis failed, using fallback:', error);
+        console.error('[AI] Analysis failed, using fallback:', error);
         return generateFallbackThreatAnalysis(input);
     }
 }
 
 export async function analyzeIncident(input: IncidentAnalysisInput): Promise<AIAnalysisResult> {
-    const model = getGeminiClient();
+    const provider = process.env.AI_PROVIDER?.toLowerCase() || 'gemini';
+    const anthropic = getAnthropicClient();
+    const gemini = getGeminiClient();
 
-    if (!model) {
-        return generateFallbackIncidentAnalysis(input);
-    }
-
-    try {
-        const prompt = `Analyze this security incident and return a JSON object (no markdown, just raw JSON):
+    const prompt = `Analyze this security incident and return a JSON object (no markdown, just raw JSON):
 
 Incident: ${input.title}
 Type: ${input.type}
@@ -202,9 +236,37 @@ Return exactly this JSON structure:
   "kenyaContext": "specific relevance to Kenyan national security"
 }`;
 
-        const result = await model.generateContent(prompt);
-        const text = result.response.text();
+    try {
+        let text = '';
+        let source: 'gemini' | 'anthropic' = 'gemini';
 
+        // 1. Try Claude
+        if ((provider === 'claude' || provider === 'anthropic') && anthropic) {
+            try {
+                const response = await anthropic.messages.create({
+                    model: 'claude-3-opus-20240229',
+                    max_tokens: 1024,
+                    system: SYSTEM_PROMPT,
+                    messages: [{ role: 'user', content: prompt }],
+                });
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                text = (response.content[0] as any).text;
+                source = 'anthropic';
+            } catch (err) {
+                console.warn('[AI] Claude incident analysis failed, falling back to Gemini:', err);
+            }
+        }
+
+        // 2. Try Gemini
+        if (!text && gemini) {
+            const result = await gemini.generateContent(prompt);
+            text = result.response.text();
+            source = 'gemini';
+        }
+
+        if (!text) return generateFallbackIncidentAnalysis(input);
+
+        // Extract JSON
         const jsonMatch = text.match(/\{[\s\S]*\}/);
         if (!jsonMatch) {
             console.error('[AI] Failed to extract JSON from incident response:', text);
@@ -228,10 +290,11 @@ Return exactly this JSON structure:
             recommendedActions: parsed.recommendedActions || ['Investigate further', 'Coordinate with local agencies'],
             kenyaContext: parsed.kenyaContext || 'Assessment pending for local context.',
             timestamp: new Date().toISOString(),
-            source: 'gemini',
+            source,
         };
+
     } catch (error) {
-        console.error('[AI] Gemini incident analysis failed, using fallback:', error);
+        console.error('[AI] Incident analysis failed, using fallback:', error);
         return generateFallbackIncidentAnalysis(input);
     }
 }
@@ -370,7 +433,7 @@ export interface IOCClassificationResult {
     totalIndicators: number;
     criticalCount: number;
     timestamp: string;
-    source: 'gemini' | 'fallback';
+    source: 'gemini' | 'anthropic' | 'fallback';
 }
 
 const MITRE_CLASSIFIER_PROMPT = `You are a MITRE ATT&CK classification engine. Given a list of Indicators of Compromise (IOCs), classify each one against the MITRE ATT&CK framework.
@@ -391,7 +454,7 @@ Always respond with valid JSON (no markdown). Return this exact structure:
       "tactic": "Tactic Name",
       "tacticId": "TA####",
       "technique": "Technique Name",
-      "techniqueId": "T####",
+      "tacticId": "T####",
       "subTechnique": "Sub-technique if applicable or null",
       "subTechniqueId": "T####.### or null",
       "confidence": 0.0-1.0,
@@ -405,21 +468,46 @@ Always respond with valid JSON (no markdown). Return this exact structure:
 }`;
 
 export async function classifyIOCs(input: IOCClassificationInput): Promise<IOCClassificationResult> {
-    const model = getGeminiClient();
+    const provider = process.env.AI_PROVIDER?.toLowerCase() || 'gemini';
+    const anthropic = getAnthropicClient();
+    const gemini = getGeminiClient();
 
-    if (!model) {
-        return generateFallbackIOCClassification(input);
-    }
+    const prompt = `Classify these IOCs against the MITRE ATT&CK framework:\n\nIndicators:\n${input.indicators.map((ioc, i) => `${i + 1}. ${ioc}`).join('\n')}\n${input.context ? `\nAdditional Context: ${input.context}` : ''}`;
 
     try {
-        const prompt = `Classify these IOCs against the MITRE ATT&CK framework:\n\nIndicators:\n${input.indicators.map((ioc, i) => `${i + 1}. ${ioc}`).join('\n')}\n${input.context ? `\nAdditional Context: ${input.context}` : ''}`;
+        let text = '';
+        let source: 'gemini' | 'anthropic' = 'gemini';
 
-        const result = await model.generateContent({
-            contents: [{ role: 'user', parts: [{ text: prompt }] }],
-            systemInstruction: MITRE_CLASSIFIER_PROMPT,
-        });
+        // 1. Try Claude
+        if ((provider === 'claude' || provider === 'anthropic') && anthropic) {
+            try {
+                const response = await anthropic.messages.create({
+                    model: 'claude-3-opus-20240229',
+                    max_tokens: 2048,
+                    system: MITRE_CLASSIFIER_PROMPT,
+                    messages: [{ role: 'user', content: prompt }],
+                });
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                text = (response.content[0] as any).text;
+                source = 'anthropic';
+            } catch (err) {
+                console.warn('[AI] Claude IOC classification failed, falling back to Gemini:', err);
+            }
+        }
 
-        const text = result.response.text();
+        // 2. Try Gemini
+        if (!text && gemini) {
+            const result = await gemini.generateContent({
+                contents: [{ role: 'user', parts: [{ text: prompt }] }],
+                systemInstruction: MITRE_CLASSIFIER_PROMPT,
+            });
+            text = result.response.text();
+            source = 'gemini';
+        }
+
+        if (!text) return generateFallbackIOCClassification(input);
+
+        // Extract JSON (Claude sometimes wraps in markdown even w/ instruction)
         const jsonMatch = text.match(/\{[\s\S]*\}/);
 
         if (!jsonMatch) {
@@ -452,7 +540,7 @@ export async function classifyIOCs(input: IOCClassificationInput): Promise<IOCCl
             totalIndicators: classifications.length,
             criticalCount,
             timestamp: new Date().toISOString(),
-            source: 'gemini',
+            source,
         };
     } catch (error) {
         console.error('[AI] MITRE classification failed, using fallback:', error);
@@ -624,4 +712,3 @@ function generateFallbackIOCClassification(input: IOCClassificationInput): IOCCl
         source: 'fallback',
     };
 }
-
