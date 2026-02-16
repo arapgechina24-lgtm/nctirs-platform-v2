@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/arapgechina24-lgtm/nctirs-platform-v2/compare/v1.0.0...v1.0.1) (2026-02-16)
+
+
+### Bug Fixes
+
+* **perf:** optimize anomaly detection client-side load ([66916df](https://github.com/arapgechina24-lgtm/nctirs-platform-v2/commit/66916df10bab5af0fb7c80592febdecc6a6d231e))
+
 # 1.0.0 (2026-02-16)
 
 
