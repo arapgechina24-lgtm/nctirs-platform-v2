@@ -10,7 +10,7 @@
 
 **AI-Powered National Security & Smart Policing Intelligence Platform**
 
-[Live Demo](https://nctirs-platform-v2.vercel.app) • [MAJESTIC SHIELD Proposal](./docs/MAJESTIC_SHIELD_PROPOSAL.md) • [Documentation](#features) • [Getting Started](#getting-started)
+[Live Demo](https://nctirs-platform-v2.vercel.app) • [MAJESTIC SHIELD Proposal](./docs/MAJESTIC_SHIELD_PROPOSAL.md) • [Documentation](#-features) • [Getting Started](#-getting-started)
 
 </div>
 
@@ -72,7 +72,7 @@ The platform simulates a Level 5 National Cyber Emergency with:
 ## 🛠️ Tech Stack
 
 | Category | Technology |
-|----------|------------|
+| -------- | ---------- |
 | Framework | Next.js 16 (App Router, PPR) |
 | Language | TypeScript 5 |
 | Styling | Tailwind CSS 4 |
@@ -86,7 +86,62 @@ The platform simulates a Level 5 National Cyber Emergency with:
 
 ---
 
-## 🏁 Getting Started
+## �️ Architecture
+
+```mermaid
+flowchart TB
+    subgraph Perception["🔍 Perception Layer"]
+        IoT["IoT Sensors"]
+        Drones["Drone Feeds"]
+        NetSniff["Network Sniffers"]
+        OSINT["OSINT Crawlers"]
+    end
+
+    subgraph Cognition["🧠 Cognition Layer"]
+        Gemini["Google Gemini 2.0 Flash"]
+        MITRE["MITRE ATT&CK Engine"]
+        APT["APT Signature DB"]
+        NLP["NLP Threat Classifier"]
+    end
+
+    subgraph Integrity["⛓️ Integrity Layer"]
+        Blockchain["Blockchain Ledger"]
+        SHA256["SHA-256 Hashing"]
+        Audit["Immutable Audit Trail"]
+        KDPA["KDPA 2019 Compliance"]
+    end
+
+    subgraph Response["🚨 SOAR Response"]
+        AirGap["Air-Gap Isolation"]
+        Dispatch["Police Dispatch"]
+        NC4["NC4 Alert"]
+        Block["IP Blocking"]
+    end
+
+    Perception --> Cognition
+    Cognition --> Integrity
+    Cognition --> Response
+    Integrity --> Response
+```
+
+---
+
+## 🏆 Why NCTIRS Wins
+
+| # | Differentiator | Details |
+| - | -------------- | ------- |
+| 1 | **Real AI, Not Mockups** | Live Google Gemini 2.0 Flash integration — SENTINEL-OMEGA analyzes threats in real-time |
+| 2 | **Production-Grade Stack** | Next.js 16, Prisma ORM, Turso DB, NextAuth v5, Ably WebSockets |
+| 3 | **Kenya-First Design** | 47-county threat map, KPLC/M-Pesa/SEACOM CNI monitoring, DPA 2019 compliance |
+| 4 | **Cinematic Demo** | Level 5 Emergency overlay with glitch effects, voice narration, and live audit trail |
+| 5 | **Zero-Trust Architecture** | Continuous Adaptive Authentication with bcrypt + SHA-256 integrity hashing |
+| 6 | **SOAR Automation** | One-click Air-Gap isolation, NC4 alerting, and automated police dispatch |
+| 7 | **Full Compliance** | Computer Misuse Act (2018), KDPA 2019, and NIST SP 800-53 controls |
+| 8 | **Enterprise Governance** | CI/CD, CodeQL, Scorecard, CODEOWNERS, signed commits, CITATION.cff |
+
+---
+
+## �🏁 Getting Started
 
 ```bash
 # Clone the repository
@@ -114,7 +169,7 @@ Visit [http://localhost:3000](http://localhost:3000) to see the dashboard.
 ## ⌨️ Keyboard Shortcuts
 
 | Shortcut | Action |
-|----------|--------|
+| -------- | ------ |
 | `Ctrl+Shift+E` | Trigger Emergency Overlay |
 | `Ctrl+Shift+A` | Open Audit Trail |
 | `Ctrl+Shift+D` | Toggle Demo Mode |
@@ -145,6 +200,18 @@ The AI operates as **SENTINEL-OMEGA**, an elite Director-Level Intelligence Fusi
 
 ---
 
+## ⚙️ Environment Variables
+
+| Variable | Required | Description |
+| -------- | -------- | ----------- |
+| `GEMINI_API_KEY` | Yes | Google Gemini 2.0 Flash API key from [AI Studio](https://aistudio.google.com/) |
+| `DATABASE_URL` | Yes | Turso (LibSQL) database connection URL |
+| `AUTH_SECRET` | Yes | NextAuth.js v5 secret for session encryption |
+| `ABLY_API_KEY` | Optional | Ably WebSocket key for real-time collaboration |
+| `NEXTAUTH_URL` | Optional | Override for NextAuth callback URL (default: `http://localhost:3000`) |
+
+---
+
 ## 🇰🇪 Built for Kenya
 
 <div align="center">
@@ -162,7 +229,7 @@ This project was developed for the **NIRU Hackathon** to demonstrate how AI and 
 ## 🗺️ Roadmap
 
 | Phase | Feature | Status |
-|-------|---------|--------|
+| ----- | ------- | ------ |
 | ✅ v1.0 | Core Dashboard (5 Views) | Completed |
 | ✅ v1.1 | Four Winning Pillars UI | Completed |
 | ✅ v1.2 | Layout & Accessibility Improvements | Completed |
@@ -181,7 +248,7 @@ This project was developed for the **NIRU Hackathon** to demonstrate how AI and 
 We welcome contributions! Please see our community resources:
 
 | Document | Description |
-|----------|-------------|
+| -------- | ----------- |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute to the project |
 | [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) | Community standards and behavior |
 | [SECURITY.md](SECURITY.md) | Security vulnerability reporting |
@@ -200,7 +267,7 @@ We welcome contributions! Please see our community resources:
 ## 👥 Contributors
 
 <a href="https://github.com/arapgechina24-lgtm/nctirs-platform-v2/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=arapgechina24-lgtm/nctirs-platform-v2" />
+  <img src="https://contrib.rocks/image?repo=arapgechina24-lgtm/nctirs-platform-v2" alt="Contributors" />
 </a>
 
 ---
