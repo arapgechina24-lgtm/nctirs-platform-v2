@@ -50,6 +50,18 @@ The platform simulates a Level 5 National Cyber Emergency with:
 - **CNI Heatmap**: Monitor Critical National Infrastructure (SEACOM, KPLC, M-Pesa)
 - **AI Threat Analytics**: MITRE ATT&CK framework integration with Google Gemini 2.0 Flash
 
+## 🔒 Deployment Security (Lockdown Mode)
+
+To restrict access to your Vercel deployment (e.g., during a hackathon or private testing), set the following environment variable in your Vercel project settings:
+
+```bash
+DEPLOYMENT_PASSWORD=your_secret_password
+```
+
+When set, the entire application will be protected by Basic Authentication. Users will be prompted for a username (any value) and password (must match `DEPLOYMENT_PASSWORD`) before they can access the site.
+
+To disable lockdown mode, simply remove the environment variable.
+
 ### 🛡️ SOAR Automation
 
 - **Automated Response Protocols**: One-click Air-Gap isolation
