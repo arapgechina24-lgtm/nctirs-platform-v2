@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/arapgechina24-lgtm/nctirs-platform-v2/compare/v1.1.0...v1.1.1) (2026-02-16)
+
+
+### Bug Fixes
+
+* **config:** ensure correct semantic-release configuration ([9aa0a79](https://github.com/arapgechina24-lgtm/nctirs-platform-v2/commit/9aa0a79f8693444f1bc1ba032c3d5604caf17584))
+
 # [1.1.0](https://github.com/arapgechina24-lgtm/nctirs-platform-v2/compare/v1.0.1...v1.1.0) (2026-02-16)
 
 
