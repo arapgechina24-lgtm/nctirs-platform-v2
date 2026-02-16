@@ -1,9 +1,15 @@
-// Surveillance Feeds API Route - GET all feeds, POST new feed
+// Surveillance Feeds API Route - GET all feeds, POST new feed (with RBAC + rate limiting)
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/db'
+import { requireAuth, requireRole } from '@/lib/rbac'
+import { checkRateLimit, RATE_LIMITS, rateLimitHeaders } from '@/lib/rateLimit'
 
+// GET /api/surveillance - List feeds (authenticated, any role)
 export async function GET(request: NextRequest) {
     try {
+        const session = await requireAuth();
+        if (session instanceof NextResponse) return session;
+
         const { searchParams } = new URL(request.url)
         const type = searchParams.get('type')
         const status = searchParams.get('status')
@@ -32,8 +38,22 @@ export async function GET(request: NextRequest) {
     }
 }
 
+// POST /api/surveillance - Create new feed (L2+ only, rate limited)
 export async function POST(request: NextRequest) {
     try {
+        const session = await requireRole('L2');
+        if (session instanceof NextResponse) return session;
+
+        // Rate limit
+        const clientIP = request.headers.get('x-forwarded-for') || 'unknown';
+        const rl = checkRateLimit(`surveillance:${session.user?.email || clientIP}`, RATE_LIMITS.STANDARD);
+        if (!rl.allowed) {
+            return NextResponse.json(
+                { error: 'Rate limit exceeded' },
+                { status: 429, headers: rateLimitHeaders(rl.remaining, rl.resetAt) }
+            );
+        }
+
         const body = await request.json()
         const { location, type, latitude, longitude, streamUrl } = body
 

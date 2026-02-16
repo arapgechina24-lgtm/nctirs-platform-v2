@@ -2,10 +2,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/db'
 import { createHash } from 'crypto'
+import { requireAuth, requireRole } from '@/lib/rbac'
+import { checkRateLimit, RATE_LIMITS, rateLimitHeaders } from '@/lib/rateLimit'
 
-// GET /api/audit - List audit logs
+// GET /api/audit - List audit logs (requires L2+ clearance)
 export async function GET(request: NextRequest) {
     try {
+        const session = await requireRole('L2');
+        if (session instanceof NextResponse) return session;
+
         const searchParams = request.nextUrl.searchParams
         const action = searchParams.get('action')
         const resource = searchParams.get('resource')
@@ -49,9 +54,22 @@ export async function GET(request: NextRequest) {
     }
 }
 
-// POST /api/audit - Create audit log with blockchain-style hashing
+// POST /api/audit - Create audit log with blockchain-style hashing (authenticated)
 export async function POST(request: NextRequest) {
     try {
+        const session = await requireAuth();
+        if (session instanceof NextResponse) return session;
+
+        // Rate limit audit log creation
+        const clientIP = request.headers.get('x-forwarded-for') || 'unknown';
+        const rl = checkRateLimit(`audit:${session.user?.email || clientIP}`, RATE_LIMITS.STANDARD);
+        if (!rl.allowed) {
+            return NextResponse.json(
+                { error: 'Rate limit exceeded' },
+                { status: 429, headers: rateLimitHeaders(rl.remaining, rl.resetAt) }
+            );
+        }
+
         const data = await request.json()
 
         const {
@@ -87,7 +105,7 @@ export async function POST(request: NextRequest) {
                 action,
                 resource,
                 resourceId,
-                userId,
+                userId: userId || session.user?.id || null,
                 details: details ? JSON.stringify(details) : null,
                 ipAddress: ipAddress || request.headers.get('x-forwarded-for') || 'unknown',
                 userAgent: userAgent || request.headers.get('user-agent') || 'unknown',
@@ -110,7 +128,7 @@ export async function POST(request: NextRequest) {
     }
 }
 
-// GET /api/audit/verify - Verify blockchain integrity
+// Verify blockchain integrity (utility, not an endpoint)
 export async function verifyChain() {
     const logs = await prisma.auditLog.findMany({
         orderBy: { createdAt: 'asc' }

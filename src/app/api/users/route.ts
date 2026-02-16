@@ -1,12 +1,17 @@
-// Users API Route - GET all users (admin only), GET current user
+// Users API Route - GET all users (L3+ admin only)
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/db'
+import { requireRole } from '@/lib/rbac'
 
 // Force dynamic rendering since we use request.url
 export const dynamic = 'force-dynamic'
 
+// GET /api/users - List users (requires L3+ clearance — admin only)
 export async function GET(request: NextRequest) {
     try {
+        const session = await requireRole('L3');
+        if (session instanceof NextResponse) return session;
+
         const { searchParams } = new URL(request.url)
         const role = searchParams.get('role')
         const agency = searchParams.get('agency')

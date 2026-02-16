@@ -58,7 +58,7 @@ interface GitHubPayload {
     hook_id?: number
 }
 
-// Verify GitHub signature (HMAC-SHA256)
+// Verify GitHub signature (HMAC-SHA256) — MANDATORY
 function verifySignature(payload: string, signature: string | null, secret: string): boolean {
     if (!signature) return false
 
@@ -85,22 +85,26 @@ function formatEventMessage(event: GitHubEvent, payload: GitHubPayload): string 
         case 'ping':
             return `🏓 Webhook ping received! Zen: "${payload.zen}"`
 
-        case 'push':
+        case 'push': {
             const commits = payload.commits || []
             const branch = payload.ref?.replace('refs/heads/', '') || 'unknown'
             return `📦 Push to ${repo}/${branch} by ${sender}: ${commits.length} commit(s)`
+        }
 
-        case 'pull_request':
+        case 'pull_request': {
             const pr = payload.pull_request
             return `🔀 PR #${pr?.number} ${payload.action}: "${pr?.title}" by ${pr?.user?.login}`
+        }
 
-        case 'issues':
+        case 'issues': {
             const issue = payload.issue
             return `📋 Issue #${issue?.number} ${payload.action}: "${issue?.title}" by ${issue?.user?.login}`
+        }
 
-        case 'release':
+        case 'release': {
             const release = payload.release
             return `🚀 Release ${payload.action}: ${release?.tag_name} - ${release?.name}`
+        }
 
         case 'star':
             return `⭐ Repository ${payload.action === 'created' ? 'starred' : 'unstarred'} by ${sender}`
@@ -123,16 +127,22 @@ export async function POST(request: NextRequest) {
         // Get raw body for signature verification
         const rawBody = await request.text()
 
-        // Verify signature if secret is configured
+        // MANDATORY signature verification — reject if secret is not configured
         const webhookSecret = process.env.GITHUB_WEBHOOK_SECRET
-        if (webhookSecret) {
-            if (!verifySignature(rawBody, signature, webhookSecret)) {
-                console.error('[Webhook] Invalid GitHub signature')
-                return NextResponse.json(
-                    { error: 'Invalid signature' },
-                    { status: 401 }
-                )
-            }
+        if (!webhookSecret) {
+            console.error('[Webhook] GITHUB_WEBHOOK_SECRET is not configured — rejecting request')
+            return NextResponse.json(
+                { error: 'Webhook signature verification is not configured' },
+                { status: 503 }
+            )
+        }
+
+        if (!verifySignature(rawBody, signature, webhookSecret)) {
+            console.error('[Webhook] Invalid GitHub signature')
+            return NextResponse.json(
+                { error: 'Invalid signature' },
+                { status: 401 }
+            )
         }
 
         // Parse the payload
@@ -174,7 +184,6 @@ export async function POST(request: NextRequest) {
         }
 
         // Optional: Forward to Discord/Slack
-        // You can add additional webhook forwarding here
         const discordWebhookUrl = process.env.DISCORD_WEBHOOK_URL
         if (discordWebhookUrl && event !== 'ping') {
             await forwardToDiscord(discordWebhookUrl, event || 'unknown', payload, message)
@@ -201,33 +210,11 @@ export async function POST(request: NextRequest) {
     }
 }
 
-// GET /api/webhooks/github - Health check endpoint
+// GET /api/webhooks/github - Health check (minimal info)
 export async function GET() {
     return NextResponse.json({
         status: 'healthy',
         service: 'NCTIRS GitHub Webhook Handler',
-        version: '1.0.0',
-        endpoints: {
-            webhook: 'POST /api/webhooks/github',
-            health: 'GET /api/webhooks/github',
-        },
-        supportedEvents: [
-            'push',
-            'pull_request',
-            'issues',
-            'issue_comment',
-            'release',
-            'create',
-            'delete',
-            'star',
-            'fork',
-            'ping',
-        ],
-        configuration: {
-            signatureVerification: !!process.env.GITHUB_WEBHOOK_SECRET,
-            discordForwarding: !!process.env.DISCORD_WEBHOOK_URL,
-            slackForwarding: !!process.env.SLACK_WEBHOOK_URL,
-        }
     })
 }
 

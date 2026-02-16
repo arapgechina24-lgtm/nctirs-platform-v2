@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 
 const nextConfig: NextConfig = {
+  poweredByHeader: false, // Suppress X-Powered-By: Next.js header
   // cacheComponents: true, // Partial Prerendering (PPR) in Next.js 16
   async headers() {
     return [
@@ -30,7 +31,11 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' *.googleapis.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: *.googleapis.com; font-src 'self'; connect-src 'self' *.googleapis.com *.ably.io wss://*.ably.io;"
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' *.googleapis.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: *.googleapis.com; font-src 'self'; connect-src 'self' *.googleapis.com *.ably.io wss://*.ably.io;"
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()'
           }
         ]
       }

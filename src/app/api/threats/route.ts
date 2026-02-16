@@ -1,11 +1,16 @@
-// Threats API: CRUD operations
+// Threats API: CRUD operations (with RBAC + rate limiting)
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/db'
 import { createHash } from 'crypto'
+import { requireAuth, requireRole } from '@/lib/rbac'
+import { checkRateLimit, RATE_LIMITS, rateLimitHeaders } from '@/lib/rateLimit'
 
-// GET /api/threats - List all threats
+// GET /api/threats - List all threats (authenticated, any role)
 export async function GET(request: NextRequest) {
     try {
+        const session = await requireAuth();
+        if (session instanceof NextResponse) return session;
+
         const searchParams = request.nextUrl.searchParams
         const type = searchParams.get('type')
         const severity = searchParams.get('severity')
@@ -38,7 +43,6 @@ export async function GET(request: NextRequest) {
 
     } catch (error) {
         console.error('[API] Get threats error:', error)
-        // Fallback for demo: return empty list
         return NextResponse.json({
             threats: [],
             total: 0,
@@ -46,9 +50,22 @@ export async function GET(request: NextRequest) {
     }
 }
 
-// POST /api/threats - Create new threat
+// POST /api/threats - Create new threat (L2+ only, rate limited)
 export async function POST(request: NextRequest) {
     try {
+        const session = await requireRole('L2');
+        if (session instanceof NextResponse) return session;
+
+        // Rate limit
+        const clientIP = request.headers.get('x-forwarded-for') || 'unknown';
+        const rl = checkRateLimit(`threats:${session.user?.email || clientIP}`, RATE_LIMITS.STANDARD);
+        if (!rl.allowed) {
+            return NextResponse.json(
+                { error: 'Rate limit exceeded' },
+                { status: 429, headers: rateLimitHeaders(rl.remaining, rl.resetAt) }
+            );
+        }
+
         const data = await request.json()
 
         const {
@@ -95,6 +112,7 @@ export async function POST(request: NextRequest) {
                 action: 'CREATE',
                 resource: 'threats',
                 resourceId: threat.id,
+                userId: session.user?.id || null,
                 details: JSON.stringify({ name, type, severity }),
                 hash: createHash('sha256').update(`CREATE-threat-${threat.id}-${Date.now()}`).digest('hex'),
             }

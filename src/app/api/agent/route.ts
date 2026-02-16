@@ -6,9 +6,9 @@ export const dynamic = 'force-dynamic'; // Ensure this endpoint is never cached
 // GET: Fetch active incidents and pending responses for OpenClaw to process
 export async function GET(req: NextRequest) {
     try {
-        // Check for a simple API key in headers (TODO: Implement robust auth)
+        // Require API key authentication — deny if key is not configured or doesn't match
         const authHeader = req.headers.get('authorization');
-        if (process.env.OPENCLAW_API_KEY && authHeader !== `Bearer ${process.env.OPENCLAW_API_KEY}`) {
+        if (!process.env.OPENCLAW_API_KEY || authHeader !== `Bearer ${process.env.OPENCLAW_API_KEY}`) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
@@ -55,7 +55,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
     try {
         const authHeader = req.headers.get('authorization');
-        if (process.env.OPENCLAW_API_KEY && authHeader !== `Bearer ${process.env.OPENCLAW_API_KEY}`) {
+        if (!process.env.OPENCLAW_API_KEY || authHeader !== `Bearer ${process.env.OPENCLAW_API_KEY}`) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
