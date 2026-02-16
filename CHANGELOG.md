@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/arapgechina24-lgtm/nctirs-platform-v2/compare/v1.0.1...v1.1.0) (2026-02-16)
+
+
+### Features
+
+* **ai:** integrate Anthropic Claude (Opus) support ([7daf0d8](https://github.com/arapgechina24-lgtm/nctirs-platform-v2/commit/7daf0d82e9078fb559adeb8d31cb5ae1278b7ad8))
+
 ## [1.0.1](https://github.com/arapgechina24-lgtm/nctirs-platform-v2/compare/v1.0.0...v1.0.1) (2026-02-16)
 
 
