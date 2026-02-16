@@ -3,6 +3,10 @@
   "version": "1.1.0",
   "private": true,
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arapgechina24-lgtm/nctirs-platform-v2.git"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
