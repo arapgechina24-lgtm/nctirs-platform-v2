@@ -31,9 +31,6 @@ jobs:
           languages: ${{ matrix.language }}
 
       - name: Build
-        env:
-          DATABASE_URL: "libsql://mock-db.turso.io"
-          TURSO_AUTH_TOKEN: "mock-token"
         run: |
           npm install
           npm run build

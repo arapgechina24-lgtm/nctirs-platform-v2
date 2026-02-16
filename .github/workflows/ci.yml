@@ -37,7 +37,5 @@ jobs:
 
       - name: Build
         env:
-          DATABASE_URL: "libsql://mock-db.turso.io"
-          TURSO_AUTH_TOKEN: "mock-token"
           AUTH_SECRET: "ci-build-secret-not-for-production"
         run: npm run build
