@@ -8,7 +8,6 @@ import {
     analyzeThreat,
     analyzeIncident,
     type ThreatAnalysisInput,
-    type ThreatAnalysisInput,
 } from '@/lib/ai';
 import { CyberThreatSeverity } from '@/types';
 
