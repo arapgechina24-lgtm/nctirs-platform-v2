@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/arapgechina24-lgtm/nctirs-platform-v2/compare/v1.1.1...v1.2.0) (2026-02-17)
+
+
+### Features
+
+* **ai:** integrate Anthropic Claude and add provider toggle UI ([ada3cd1](https://github.com/arapgechina24-lgtm/nctirs-platform-v2/commit/ada3cd160fd27b73834a9274cc59996db0ac1b15))
+
 ## [1.1.1](https://github.com/arapgechina24-lgtm/nctirs-platform-v2/compare/v1.1.0...v1.1.1) (2026-02-16)
 
 
