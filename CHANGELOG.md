@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/arapgechina24-lgtm/nctirs-platform-v2/compare/v1.2.0...v1.2.1) (2026-02-17)
+
+
+### Bug Fixes
+
+* **ci:** remove duplicate ThreatAnalysisInput import to fix build ([561cc06](https://github.com/arapgechina24-lgtm/nctirs-platform-v2/commit/561cc06c5b9ed4655412c8c4aabc498f58b8be82))
+
 # [1.2.0](https://github.com/arapgechina24-lgtm/nctirs-platform-v2/compare/v1.1.1...v1.2.0) (2026-02-17)
 
 
