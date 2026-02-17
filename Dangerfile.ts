@@ -1,4 +1,5 @@
-import { danger, warn } from "danger";
+import { danger, warn, markdown } from "danger";
+import { reviewCode } from "./scripts/ai-pr-reviewer";
 
 // Check for PR description
 if (danger.github.pr.body.length < 10) {
@@ -28,3 +29,24 @@ const bigPRThreshold = 500;
 if (danger.github.pr.additions + danger.github.pr.deletions > bigPRThreshold) {
     warn("Big PR! 😅 Please try to keep PRs smaller next time for easier review.");
 }
+
+// AI Code Review
+(async () => {
+    const aiReviewableFiles = danger.git.modified_files.filter(
+        (file) =>
+            (file.endsWith(".ts") || file.endsWith(".tsx")) &&
+            !file.includes("test") &&
+            !file.includes("spec")
+    );
+
+    // Limit to 5 files
+    for (const file of aiReviewableFiles.slice(0, 5)) {
+        const diff = await danger.git.diffForFile(file);
+        if (diff && diff.diff) {
+            const feedback = await reviewCode(file, diff.diff);
+            if (feedback && !feedback.includes("LGTM")) {
+                markdown(`### AI Review for \`${file}\`\n\n${feedback}`);
+            }
+        }
+    }
+})();
