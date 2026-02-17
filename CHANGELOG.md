@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/arapgechina24-lgtm/nctirs-platform-v2/compare/v1.2.1...v1.3.0) (2026-02-17)
+
+
+### Features
+
+* **ci:** implement automated AI code review with DangerJS and Anthropic/Gemini ([5dc5259](https://github.com/arapgechina24-lgtm/nctirs-platform-v2/commit/5dc525989983c2c372500964031e3873a064c615))
+
 ## [1.2.1](https://github.com/arapgechina24-lgtm/nctirs-platform-v2/compare/v1.2.0...v1.2.1) (2026-02-17)
 
 
