@@ -8,7 +8,7 @@ import {
     analyzeThreat,
     analyzeIncident,
     type ThreatAnalysisInput,
-    type IncidentAnalysisInput,
+    type ThreatAnalysisInput,
 } from '@/lib/ai';
 import { CyberThreatSeverity } from '@/types';
 
@@ -81,7 +81,8 @@ export async function POST(req: NextRequest) {
                 location: z.string().optional(),
                 region: z.string().optional(),
                 status: z.string().optional(),
-            })
+            }),
+            provider: z.string().optional(),
         });
 
         const parseResult = AnalysisSchema.safeParse(body);
@@ -92,7 +93,7 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        const { type, data } = parseResult.data;
+        const { type, data, provider } = parseResult.data;
         let analysis;
 
         if (type === 'threat') {
@@ -106,7 +107,7 @@ export async function POST(req: NextRequest) {
                 sourceIP: data.sourceIP,
                 targetSystem: data.targetSystem,
             };
-            analysis = await analyzeThreat(input);
+            analysis = await analyzeThreat(input, provider);
         } else {
             const input: IncidentAnalysisInput = {
                 title: data.title || 'Unknown Incident',
@@ -117,15 +118,16 @@ export async function POST(req: NextRequest) {
                 region: data.region || '',
                 status: data.status || 'OPEN',
             };
-            analysis = await analyzeIncident(input);
+            analysis = await analyzeIncident(input, provider);
         }
 
         return NextResponse.json({
             success: true,
             analysis,
             meta: {
-                aiEnabled: !!process.env.GEMINI_API_KEY,
-                model: process.env.GEMINI_API_KEY ? 'gemini-2.0-flash' : 'rule-based-fallback',
+                aiEnabled: !!process.env.GEMINI_API_KEY || !!process.env.ANTHROPIC_API_KEY,
+                provider: analysis?.source || (process.env.AI_PROVIDER || 'gemini'),
+                model: analysis?.source === 'anthropic' ? 'claude-3-opus' : (process.env.GEMINI_API_KEY ? 'gemini-2.0-flash' : 'rule-based-fallback'),
             },
         });
     } catch (error) {
@@ -141,8 +143,12 @@ export async function POST(req: NextRequest) {
 export async function GET() {
     return NextResponse.json({
         status: 'operational',
-        aiEnabled: !!process.env.GEMINI_API_KEY,
-        model: process.env.GEMINI_API_KEY ? 'gemini-2.0-flash' : 'rule-based-fallback',
+        aiEnabled: !!process.env.GEMINI_API_KEY || !!process.env.ANTHROPIC_API_KEY,
+        providers: {
+            gemini: !!process.env.GEMINI_API_KEY,
+            anthropic: !!process.env.ANTHROPIC_API_KEY,
+        },
+        defaultProvider: process.env.AI_PROVIDER || 'gemini',
         endpoint: '/api/ai/analyze',
         methods: ['POST'],
         usage: {

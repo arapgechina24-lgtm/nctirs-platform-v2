@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
-import { BrainCircuit } from 'lucide-react';
+import React, { useState } from 'react';
+import { BrainCircuit, Sparkles } from 'lucide-react';
 import {
     RansomwareTracker,
     SovereignAIStatusPanel,
@@ -42,6 +42,7 @@ const MOCK_CAMPAIGNS_ANALYTICS: Partial<RansomwareCampaign>[] = [
 ];
 
 export default function IntelligencePage() {
+    const [aiProvider, setAiProvider] = useState<string>('gemini');
     const sovereignStatus = generateSovereignAIStatus();
     const federatedStatus = generateFederatedNodes();
 
@@ -62,13 +63,42 @@ export default function IntelligencePage() {
                 </div>
             </div>
 
+            {/* AI Provider Toggle */}
+            <div className="flex justify-end mb-4 px-2">
+                <div className="flex items-center gap-3 bg-black/40 border border-gray-800 rounded-lg p-1">
+                    <span className="text-xs text-gray-500 font-mono pl-2 uppercase tracking-wider">AI Model:</span>
+                    <div className="flex gap-1">
+                        <button
+                            onClick={() => setAiProvider('gemini')}
+                            className={`px-3 py-1.5 rounded text-xs font-mono transition-all flex items-center gap-2
+                                ${aiProvider === 'gemini'
+                                    ? 'bg-cyan-900/40 text-cyan-400 border border-cyan-700/50 shadow-[0_0_10px_rgba(34,211,238,0.2)]'
+                                    : 'text-gray-500 hover:text-gray-300'}`}
+                        >
+                            <Sparkles className="w-3 h-3" />
+                            GEMINI 2.0
+                        </button>
+                        <button
+                            onClick={() => setAiProvider('claude')}
+                            className={`px-3 py-1.5 rounded text-xs font-mono transition-all flex items-center gap-2
+                                ${aiProvider === 'claude'
+                                    ? 'bg-purple-900/40 text-purple-400 border border-purple-700/50 shadow-[0_0_10px_rgba(168,85,247,0.2)]'
+                                    : 'text-gray-500 hover:text-gray-300'}`}
+                        >
+                            <BrainCircuit className="w-3 h-3" />
+                            CLAUDE 3.5
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             {/* Grid Layout */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 min-h-0">
 
                 {/* Column 1: Ransomware Campaign Tracking (4 cols) */}
                 <div className="lg:col-span-4 h-full flex flex-col gap-6 overflow-hidden">
                     <div className="flex-1 min-h-[300px]">
-                        <ThreatPredictionPanel />
+                        <ThreatPredictionPanel aiProvider={aiProvider} />
                     </div>
                     <div className="flex-1 min-h-[200px]">
                         <RansomwareTracker />

@@ -23,7 +23,7 @@ const PIPELINE_STAGES = [
     { id: 'DECISION', name: 'Threat Scoring', icon: Activity, status: 'COMPLETED' },
 ];
 
-export function ThreatPredictionPanel() {
+export function ThreatPredictionPanel({ aiProvider = 'gemini' }: { aiProvider?: string }) {
     const [activeStage, setActiveStage] = useState(0);
     const [currentPrediction, setCurrentPrediction] = useState(mockThreats[0]);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -65,7 +65,8 @@ export function ThreatPredictionPanel() {
                                 severity: currentPrediction.severity,
                                 description: `Detected anomaly in ${currentPrediction.targetSector} sector.`,
                                 targetSector: currentPrediction.targetSector,
-                            }
+                            },
+                            provider: aiProvider,
                         })
                     });
                     const result = await response.json();
@@ -80,14 +81,15 @@ export function ThreatPredictionPanel() {
             };
             fetchAnalysis();
         }
-    }, [activeStage, currentPrediction, aiAnalysis, isAnalyzing]);
+    }, [activeStage, currentPrediction, aiAnalysis, isAnalyzing, aiProvider]);
 
     const confidenceScore = aiAnalysis?.riskAssessment?.confidenceScore
         ? Math.round(aiAnalysis.riskAssessment.confidenceScore * 100)
         : (currentPrediction.aiConfidence || 85);
 
     const isHighRisk = confidenceScore > 80;
-    const isRealAI = aiAnalysis?.source === 'gemini';
+    const isRealAI = aiAnalysis?.source === 'gemini' || aiAnalysis?.source === 'anthropic';
+    const activeModel = aiAnalysis?.source === 'anthropic' ? 'CLAUDE-3-OPUS' : 'GEMINI-2.0-FLASH';
 
     return (
         <div className={`h-full flex flex-col ${DesignSystem.layout.cardShadow} bg-black/40 border border-cyan-900/50`}>
@@ -104,7 +106,7 @@ export function ThreatPredictionPanel() {
                         ? 'bg-purple-900/40 border-purple-500/50 text-purple-300 shadow-[0_0_10px_purple]'
                         : 'bg-cyan-900/20 border-cyan-700/30 text-cyan-400'}`}>
                     {isRealAI ? <Zap className="w-3 h-3 animate-pulse text-purple-400" /> : <Cpu className="w-3 h-3" />}
-                    <span>{isRealAI ? 'MODEL: GEMINI-2.0-FLASH' : 'MODEL: SENTINEL-V2.1 (SIM)'}</span>
+                    <span>{isRealAI ? `MODEL: ${activeModel}` : 'MODEL: SENTINEL-V2.1 (SIM)'}</span>
                 </div>
             </div>
 
@@ -192,7 +194,7 @@ export function ThreatPredictionPanel() {
             <div className="p-2 border-t border-cyan-900/30 bg-cyan-950/20 text-center">
                 <span className="text-[10px] text-cyan-300/70 font-mono flex items-center justify-center gap-2">
                     <Activity className="w-3 h-3" />
-                    {isRealAI ? 'Latency: 240ms (Gemini API)' : 'Processing 1.4M events/sec • Latency: 12ms'}
+                    {isRealAI ? `Latency: ${aiAnalysis?.source === 'anthropic' ? '850ms (Claude API)' : '240ms (Gemini API)'}` : 'Processing 1.4M events/sec • Latency: 12ms'}
                 </span>
             </div>
         </div>

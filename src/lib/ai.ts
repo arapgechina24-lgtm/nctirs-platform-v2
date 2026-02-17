@@ -106,8 +106,8 @@ function getAnthropicClient() {
 
 // ===== Core Analysis Functions =====
 
-export async function analyzeThreat(input: ThreatAnalysisInput): Promise<AIAnalysisResult> {
-    const provider = process.env.AI_PROVIDER?.toLowerCase() || 'gemini';
+export async function analyzeThreat(input: ThreatAnalysisInput, providerOverride?: string): Promise<AIAnalysisResult> {
+    const provider = providerOverride?.toLowerCase() || process.env.AI_PROVIDER?.toLowerCase() || 'gemini';
     const anthropic = getAnthropicClient();
     const gemini = getGeminiClient();
 
@@ -204,8 +204,8 @@ Return exactly this JSON structure:
     }
 }
 
-export async function analyzeIncident(input: IncidentAnalysisInput): Promise<AIAnalysisResult> {
-    const provider = process.env.AI_PROVIDER?.toLowerCase() || 'gemini';
+export async function analyzeIncident(input: IncidentAnalysisInput, providerOverride?: string): Promise<AIAnalysisResult> {
+    const provider = providerOverride?.toLowerCase() || process.env.AI_PROVIDER?.toLowerCase() || 'gemini';
     const anthropic = getAnthropicClient();
     const gemini = getGeminiClient();
 
@@ -467,8 +467,8 @@ Always respond with valid JSON (no markdown). Return this exact structure:
   "summary": "executive summary of findings"
 }`;
 
-export async function classifyIOCs(input: IOCClassificationInput): Promise<IOCClassificationResult> {
-    const provider = process.env.AI_PROVIDER?.toLowerCase() || 'gemini';
+export async function classifyIOCs(input: IOCClassificationInput, providerOverride?: string): Promise<IOCClassificationResult> {
+    const provider = providerOverride?.toLowerCase() || process.env.AI_PROVIDER?.toLowerCase() || 'gemini';
     const anthropic = getAnthropicClient();
     const gemini = getGeminiClient();
 
