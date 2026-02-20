@@ -3,6 +3,7 @@
 Thank you for your interest in contributing to the National Counter-Terrorism Intelligence Response System (NCTIRS) Dashboard! This document provides guidelines and instructions for contributing.
 
 ## Table of Contents
+
 - [Code of Conduct](#code-of-conduct)
 - [Getting Started](#getting-started)
 - [Development Workflow](#development-workflow)
@@ -17,6 +18,7 @@ By participating in this project, you agree to abide by our [Code of Conduct](CO
 ## Getting Started
 
 ### Prerequisites
+
 - Node.js 18.x or higher
 - npm 9.x or higher
 - Git
@@ -24,6 +26,7 @@ By participating in this project, you agree to abide by our [Code of Conduct](CO
 ### Local Development Setup
 
 1. **Fork the repository**
+
    ```bash
    # Clone your fork
    git clone https://github.com/YOUR_USERNAME/nctirs-dashboard.git
@@ -31,11 +34,13 @@ By participating in this project, you agree to abide by our [Code of Conduct](CO
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Start the development server**
+
    ```bash
    npm run dev
    ```
@@ -46,6 +51,7 @@ By participating in this project, you agree to abide by our [Code of Conduct](CO
 ## Development Workflow
 
 ### Branch Naming Convention
+
 - `feature/` - New features (e.g., `feature/add-threat-heatmap`)
 - `fix/` - Bug fixes (e.g., `fix/incident-list-overflow`)
 - `docs/` - Documentation changes
@@ -53,6 +59,7 @@ By participating in this project, you agree to abide by our [Code of Conduct](CO
 - `test/` - Test additions or modifications
 
 ### Commit Messages
+
 We follow [Conventional Commits](https://www.conventionalcommits.org/):
 
 ```
@@ -64,6 +71,7 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/):
 ```
 
 **Types:**
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation only
@@ -73,6 +81,7 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/):
 - `chore`: Maintenance tasks
 
 **Examples:**
+
 ```
 feat(dashboard): add real-time threat level indicator
 fix(surveillance): resolve camera feed truncation issue
@@ -82,21 +91,25 @@ docs(readme): update installation instructions
 ## Coding Standards
 
 ### TypeScript
+
 - Use TypeScript for all new code
 - Enable strict mode
 - Define explicit types; avoid `any`
 
 ### React Components
+
 - Use functional components with hooks
 - Keep components focused and reusable
 - Follow the existing component structure
 
 ### Styling
+
 - Use Tailwind CSS utility classes
 - Follow the design system in `globals.css`
 - Maintain responsive design patterns
 
 ### Code Quality
+
 ```bash
 # Run linting
 npm run lint
@@ -114,6 +127,7 @@ npm run build
 5. **Submit pull request** with a clear description
 
 ### PR Requirements
+
 - [ ] Code follows project style guidelines
 - [ ] Self-review completed
 - [ ] Build passes without errors
@@ -121,6 +135,7 @@ npm run build
 - [ ] Screenshots provided for UI changes
 
 ### Review Process
+
 - PRs require at least one maintainer approval
 - Address all review comments
 - Keep PRs focused and reasonably sized
@@ -134,9 +149,23 @@ This is a national security application. Please note:
 - **Follow security best practices** in all contributions
 - **Mock data only** - no real intelligence data in the repository
 
+## Governance & Compliance
+
+To maintain National Security standards, this repository enforces strict governance:
+
+- **CODEOWNERS**: Critical paths (`/src/lib/`, `/api/`) require review from core maintainers.
+- **Signed Commits**: All commits must be signed and verified.
+- **Strict CI**: All PRs must pass:
+  - `lint` (ESLint)
+  - `build` (Next.js production build)
+  - `test` (Vitest)
+  - `security` (CodeQL, OSSF Scorecard)
+- **Branch Protection**: Direct pushes to `main` are disabled for non-admins. All changes must go through PRs.
+
 ## Questions?
 
 If you have questions about contributing, please:
+
 1. Check existing issues and discussions
 2. Open a new issue with the "question" label
 3. Contact the maintainers
