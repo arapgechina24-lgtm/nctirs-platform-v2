@@ -106,11 +106,57 @@ function getAnthropicClient() {
 
 // ===== Core Analysis Functions =====
 
-export async function analyzeThreat(input: ThreatAnalysisInput, providerOverride?: string): Promise<AIAnalysisResult> {
+async function executeAIQuery(
+    prompt: string,
+    systemPrompt: string,
+    providerOverride?: string,
+): Promise<{ text: string, source: 'gemini' | 'anthropic' | 'fallback' }> {
     const provider = providerOverride?.toLowerCase() || process.env.AI_PROVIDER?.toLowerCase() || 'gemini';
     const anthropic = getAnthropicClient();
     const gemini = getGeminiClient();
 
+    let text = '';
+    let source: 'gemini' | 'anthropic' | 'fallback' = 'gemini';
+
+    // 1. Try Claude if selected
+    if ((provider === 'claude' || provider === 'anthropic') && anthropic) {
+        try {
+            const response = await anthropic.messages.create({
+                model: 'claude-3-opus-20240229',
+                max_tokens: 2048,
+                system: systemPrompt,
+                messages: [{ role: 'user', content: prompt }],
+            });
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            text = (response.content[0] as any).text;
+            source = 'anthropic';
+        } catch (err) {
+            console.warn('[AI] Claude analysis failed, falling back to Gemini:', err);
+        }
+    }
+
+    // 2. Try Gemini if Claude failed or wasn't selected
+    if (!text && gemini) {
+        try {
+            const result = await gemini.generateContent({
+                contents: [{ role: 'user', parts: [{ text: prompt }] }],
+                systemInstruction: systemPrompt,
+            });
+            text = result.response.text();
+            source = 'gemini';
+        } catch (err) {
+            console.warn('[AI] Gemini analysis failed:', err);
+        }
+    }
+
+    if (!text) {
+        source = 'fallback';
+    }
+
+    return { text, source };
+}
+
+export async function analyzeThreat(input: ThreatAnalysisInput, providerOverride?: string): Promise<AIAnalysisResult> {
     const prompt = `Analyze this cyber threat and return a JSON object (no markdown, just raw JSON):
 
 Threat: ${input.name}
@@ -140,36 +186,8 @@ Return exactly this JSON structure:
 }`;
 
     try {
-        let text = '';
-        let source: 'gemini' | 'anthropic' = 'gemini';
-
-        // 1. Try Claude if selected
-        if ((provider === 'claude' || provider === 'anthropic') && anthropic) {
-            try {
-                const response = await anthropic.messages.create({
-                    model: 'claude-3-opus-20240229',
-                    max_tokens: 1024,
-                    system: SYSTEM_PROMPT,
-                    messages: [{ role: 'user', content: prompt }],
-                });
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                text = (response.content[0] as any).text;
-                source = 'anthropic';
-            } catch (err) {
-                console.warn('[AI] Claude analysis failed, falling back to Gemini:', err);
-                // Fallback to Gemini handled below if text is empty
-            }
-        }
-
-        // 2. Try Gemini if Claude failed or wasn't selected
-        if (!text && gemini) {
-            const result = await gemini.generateContent(prompt);
-            text = result.response.text();
-            source = 'gemini';
-        }
-
-        // 3. Fallback if both failed
-        if (!text) return generateFallbackThreatAnalysis(input);
+        const { text, source } = await executeAIQuery(prompt, SYSTEM_PROMPT, providerOverride);
+        if (source === 'fallback') return generateFallbackThreatAnalysis(input);
 
         // Extract JSON
         const jsonMatch = text.match(/\{[\s\S]*\}/);
@@ -195,7 +213,7 @@ Return exactly this JSON structure:
             recommendedActions: parsed.recommendedActions || ['Investigate further', 'Monitor network traffic'],
             kenyaContext: parsed.kenyaContext || 'Assessment pending for local infrastructure impact.',
             timestamp: new Date().toISOString(),
-            source,
+            source: source as 'gemini' | 'anthropic' | 'fallback',
         };
 
     } catch (error) {
@@ -205,10 +223,6 @@ Return exactly this JSON structure:
 }
 
 export async function analyzeIncident(input: IncidentAnalysisInput, providerOverride?: string): Promise<AIAnalysisResult> {
-    const provider = providerOverride?.toLowerCase() || process.env.AI_PROVIDER?.toLowerCase() || 'gemini';
-    const anthropic = getAnthropicClient();
-    const gemini = getGeminiClient();
-
     const prompt = `Analyze this security incident and return a JSON object (no markdown, just raw JSON):
 
 Incident: ${input.title}
@@ -237,34 +251,8 @@ Return exactly this JSON structure:
 }`;
 
     try {
-        let text = '';
-        let source: 'gemini' | 'anthropic' = 'gemini';
-
-        // 1. Try Claude
-        if ((provider === 'claude' || provider === 'anthropic') && anthropic) {
-            try {
-                const response = await anthropic.messages.create({
-                    model: 'claude-3-opus-20240229',
-                    max_tokens: 1024,
-                    system: SYSTEM_PROMPT,
-                    messages: [{ role: 'user', content: prompt }],
-                });
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                text = (response.content[0] as any).text;
-                source = 'anthropic';
-            } catch (err) {
-                console.warn('[AI] Claude incident analysis failed, falling back to Gemini:', err);
-            }
-        }
-
-        // 2. Try Gemini
-        if (!text && gemini) {
-            const result = await gemini.generateContent(prompt);
-            text = result.response.text();
-            source = 'gemini';
-        }
-
-        if (!text) return generateFallbackIncidentAnalysis(input);
+        const { text, source } = await executeAIQuery(prompt, SYSTEM_PROMPT, providerOverride);
+        if (source === 'fallback') return generateFallbackIncidentAnalysis(input);
 
         // Extract JSON
         const jsonMatch = text.match(/\{[\s\S]*\}/);
@@ -290,7 +278,7 @@ Return exactly this JSON structure:
             recommendedActions: parsed.recommendedActions || ['Investigate further', 'Coordinate with local agencies'],
             kenyaContext: parsed.kenyaContext || 'Assessment pending for local context.',
             timestamp: new Date().toISOString(),
-            source,
+            source: source as 'gemini' | 'anthropic' | 'fallback',
         };
 
     } catch (error) {
@@ -468,44 +456,11 @@ Always respond with valid JSON (no markdown). Return this exact structure:
 }`;
 
 export async function classifyIOCs(input: IOCClassificationInput, providerOverride?: string): Promise<IOCClassificationResult> {
-    const provider = providerOverride?.toLowerCase() || process.env.AI_PROVIDER?.toLowerCase() || 'gemini';
-    const anthropic = getAnthropicClient();
-    const gemini = getGeminiClient();
-
     const prompt = `Classify these IOCs against the MITRE ATT&CK framework:\n\nIndicators:\n${input.indicators.map((ioc, i) => `${i + 1}. ${ioc}`).join('\n')}\n${input.context ? `\nAdditional Context: ${input.context}` : ''}`;
 
     try {
-        let text = '';
-        let source: 'gemini' | 'anthropic' = 'gemini';
-
-        // 1. Try Claude
-        if ((provider === 'claude' || provider === 'anthropic') && anthropic) {
-            try {
-                const response = await anthropic.messages.create({
-                    model: 'claude-3-opus-20240229',
-                    max_tokens: 2048,
-                    system: MITRE_CLASSIFIER_PROMPT,
-                    messages: [{ role: 'user', content: prompt }],
-                });
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                text = (response.content[0] as any).text;
-                source = 'anthropic';
-            } catch (err) {
-                console.warn('[AI] Claude IOC classification failed, falling back to Gemini:', err);
-            }
-        }
-
-        // 2. Try Gemini
-        if (!text && gemini) {
-            const result = await gemini.generateContent({
-                contents: [{ role: 'user', parts: [{ text: prompt }] }],
-                systemInstruction: MITRE_CLASSIFIER_PROMPT,
-            });
-            text = result.response.text();
-            source = 'gemini';
-        }
-
-        if (!text) return generateFallbackIOCClassification(input);
+        const { text, source } = await executeAIQuery(prompt, MITRE_CLASSIFIER_PROMPT, providerOverride);
+        if (source === 'fallback') return generateFallbackIOCClassification(input);
 
         // Extract JSON (Claude sometimes wraps in markdown even w/ instruction)
         const jsonMatch = text.match(/\{[\s\S]*\}/);
@@ -540,7 +495,7 @@ export async function classifyIOCs(input: IOCClassificationInput, providerOverri
             totalIndicators: classifications.length,
             criticalCount,
             timestamp: new Date().toISOString(),
-            source,
+            source: source as 'gemini' | 'anthropic' | 'fallback',
         };
     } catch (error) {
         console.error('[AI] MITRE classification failed, using fallback:', error);
