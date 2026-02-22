@@ -9,7 +9,7 @@ jobs:
             - uses: actions/setup-node@v4
               with:
                   node-version: 20
-            - run: npm ci
+            - run: npm install --legacy-peer-deps
             # Using a simple script or tool to check licenses would be ideal here.
             # For now, we'll verify the LICENSE file exists and npm can parse package.json license.
             - name: Check LICENSE file exists
