@@ -61,7 +61,7 @@ export default function DemoModeController({ onTriggerEmergency }: DemoModeProps
             {/* Demo Mode Toggle Button */}
             <button
                 onClick={() => setDemoMode(prev => !prev)}
-                className={`fixed bottom-4 left-4 z-50 px-3 py-2 text-[10px] font-mono uppercase border transition-all ${demoMode
+                className={`fixed bottom-10 left-4 z-50 px-3 py-2 text-[10px] font-mono uppercase border transition-all ${demoMode
                     ? 'bg-yellow-900/50 text-yellow-400 border-yellow-500 animate-pulse'
                     : 'bg-gray-900/50 text-gray-500 border-gray-700 hover:border-gray-500'
                     }`}
@@ -70,10 +70,10 @@ export default function DemoModeController({ onTriggerEmergency }: DemoModeProps
             </button>
 
             {/* Keyboard Shortcut Hints */}
-            <div className="fixed bottom-4 right-4 z-50 text-[9px] font-mono text-gray-600 space-y-1">
-                <div><kbd className="bg-gray-800 px-1 rounded">Ctrl+Shift+E</kbd> Emergency</div>
-                <div><kbd className="bg-gray-800 px-1 rounded">Ctrl+Shift+A</kbd> Audit</div>
-                <div><kbd className="bg-gray-800 px-1 rounded">Ctrl+Shift+D</kbd> Demo</div>
+            <div className="fixed bottom-10 left-32 z-50 flex flex-row items-center gap-3 text-[9px] font-mono text-gray-600">
+                <div className="flex items-center gap-1"><kbd className="bg-gray-800 px-1 rounded text-gray-400">Ctrl+Shift+E</kbd> Emergency</div>
+                <div className="flex items-center gap-1"><kbd className="bg-gray-800 px-1 rounded text-gray-400">Ctrl+Shift+A</kbd> Audit</div>
+                <div className="flex items-center gap-1"><kbd className="bg-gray-800 px-1 rounded text-gray-400">Ctrl+Shift+D</kbd> Demo</div>
             </div>
         </>
     );

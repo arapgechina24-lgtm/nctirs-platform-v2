@@ -30,18 +30,18 @@ export function IncidentList({ incidents, maxItems = 10 }: IncidentListProps) {
               key={incident.id}
               className="flex flex-col gap-3 rounded-none border border-green-900/30 bg-black/50 p-4 transition-all hover:border-green-500/50 hover:bg-green-950/10 hover:shadow-[0_0_20px_rgba(0,255,65,0.05)]"
             >
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
+              <div className="flex flex-wrap sm:flex-nowrap items-start justify-between gap-4">
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-2 mb-1">
                     <ThreatBadge level={incident.threatLevel} />
                     <StatusBadge status={incident.status} />
                     <Badge variant="info">{incident.type.replace(/_/g, ' ')}</Badge>
                   </div>
-                  <h4 className="font-bold text-green-400 font-mono tracking-tight">{incident.title}</h4>
+                  <h4 className="font-bold text-green-400 font-mono tracking-tight truncate">{incident.title}</h4>
                   <p className="text-[11px] text-green-800 mt-1 uppercase leading-relaxed">{incident.description}</p>
                 </div>
-                <div className="text-right">
-                  <div className="text-[10px] font-bold text-green-600 font-mono">
+                <div className="text-left sm:text-right shrink-0">
+                  <div className="text-[10px] font-bold text-green-600 font-mono bg-black/50 px-2 py-1 rounded">
                     AI_CONFIDENCE: {incident.aiConfidence}%
                   </div>
                 </div>

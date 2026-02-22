@@ -143,7 +143,7 @@ const MultiplayerSession: React.FC = () => {
             ))}
 
             {/* Session Indicator */}
-            <div className="absolute bottom-4 right-4 flex flex-col gap-2 pointer-events-auto">
+            <div className="absolute bottom-10 right-4 flex flex-col gap-2 pointer-events-auto">
                 <div className="bg-black/80 border border-gray-700 rounded p-2 text-xs font-mono text-gray-400">
                     <div className="flex items-center gap-2 mb-1 border-b border-gray-800 pb-1">
                         <span className={`w-2 h-2 rounded-full ${status === 'LIVE' ? 'bg-green-500' : 'bg-amber-500'} animate-pulse`}></span>

@@ -358,7 +358,7 @@ export default function Home() {
   return (
 
     <div className={`min-h-screen bg-black text-green-500 font-mono selection:bg-green-900 selection:text-white`}>
-      <div className="fixed inset-0 pointer-events-none z-50 bg-[url('/scanline.png')] opacity-10 mix-blend-overlay"></div>
+      <div className="fixed inset-0 pointer-events-none z-50 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_4px,3px_100%] opacity-20 mix-blend-overlay"></div>
       <div className="fixed inset-0 pointer-events-none z-50 bg-gradient-to-b from-transparent via-green-900/5 to-green-900/10"></div>
 
       <Header currentView={currentView} onViewChange={setCurrentView} />
@@ -367,11 +367,13 @@ export default function Home() {
         <MultiplayerSession />
 
         {/* View Routing */}
-        {currentView === 'COMMAND_CENTER' && <CommandCenterView data={data} setIsEmergency={setIsEmergency} activeCoordinated={activeCoordinated} highThreatCount={highThreatCount} activeResponses={activeResponses} criticalCyber={criticalCyber} />}
-        {currentView === 'FUSION_CENTER' && <FusionCenterView data={data} />}
-        {currentView === 'THREAT_MATRIX' && <ThreatMatrixView data={data} />}
-        {currentView === 'ANALYTICS' && <AnalyticsView data={data} />}
-        {currentView === 'OPERATIONS' && <OperationsView data={data} />}
+        <div className="flex flex-col gap-4 overflow-y-auto relative z-10" style={{ height: 'calc(100vh - 9rem)' }}>
+          {currentView === 'COMMAND_CENTER' && <CommandCenterView data={data} setIsEmergency={setIsEmergency} activeCoordinated={activeCoordinated} highThreatCount={highThreatCount} activeResponses={activeResponses} criticalCyber={criticalCyber} />}
+          {currentView === 'FUSION_CENTER' && <FusionCenterView data={data} />}
+          {currentView === 'THREAT_MATRIX' && <ThreatMatrixView data={data} />}
+          {currentView === 'ANALYTICS' && <AnalyticsView data={data} />}
+          {currentView === 'OPERATIONS' && <OperationsView data={data} />}
+        </div>
 
       </main>
 
@@ -400,7 +402,7 @@ export default function Home() {
 }
 function CommandCenterView({ data, setIsEmergency, activeCoordinated, highThreatCount, activeResponses, criticalCyber }: { data: DashboardData, setIsEmergency: (val: boolean) => void, activeCoordinated: number, highThreatCount: number, activeResponses: number, criticalCyber: number }) {
   return (
-    <div className="flex flex-col gap-4 overflow-y-auto" style={{ height: 'calc(100vh - 9rem)' }}>
+    <div className="flex flex-col gap-4">
       {/* TOP ROW: Metrics Bar with Emergency Button */}
       <div className="flex items-stretch gap-4 shrink-0">
         <div className="flex-1">
@@ -615,7 +617,7 @@ function AnalyticsView({ data }: { data: DashboardData }) {
 
 function OperationsView({ data }: { data: DashboardData }) {
   return (
-    <div className="flex flex-col gap-4 overflow-y-auto" style={{ height: 'calc(100vh - 9rem)' }}>
+    <div className="flex flex-col gap-4">
       {/* 4 PILLARS HEADER */}
       <div className="flex items-center justify-between px-1 shrink-0">
         <div className="text-xs text-green-500 uppercase tracking-widest font-bold flex items-center gap-2">
