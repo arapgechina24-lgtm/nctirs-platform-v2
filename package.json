@@ -15,7 +15,12 @@
     "start": "next start",
     "lint": "eslint",
     "type-check": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "db:seed": "npx prisma db seed",
+    "db:reset": "npx prisma migrate reset --force && npx prisma db seed"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "eslintConfig": {
     "extends": "next/core-web-vitals",

@@ -38,7 +38,7 @@ model Incident {
   id            String    @id @default(cuid())
   title         String
   description   String
-  type          String    // CYBER_ATTACK, TERROR_THREAT, FRAUD, etc.
+  type          String    // PHISHING, RANSOMWARE, DATA_BREACH, MALWARE, DDOS, APT, INSIDER_THREAT, IDENTITY_THEFT
   severity      String    // CRITICAL, HIGH, MEDIUM, LOW
   status        String    @default("ACTIVE") // ACTIVE, INVESTIGATING, CONTAINED, RESOLVED
   location      String?
@@ -48,6 +48,8 @@ model Incident {
   targetAsset   String?
   attackVector  String?   // MITRE ATT&CK technique
   indicators    String?   // JSON string of IOCs
+  dataProtectionImpact String? // PII_EXPOSED, CREDENTIALS_LEAKED, FINANCIAL_DATA, HEALTH_RECORDS, NONE
+  mitreAttackId String?   // MITRE ATT&CK technique ID (e.g. T1566.001)
   
   // Timestamps
   createdAt     DateTime  @default(now())
@@ -67,14 +69,16 @@ model Incident {
 model Threat {
   id            String    @id @default(cuid())
   name          String
-  type          String    // APT, RANSOMWARE, PHISHING, DDOS, etc.
+  type          String    // APT, RANSOMWARE, PHISHING, DDOS, DATA_BREACH, MALWARE, INSIDER_THREAT, IDENTITY_THEFT
   severity      String
   source        String?   // Origin country/group
-  targetSector  String?   // FINANCE, TELECOM, POWER, etc.
+  targetSector  String?   // GOVERNMENT, FINANCIAL, INFRASTRUCTURE, HEALTHCARE, TELECOM, ENERGY, TRANSPORT
   confidence    Float     @default(0.0)
   mitreId       String?   // MITRE ATT&CK ID
   description   String?
   indicators    String?   // JSON string of IOCs
+  affectedCitizens Int?   // Number of affected citizens
+  dpaViolation  String?   // Kenya DPA 2019 section violated
   
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
