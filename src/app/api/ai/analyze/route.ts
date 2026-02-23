@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
         if (type === 'threat') {
             const input: ThreatAnalysisInput = {
                 name: data.name || 'Unknown Threat',
-                type: data.type || 'CYBER_ATTACK',
+                type: data.type || 'MALWARE',
                 severity: (data.severity as CyberThreatSeverity) || 'MEDIUM',
                 description: data.description || '',
                 indicators: data.indicators,
@@ -111,7 +111,7 @@ export async function POST(req: NextRequest) {
         } else {
             const input: IncidentAnalysisInput = {
                 title: data.title || 'Unknown Incident',
-                type: data.type || 'CYBER_ATTACK',
+                type: data.type || 'MALWARE',
                 severity: (data.severity as CyberThreatSeverity) || 'MEDIUM',
                 description: data.description || '',
                 location: data.location || '',

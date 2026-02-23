@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
                 data: {
                     title: payload.title,
                     description: `${payload.description}\n\n[Source: OpenClaw Agent]`,
-                    type: payload.type || 'CYBER_ATTACK',
+                    type: payload.type || 'MALWARE',
                     severity: payload.severity || 'HIGH',
                     status: 'ACTIVE',
                     indicators: JSON.stringify(payload.indicators || {}),

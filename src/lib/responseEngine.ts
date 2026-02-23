@@ -45,11 +45,11 @@ const RESPONSE_PLAYBOOKS: AutomatedResponseTrigger[] = [
     },
     {
         id: 'PB-005',
-        threatType: 'TERRORISM',
+        threatType: 'PHISHING',
         severity: 'CRITICAL',
-        action: 'POLICE_DISPATCH',
-        autoApprove: false, // Requires manual approval
-        description: 'Dispatch Quick Response Team to physical location.',
+        action: 'ALERT_AGENCY',
+        autoApprove: false,
+        description: 'Alert all agencies and lock affected user accounts for credential reset.',
     },
 ];
 

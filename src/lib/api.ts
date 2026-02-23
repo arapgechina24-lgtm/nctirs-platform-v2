@@ -116,8 +116,10 @@ function mapDBIncidentToSecurityIncident(db: DBIncident): SecurityIncident {
         affectedArea: Math.floor(Math.random() * 50) + 1, // Not stored in DB, generate placeholder
         casualties: undefined, // Not stored in DB
         suspects: undefined, // Not stored in DB
-        aiConfidence: 75 + Math.floor(Math.random() * 20), // Not stored in DB, generate realistic value
-        sources: ['Database', 'API'].slice(0, Math.floor(Math.random() * 2) + 1), // Placeholder
+        aiConfidence: 75 + Math.floor(Math.random() * 20),
+        sources: ['Database', 'API'].slice(0, Math.floor(Math.random() * 2) + 1),
+        dataProtectionImpact: 'NONE',
+        mitreAttackId: undefined,
     }
 }
 

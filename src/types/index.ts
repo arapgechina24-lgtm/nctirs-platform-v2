@@ -11,7 +11,8 @@
 // ============================================================
 
 export type ThreatLevel = 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
-export type IncidentType = 'TERRORISM' | 'ORGANIZED_CRIME' | 'CYBER_ATTACK' | 'VIOLENT_CRIME' | 'TRAFFICKING' | 'RADICALIZATION' | 'BORDER_SECURITY' | 'PUBLIC_DISORDER';
+export type IncidentType = 'PHISHING' | 'RANSOMWARE' | 'DATA_BREACH' | 'MALWARE' | 'DDOS' | 'APT' | 'INSIDER_THREAT' | 'IDENTITY_THEFT';
+export type DataProtectionImpact = 'PII_EXPOSED' | 'CREDENTIALS_LEAKED' | 'FINANCIAL_DATA' | 'HEALTH_RECORDS' | 'NONE';
 export type IncidentStatus = 'ACTIVE' | 'INVESTIGATING' | 'RESOLVED' | 'MONITORING';
 export type Region = 'NAIROBI' | 'MOMBASA' | 'KISUMU' | 'NAKURU' | 'ELDORET' | 'TURKANA' | 'GARISSA' | 'MANDERA';
 
@@ -33,6 +34,8 @@ export interface SecurityIncident {
     suspects?: number;
     aiConfidence: number;
     sources: string[];
+    dataProtectionImpact: DataProtectionImpact;
+    mitreAttackId?: string;
 }
 
 export interface CrimePrediction {

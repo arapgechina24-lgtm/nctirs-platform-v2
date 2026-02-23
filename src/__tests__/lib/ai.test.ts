@@ -142,7 +142,7 @@ describe('generateFallbackThreatAnalysis', () => {
 describe('generateFallbackIncidentAnalysis', () => {
     const baseIncident: IncidentAnalysisInput = {
         title: 'Government System Breach',
-        type: 'CYBER_ATTACK',
+        type: 'MALWARE',
         severity: 'HIGH',
         location: 'Nairobi CBD',
         region: 'NAIROBI',
@@ -174,7 +174,7 @@ describe('generateFallbackIncidentAnalysis', () => {
     it('should handle missing location gracefully', () => {
         const result = generateFallbackIncidentAnalysis({
             title: 'Test Incident',
-            type: 'CYBER_ATTACK',
+            type: 'MALWARE',
             severity: 'MEDIUM',
         })
         expect(result.recommendedActions[0]).toContain('incident location')
@@ -224,7 +224,7 @@ describe('analyzeIncident', () => {
     it('should return fallback when no API key is set', async () => {
         const result = await analyzeIncident({
             title: 'Test Incident',
-            type: 'TERRORISM',
+            type: 'PHISHING',
             severity: 'CRITICAL',
             region: 'GARISSA',
         })
@@ -235,7 +235,7 @@ describe('analyzeIncident', () => {
     it('should return valid analysis shape even in fallback', async () => {
         const result = await analyzeIncident({
             title: 'Armed Robbery',
-            type: 'VIOLENT_CRIME',
+            type: 'RANSOMWARE',
             severity: 'HIGH',
             location: 'Eastleigh',
             region: 'NAIROBI',

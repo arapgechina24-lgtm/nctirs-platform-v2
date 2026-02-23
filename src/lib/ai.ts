@@ -298,11 +298,8 @@ const MITRE_MAP: Record<string, { technique: string; id: string; description: st
     DATA_BREACH: { technique: 'Data Exfiltration', id: 'T1041', description: 'Unauthorized transfer of data over C2 channel.' },
     MALWARE: { technique: 'User Execution of Malware', id: 'T1204', description: 'Malicious code execution via user interaction.' },
     SQL_INJECTION: { technique: 'Exploitation via SQL Injection', id: 'T1190', description: 'SQL injection to manipulate or extract database content.' },
-    CYBER_ATTACK: { technique: 'Multi-Vector Cyber Attack', id: 'T1059', description: 'Combined exploitation techniques targeting system integrity.' },
-    TERRORISM: { technique: 'Physical Threat Correlated', id: 'T1200', description: 'Hardware-based or physically proximate threat vector.' },
-    ORGANIZED_CRIME: { technique: 'Organized Criminal Activity', id: 'T1078', description: 'Use of valid credentials obtained through criminal networks.' },
-    VIOLENT_CRIME: { technique: 'Physical Security Threat', id: 'T1200', description: 'Direct physical threat requiring law enforcement response.' },
-    TRAFFICKING: { technique: 'Illicit Supply Chain', id: 'T1195', description: 'Exploitation via compromised supply chain or trafficking routes.' },
+    INSIDER_THREAT: { technique: 'Valid Accounts Abuse', id: 'T1078', description: 'Abuse of legitimate credentials by authorized insider for unauthorized purposes.' },
+    IDENTITY_THEFT: { technique: 'Identity Fraud', id: 'T1589', description: 'Exploitation of stolen identity information for unauthorized access or financial fraud.' },
 };
 
 const KENYA_CONTEXT_MAP: Record<string, string> = {
@@ -316,7 +313,7 @@ const KENYA_CONTEXT_MAP: Record<string, string> = {
 };
 
 export function generateFallbackThreatAnalysis(input: ThreatAnalysisInput): AIAnalysisResult {
-    const mitre = MITRE_MAP[input.type] || MITRE_MAP['CYBER_ATTACK'];
+    const mitre = MITRE_MAP[input.type] || MITRE_MAP['MALWARE'];
     const kenyaCtx = input.targetSector
         ? KENYA_CONTEXT_MAP[input.targetSector] || `Threat to Kenyan ${input.targetSector.toLowerCase()} sector infrastructure. Standard NCTIRS response protocols apply.`
         : 'Cross-sector threat assessment pending. Multi-agency coordination recommended under NCTIRS framework.';
@@ -366,7 +363,7 @@ export function generateFallbackThreatAnalysis(input: ThreatAnalysisInput): AIAn
 }
 
 export function generateFallbackIncidentAnalysis(input: IncidentAnalysisInput): AIAnalysisResult {
-    const mitre = MITRE_MAP[input.type] || MITRE_MAP['CYBER_ATTACK'];
+    const mitre = MITRE_MAP[input.type] || MITRE_MAP['MALWARE'];
 
     return {
         summary: `Rule-based briefing: ${input.title}. ${input.type.replace(/_/g, ' ')} incident in ${input.region || 'Kenya'} at ${input.severity} severity. Status: ${input.status || 'ACTIVE'}.`,

@@ -424,14 +424,14 @@ function CommandCenterView({ data, setIsEmergency, activeCoordinated, highThreat
         </button>
       </div>
 
-      {/* MAIN CONTENT: 3-Column Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+      {/* MAIN CONTENT: 2-Column Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         {/* COLUMN 1: Infrastructure Status */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-5">
           <div className="text-xs text-green-500 uppercase tracking-widest font-bold px-1 flex items-center gap-2">
             <span className="w-2 h-2 bg-green-500 rounded-full" />
-            Infrastructure Status
+            System Infrastructure
           </div>
           <CNIHeatmap />
           <SystemArchitecture
@@ -452,10 +452,10 @@ function CommandCenterView({ data, setIsEmergency, activeCoordinated, highThreat
         </div>
 
         {/* COLUMN 2: Threat Visualization */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-5">
           <div className="text-xs text-green-500 uppercase tracking-widest font-bold px-1 flex items-center gap-2">
             <span className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
-            Threat Visualization
+            Cyber Threat Visualization
           </div>
 
           {/* Quick Stats */}
@@ -470,8 +470,8 @@ function CommandCenterView({ data, setIsEmergency, activeCoordinated, highThreat
             </div>
           </div>
 
-          {/* Main Map */}
-          <div className="h-64 border border-green-900/30 overflow-hidden">
+          {/* Main Map - Large and Prominent */}
+          <div className="h-[420px] border border-green-900/30 rounded-lg overflow-hidden shadow-lg shadow-green-900/10">
             <ThreatMap
               incidents={data.incidents}
               predictions={data.predictions}
@@ -485,10 +485,10 @@ function CommandCenterView({ data, setIsEmergency, activeCoordinated, highThreat
         </div>
 
         {/* COLUMN 3: Intelligence & Response */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-5">
           <div className="text-xs text-green-500 uppercase tracking-widest font-bold px-1 flex items-center gap-2">
             <span className="w-2 h-2 bg-cyan-500 rounded-full" />
-            Intelligence Feed
+            Cyber Intelligence Feed
           </div>
 
           <ThreatAnalyticsEngine

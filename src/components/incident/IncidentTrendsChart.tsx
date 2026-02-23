@@ -20,7 +20,7 @@ export function IncidentTrendsChart({ data }: IncidentTrendsChartProps) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <TrendingUp className="h-5 w-5 text-emerald-500" />
-          30-Day Incident Trends
+          30-Day Cyber Threat Trends
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -52,32 +52,40 @@ export function IncidentTrendsChart({ data }: IncidentTrendsChartProps) {
             <Line
               type="monotone"
               dataKey="total"
-              name="TOTAL_INCIDENTS"
+              name="TOTAL_THREATS"
               stroke="#00ff41"
               strokeWidth={2}
               dot={false}
             />
             <Line
               type="monotone"
-              dataKey="TERRORISM"
-              name="TERRORISM"
-              stroke="#ff0000"
+              dataKey="PHISHING"
+              name="PHISHING"
+              stroke="#ff6b6b"
               strokeWidth={1.5}
               dot={false}
             />
             <Line
               type="monotone"
-              dataKey="ORGANIZED_CRIME"
-              name="ORG_CRIME"
-              stroke="#008f11"
+              dataKey="RANSOMWARE"
+              name="RANSOMWARE"
+              stroke="#ffa500"
               strokeWidth={1.5}
               dot={false}
             />
             <Line
               type="monotone"
-              dataKey="CYBER_ATTACK"
-              name="CYBER"
-              stroke="#003b00"
+              dataKey="DATA_BREACH"
+              name="DATA_BREACH"
+              stroke="#a855f7"
+              strokeWidth={1.5}
+              dot={false}
+            />
+            <Line
+              type="monotone"
+              dataKey="APT"
+              name="APT"
+              stroke="#06b6d4"
               strokeWidth={1.5}
               dot={false}
             />

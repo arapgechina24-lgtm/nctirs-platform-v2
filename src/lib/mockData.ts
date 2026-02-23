@@ -51,6 +51,7 @@ import type {
   PerceptionLayerStatus,
   CognitionLayerStatus,
   IntegrityLayerStatus,
+  DataProtectionImpact,
 } from '@/types';
 
 // Kenyan locations with realistic coordinates
@@ -91,54 +92,76 @@ const kenyaLocations = {
 };
 
 const incidentTitles: Record<IncidentType, string[]> = {
-  TERRORISM: [
-    'Suspected extremist activity detected',
-    'Explosive device neutralized',
-    'Terror cell identified',
-    'Radicalization center discovered',
+  PHISHING: [
+    'Spearphishing campaign targeting eCitizen users',
+    'KRA iTax credential harvesting detected',
+    'M-Pesa agent verification scam active',
+    'Business email compromise attempt',
   ],
-  ORGANIZED_CRIME: [
-    'Drug trafficking operation',
-    'Human trafficking ring',
-    'Organized theft syndicate',
-    'Money laundering network',
+  RANSOMWARE: [
+    'LOCKBIT 4.0 deployment on critical infrastructure',
+    'BlackCat variant encrypting government systems',
+    'Ransomware attack on hospital network',
+    'County government systems encrypted',
   ],
-  CYBER_ATTACK: [
-    'Government system breach attempt',
-    'Malware attack on infrastructure',
-    'Phishing campaign targeting officials',
-    'DDoS attack detected',
+  DATA_BREACH: [
+    'Government database exfiltration detected',
+    'Citizen PII exposed on dark web',
+    'Financial records breach at banking institution',
+    'Voter registration data leak identified',
   ],
-  VIOLENT_CRIME: [
-    'Armed robbery reported',
-    'Gang violence incident',
-    'Assault and battery case',
-    'Carjacking incident',
+  MALWARE: [
+    'RAT detected on telecom infrastructure',
+    'Wiper malware targeting SCADA systems',
+    'Banking Trojan distributed via fake apps',
+    'Supply chain compromise via trojanized update',
   ],
-  TRAFFICKING: [
-    'Wildlife trafficking operation',
-    'Arms smuggling detected',
-    'Counterfeit goods seizure',
-    'Illegal border crossing',
+  DDOS: [
+    'Volumetric DDoS on government portal',
+    'Application layer attack on financial exchange',
+    'DNS amplification against ISP backbone',
+    'Service disruption attack on e-Services',
   ],
-  RADICALIZATION: [
-    'Extremist recruitment activity',
-    'Hate speech dissemination',
-    'Radical propaganda distribution',
-    'Youth radicalization attempt',
+  APT: [
+    'State-sponsored espionage on diplomatic systems',
+    'Persistent access to submarine cable infrastructure',
+    'Defense network firmware compromise detected',
+    'DNS hijacking of government domains',
   ],
-  BORDER_SECURITY: [
-    'Illegal border crossing',
-    'Contraband smuggling',
-    'Cross-border incursion',
-    'Border patrol alert',
+  INSIDER_THREAT: [
+    'Privileged user exfiltrating procurement data',
+    'Employee selling customer records externally',
+    'Unauthorized access to classified systems',
+    'Data processor confidentiality breach',
   ],
-  PUBLIC_DISORDER: [
-    'Riot and civil unrest',
-    'Illegal protest gathering',
-    'Public violence outbreak',
-    'Mob justice incident',
+  IDENTITY_THEFT: [
+    'Digital ID fraud ring using stolen biometrics',
+    'Synthetic identity fraud on lending platforms',
+    'SIM swap fraud targeting M-Pesa accounts',
+    'Deepfake voice bypass on KYC systems',
   ],
+};
+
+const dataProtectionImpacts: Record<IncidentType, DataProtectionImpact[]> = {
+  PHISHING: ['CREDENTIALS_LEAKED', 'FINANCIAL_DATA', 'PII_EXPOSED'],
+  RANSOMWARE: ['NONE', 'FINANCIAL_DATA', 'HEALTH_RECORDS'],
+  DATA_BREACH: ['PII_EXPOSED', 'FINANCIAL_DATA', 'CREDENTIALS_LEAKED', 'HEALTH_RECORDS'],
+  MALWARE: ['CREDENTIALS_LEAKED', 'NONE', 'FINANCIAL_DATA'],
+  DDOS: ['NONE'],
+  APT: ['PII_EXPOSED', 'CREDENTIALS_LEAKED', 'NONE'],
+  INSIDER_THREAT: ['PII_EXPOSED', 'FINANCIAL_DATA', 'CREDENTIALS_LEAKED'],
+  IDENTITY_THEFT: ['PII_EXPOSED', 'FINANCIAL_DATA'],
+};
+
+const mitreAttackIds: Record<IncidentType, string[]> = {
+  PHISHING: ['T1566.001', 'T1566.002', 'T1566.003', 'T1598.003'],
+  RANSOMWARE: ['T1486', 'T1490', 'T1489'],
+  DATA_BREACH: ['T1530', 'T1005', 'T1190', 'T1213'],
+  MALWARE: ['T1059.001', 'T1485', 'T1014', 'T1195.002'],
+  DDOS: ['T1498.001', 'T1499.003', 'T1499.002', 'T1498.002'],
+  APT: ['T1078.004', 'T1040', 'T1195.003', 'T1071.001'],
+  INSIDER_THREAT: ['T1567.002', 'T1078', 'T1078.001', 'T1530'],
+  IDENTITY_THEFT: ['T1588.002', 'T1589.001', 'T1556', 'T1589.003'],
 };
 
 // Generate mock security incidents
@@ -160,7 +183,7 @@ export function generateMockIncidents(count: number = 20): SecurityIncident[] {
       id: `INC-${Date.now()}-${i}`,
       type,
       title: titles[Math.floor(Math.random() * titles.length)],
-      description: `Intelligence analysis indicates ${type.toLowerCase().replace('_', ' ')} activity in the area.`,
+      description: `AI-detected ${type.toLowerCase().replace('_', ' ')} activity targeting Kenyan infrastructure.`,
       location: {
         name: location.name,
         region,
@@ -170,10 +193,18 @@ export function generateMockIncidents(count: number = 20): SecurityIncident[] {
       status: statuses[Math.floor(Math.random() * statuses.length)],
       timestamp: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000),
       affectedArea: Math.floor(Math.random() * 50) + 1,
-      casualties: Math.random() > 0.7 ? Math.floor(Math.random() * 10) : undefined,
+      casualties: undefined,
       suspects: Math.random() > 0.5 ? Math.floor(Math.random() * 5) + 1 : undefined,
       aiConfidence: Math.floor(Math.random() * 30) + 70,
-      sources: ['CCTV', 'OSINT', 'Field Reports', 'Citizen Reports', 'Intercepted Communications'].slice(0, Math.floor(Math.random() * 3) + 1),
+      sources: ['KE-CIRT/CC', 'OSINT', 'Network Logs', 'Dark Web Intel', 'SOC Alert', 'Threat Intel Feed'].slice(0, Math.floor(Math.random() * 3) + 1),
+      dataProtectionImpact: (() => {
+        const impacts = dataProtectionImpacts[type];
+        return impacts[Math.floor(Math.random() * impacts.length)];
+      })(),
+      mitreAttackId: (() => {
+        const ids = mitreAttackIds[type];
+        return ids[Math.floor(Math.random() * ids.length)];
+      })(),
     });
   }
 
