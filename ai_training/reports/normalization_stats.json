@@ -1,0 +1,389 @@
+{
+  "features": [
+    "flow_duration",
+    "total_fwd_packets",
+    "total_bwd_packets",
+    "total_fwd_bytes",
+    "total_bwd_bytes",
+    "flow_bytes_per_sec",
+    "flow_packets_per_sec",
+    "flow_iat_mean",
+    "flow_iat_std",
+    "flow_iat_max",
+    "protocol_type",
+    "dst_port_entropy",
+    "src_port_entropy",
+    "tcp_flag_syn_ratio",
+    "tcp_flag_ack_ratio",
+    "tcp_flag_fin_ratio",
+    "tcp_flag_rst_ratio",
+    "tcp_flag_psh_ratio",
+    "fwd_payload_mean",
+    "fwd_payload_std",
+    "bwd_payload_mean",
+    "bwd_payload_std",
+    "payload_entropy",
+    "small_packet_ratio",
+    "large_packet_ratio",
+    "payload_length_variance",
+    "unique_src_ips",
+    "unique_dst_ips",
+    "src_fanout",
+    "dst_fanin",
+    "connection_count",
+    "same_srv_rate",
+    "diff_srv_rate",
+    "connection_duration_var",
+    "time_of_day",
+    "day_of_week",
+    "is_weekend",
+    "burstiness_index",
+    "idle_time_ratio",
+    "periodic_score",
+    "failed_connection_ratio",
+    "dns_query_rate",
+    "dns_response_ratio",
+    "retransmission_rate",
+    "avg_ttl",
+    "ttl_variance"
+  ],
+  "num_features": 46,
+  "feature_groups": {
+    "flow": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "protocol": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "payload": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25
+    ],
+    "connection": [
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33
+    ],
+    "temporal": [
+      34,
+      35,
+      36,
+      37,
+      38,
+      39
+    ],
+    "behavioral": [
+      40,
+      41,
+      42,
+      43,
+      44,
+      45
+    ]
+  },
+  "normalization": {
+    "flow_duration": {
+      "mean": 1.0067561463464996,
+      "std": 4.710444410846159,
+      "min": 0.0,
+      "max": 59.999989
+    },
+    "total_fwd_packets": {
+      "mean": 18.666472331535733,
+      "std": 133.91635344919013,
+      "min": 1.0,
+      "max": 10646.0
+    },
+    "total_bwd_packets": {
+      "mean": 17.54593596657436,
+      "std": 115.57408562825539,
+      "min": 0.0,
+      "max": 11018.0
+    },
+    "total_fwd_bytes": {
+      "mean": 7993.908164504688,
+      "std": 171642.26188005073,
+      "min": 24.0,
+      "max": 14355774.0
+    },
+    "total_bwd_bytes": {
+      "mean": 13233.78556332896,
+      "std": 151471.45609124954,
+      "min": 0.0,
+      "max": 14657531.0
+    },
+    "flow_bytes_per_sec": {
+      "mean": 17175228.884499863,
+      "std": 49181242.17561909,
+      "min": 1.533333614444496,
+      "max": 1768000000.0
+    },
+    "flow_packets_per_sec": {
+      "mean": 178985.3711916967,
+      "std": 333204.8128196002,
+      "min": 0.03333333944444557,
+      "max": 20000000.0
+    },
+    "flow_iat_mean": {
+      "mean": 755.3943010848151,
+      "std": 6182.615731603772,
+      "min": 0.0,
+      "max": 60009.992
+    },
+    "flow_iat_std": {
+      "mean": 6363.075099675206,
+      "std": 56724.01668947716,
+      "min": 0.0,
+      "max": 1483830.917
+    },
+    "flow_iat_max": {
+      "mean": 13481.544500435226,
+      "std": 114109.20848701197,
+      "min": 0.0,
+      "max": 2986957.8286699997
+    },
+    "protocol_type": {
+      "mean": 109.34827284652383,
+      "std": 18.637282115713226,
+      "min": 0.0,
+      "max": 130.0
+    },
+    "dst_port_entropy": {
+      "mean": 0.0,
+      "std": 0.0,
+      "min": 0.0,
+      "max": 0.0
+    },
+    "src_port_entropy": {
+      "mean": 0.0,
+      "std": 0.0,
+      "min": 0.0,
+      "max": 0.0
+    },
+    "tcp_flag_syn_ratio": {
+      "mean": 0.09206626827964826,
+      "std": 0.2891212303126425,
+      "min": 0.0,
+      "max": 1.0
+    },
+    "tcp_flag_ack_ratio": {
+      "mean": 0.011125686245931108,
+      "std": 0.10489060483025199,
+      "min": 0.0,
+      "max": 1.0
+    },
+    "tcp_flag_fin_ratio": {
+      "mean": 0.13692731866103097,
+      "std": 0.10671880910513526,
+      "min": 0.0,
+      "max": 0.6
+    },
+    "tcp_flag_rst_ratio": {
+      "mean": 0.09546603993586943,
+      "std": 0.11090288545022711,
+      "min": 0.01,
+      "max": 0.63
+    },
+    "tcp_flag_psh_ratio": {
+      "mean": 0.09164261769421368,
+      "std": 0.11121413377603817,
+      "min": 0.01,
+      "max": 0.62
+    },
+    "fwd_payload_mean": {
+      "mean": 139.52860370208424,
+      "std": 208.47206330498105,
+      "min": 24.0,
+      "max": 1504.0
+    },
+    "fwd_payload_std": {
+      "mean": 139.5357581085059,
+      "std": 208.4598547645891,
+      "min": 24.0,
+      "max": 1504.0
+    },
+    "bwd_payload_mean": {
+      "mean": 116.2750692318904,
+      "std": 244.60027141356582,
+      "min": 0.0,
+      "max": 1500.0
+    },
+    "bwd_payload_std": {
+      "mean": 116.25583041468191,
+      "std": 244.59819190753305,
+      "min": 0.0,
+      "max": 1500.0
+    },
+    "payload_entropy": {
+      "mean": 0.6153120711795038,
+      "std": 0.10232051217162522,
+      "min": 0.43440465234156256,
+      "max": 1.0
+    },
+    "small_packet_ratio": {
+      "mean": 0.6892095418549288,
+      "std": 0.4628199984455814,
+      "min": 0.0,
+      "max": 1.0
+    },
+    "large_packet_ratio": {
+      "mean": 0.0005344216100665598,
+      "std": 0.023111522911200368,
+      "min": 0.0,
+      "max": 1.0
+    },
+    "payload_length_variance": {
+      "mean": 62925.21103111221,
+      "std": 221777.49892280804,
+      "min": 576.0,
+      "max": 2262016.0
+    },
+    "unique_src_ips": {
+      "mean": 3.663010737015984,
+      "std": 5.915386045711441,
+      "min": 1.0,
+      "max": 38.0
+    },
+    "unique_dst_ips": {
+      "mean": 4.928897633969781,
+      "std": 8.389545255933497,
+      "min": 1.0,
+      "max": 59.0
+    },
+    "src_fanout": {
+      "mean": 1.442616312194293,
+      "std": 1.383739680164617,
+      "min": 0.5,
+      "max": 18.0
+    },
+    "dst_fanin": {
+      "mean": 0.8762863478717476,
+      "std": 0.24662746767418725,
+      "min": 0.05555555555555555,
+      "max": 2.0
+    },
+    "connection_count": {
+      "mean": 5.744922994704368,
+      "std": 8.418111964770473,
+      "min": 1.0,
+      "max": 59.0
+    },
+    "same_srv_rate": {
+      "mean": 1.4973507575945575,
+      "std": 1.7253302170207434,
+      "min": 0.020833333333333332,
+      "max": 40.0
+    },
+    "diff_srv_rate": {
+      "mean": 0.05564931007773442,
+      "std": 0.16670264814784694,
+      "min": 0.0,
+      "max": 0.9791666666666666
+    },
+    "connection_duration_var": {
+      "mean": 535.1804302089224,
+      "std": 3635.305382910511,
+      "min": 0.0,
+      "max": 463199.2401
+    },
+    "time_of_day": {
+      "mean": 0.5,
+      "std": 0.0,
+      "min": 0.5,
+      "max": 0.5
+    },
+    "day_of_week": {
+      "mean": 0.5,
+      "std": 0.0,
+      "min": 0.5,
+      "max": 0.5
+    },
+    "is_weekend": {
+      "mean": 0.0,
+      "std": 0.0,
+      "min": 0.0,
+      "max": 0.0
+    },
+    "burstiness_index": {
+      "mean": 28.89595615381337,
+      "std": 36.84748225756393,
+      "min": 0.0,
+      "max": 483.7356747957793
+    },
+    "idle_time_ratio": {
+      "mean": 0.005592504442986931,
+      "std": 0.011602177116004109,
+      "min": 0.0,
+      "max": 0.3821465
+    },
+    "periodic_score": {
+      "mean": 0.4966997586004928,
+      "std": 0.4830276397342738,
+      "min": 0.0019186441159135968,
+      "max": 1.0
+    },
+    "failed_connection_ratio": {
+      "mean": 0.09546603993586943,
+      "std": 0.11090288545022711,
+      "min": 0.01,
+      "max": 0.63
+    },
+    "dns_query_rate": {
+      "mean": 259.1135079110593,
+      "std": 13140.673351333651,
+      "min": 0.0,
+      "max": 666666.6666666666
+    },
+    "dns_response_ratio": {
+      "mean": 0.06870961473060293,
+      "std": 0.2529612238777287,
+      "min": 0.0,
+      "max": 1.0
+    },
+    "retransmission_rate": {
+      "mean": 0.0799064943184506,
+      "std": 0.11549347773528154,
+      "min": 0.0,
+      "max": 1.1772727272727272
+    },
+    "avg_ttl": {
+      "mean": 0.7096771274219253,
+      "std": 0.3980915980428848,
+      "min": 0.0,
+      "max": 1.0
+    },
+    "ttl_variance": {
+      "mean": 0.375345111566465,
+      "std": 0.4575204770078568,
+      "min": 0.0,
+      "max": 0.9921568627450981
+    }
+  }
+}

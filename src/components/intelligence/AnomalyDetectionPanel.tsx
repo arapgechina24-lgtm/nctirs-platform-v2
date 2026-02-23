@@ -75,18 +75,51 @@ function FeatureBar({ name, value, max }: { name: string; value: number; max: nu
                 '#22c55e';
 
     const labels: Record<string, string> = {
-        packetRate: 'Packet Rate',
-        byteVolume: 'Byte Volume',
-        uniqueDestinations: 'Unique Dests',
-        protocolEntropy: 'Protocol Entropy',
-        timeOfDayFactor: 'Time-of-Day',
-        connectionDuration: 'Conn Duration',
+        // Flow
+        flow_duration: 'Flow Duration',
+        total_fwd_packets: 'Fwd Packets',
+        total_bwd_packets: 'Bwd Packets',
+        total_fwd_bytes: 'Fwd Bytes',
+        total_bwd_bytes: 'Bwd Bytes',
+        flow_bytes_per_sec: 'Bytes/s',
+        flow_packets_per_sec: 'Packets/s',
+        flow_iat_mean: 'IAT Mean',
+        flow_iat_std: 'IAT Std',
+        flow_iat_max: 'IAT Max',
+        // Protocol
+        protocol_type: 'Protocol',
+        dst_port_entropy: 'Dst Port Entropy',
+        src_port_entropy: 'Src Port Entropy',
+        tcp_flag_syn_ratio: 'SYN Ratio',
+        tcp_flag_ack_ratio: 'ACK Ratio',
+        tcp_flag_fin_ratio: 'FIN Ratio',
+        tcp_flag_rst_ratio: 'RST Ratio',
+        tcp_flag_psh_ratio: 'PSH Ratio',
+        // Payload
+        fwd_payload_mean: 'Fwd Payload',
+        payload_entropy: 'Payload Entropy',
+        small_packet_ratio: 'Small Pkt Ratio',
+        large_packet_ratio: 'Large Pkt Ratio',
+        // Connection
+        unique_src_ips: 'Unique Src IPs',
+        unique_dst_ips: 'Unique Dst IPs',
+        src_fanout: 'Src Fan-out',
+        dst_fanin: 'Dst Fan-in',
+        connection_count: 'Connections',
+        // Temporal
+        time_of_day: 'Time-of-Day',
+        burstiness_index: 'Burstiness',
+        periodic_score: 'Periodicity',
+        // Behavioral
+        failed_connection_ratio: 'Failed Conns',
+        dns_query_rate: 'DNS Queries',
+        retransmission_rate: 'Retransmits',
     };
 
     return (
         <div className="flex items-center gap-2 text-xs">
             <span className="w-24 text-gray-400 truncate" title={name}>
-                {labels[name] || name}
+                {labels[name] || name.replace(/_/g, ' ')}
             </span>
             <div className="flex-1 h-2 bg-white/5 rounded-full overflow-hidden">
                 <div
@@ -284,18 +317,11 @@ export default function AnomalyDetectionPanel() {
             const topFeature = Object.entries(result.featureContributions)
                 .sort(([, a], [, b]) => b - a)[0];
 
-            const featureLabels: Record<string, string> = {
-                packetRate: 'packet rate spike',
-                byteVolume: 'unusual byte volume',
-                uniqueDestinations: 'destination count anomaly',
-                protocolEntropy: 'protocol distribution anomaly',
-                timeOfDayFactor: 'off-hours activity',
-                connectionDuration: 'connection duration anomaly',
-            };
+            const attackLabel = result.attackType || topFeature[0].replace(/_/g, ' ');
 
             setAlerts(prev => [
                 {
-                    message: `${result.classification}: ${featureLabels[topFeature[0]] || topFeature[0]} detected (score: ${result.score})`,
+                    message: `${result.classification}: ${attackLabel} detected (score: ${result.score})`,
                     severity: result.classification,
                     time: new Date().toLocaleTimeString(),
                 },
@@ -332,12 +358,17 @@ export default function AnomalyDetectionPanel() {
                         ANOMALY DETECTION ENGINE
                     </h3>
                     <span className="text-[10px] text-cyan-400 bg-cyan-400/10 px-2 py-0.5 rounded-full font-mono">
-                        TF.js
+                        {metrics?.modelVersion || 'v2.0'} • LSTM-AE
                     </span>
+                    {metrics?.f1Score && (
+                        <span className="text-[10px] text-green-400 bg-green-400/10 px-2 py-0.5 rounded-full font-mono">
+                            F1={metrics.f1Score}
+                        </span>
+                    )}
                 </div>
                 {metrics && (
                     <span className="text-[10px] text-gray-500 font-mono">
-                        {metrics.trainingSamples} samples • {metrics.trainingEpochs} epochs
+                        {(metrics.trainingSamples || 0).toLocaleString()} samples • {metrics.totalParameters?.toLocaleString() || '254K'} params
                     </span>
                 )}
             </div>
@@ -345,7 +376,7 @@ export default function AnomalyDetectionPanel() {
             {loading ? (
                 <div className="flex flex-col items-center justify-center py-12 gap-3">
                     <div className="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
-                    <p className="text-xs text-gray-400">Training autoencoder model...</p>
+                    <p className="text-xs text-gray-400">Loading SENTINEL-OMEGA model...</p>
                 </div>
             ) : (
                 <div className="p-4 space-y-4">
@@ -363,37 +394,37 @@ export default function AnomalyDetectionPanel() {
 
                         {/* Live Stats */}
                         <div className="space-y-2">
-                            <h4 className="text-[10px] text-gray-500 uppercase tracking-wider">Live Telemetry</h4>
+                            <h4 className="text-[10px] text-gray-500 uppercase tracking-wider">Live Telemetry (46 features)</h4>
                             {currentFeatures && (
                                 <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[11px]">
                                     <div>
                                         <span className="text-gray-500">Packets/s</span>
                                         <span className="float-right text-white font-mono">
-                                            {currentFeatures.packetRate.toFixed(0)}
+                                            {currentFeatures.flow_packets_per_sec.toFixed(0)}
                                         </span>
                                     </div>
                                     <div>
                                         <span className="text-gray-500">Bytes/s</span>
                                         <span className="float-right text-white font-mono">
-                                            {(currentFeatures.byteVolume / 1000).toFixed(1)}K
+                                            {(currentFeatures.flow_bytes_per_sec / 1000).toFixed(1)}K
                                         </span>
                                     </div>
                                     <div>
                                         <span className="text-gray-500">Unique Dst</span>
                                         <span className="float-right text-white font-mono">
-                                            {currentFeatures.uniqueDestinations}
+                                            {currentFeatures.unique_dst_ips}
                                         </span>
                                     </div>
                                     <div>
-                                        <span className="text-gray-500">Entropy</span>
+                                        <span className="text-gray-500">Payload Ent</span>
                                         <span className="float-right text-white font-mono">
-                                            {currentFeatures.protocolEntropy.toFixed(2)}
+                                            {currentFeatures.payload_entropy.toFixed(2)}
                                         </span>
                                     </div>
                                     <div>
-                                        <span className="text-gray-500">Conn Dur</span>
+                                        <span className="text-gray-500">DNS Rate</span>
                                         <span className="float-right text-white font-mono">
-                                            {currentFeatures.connectionDuration.toFixed(1)}s
+                                            {currentFeatures.dns_query_rate.toFixed(1)}
                                         </span>
                                     </div>
                                     <div>
@@ -402,6 +433,13 @@ export default function AnomalyDetectionPanel() {
                                             {currentResult ? (currentResult.confidence * 100).toFixed(0) : 0}%
                                         </span>
                                     </div>
+                                    {currentResult?.attackType && (
+                                        <div className="col-span-2 mt-1">
+                                            <span className="text-red-400 text-[10px] bg-red-400/10 px-2 py-0.5 rounded-full">
+                                                ⚠ {currentResult.attackType}
+                                            </span>
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </div>
@@ -411,17 +449,18 @@ export default function AnomalyDetectionPanel() {
                     {currentResult && (
                         <div>
                             <h4 className="text-[10px] text-gray-500 uppercase tracking-wider mb-2">
-                                Feature Contributions
+                                Top Feature Contributions (of 46)
                             </h4>
                             <div className="space-y-1.5">
                                 {Object.entries(currentResult.featureContributions)
                                     .sort(([, a], [, b]) => b - a)
+                                    .slice(0, 8)
                                     .map(([name, value]) => (
                                         <FeatureBar
                                             key={name}
                                             name={name}
                                             value={value}
-                                            max={0.5}
+                                            max={0.3}
                                         />
                                     ))}
                             </div>

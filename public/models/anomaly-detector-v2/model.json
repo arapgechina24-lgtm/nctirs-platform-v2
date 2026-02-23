@@ -1,0 +1,436 @@
+{
+  "format": "nctirs-pytorch-export",
+  "generatedBy": "NCTIRS AI Training Pipeline v2.0",
+  "convertedBy": "train_combined.py",
+  "modelTopology": {
+    "class_name": "LSTMAutoencoder",
+    "config": {
+      "input_dim": 46,
+      "encoder_dims": [
+        128,
+        64
+      ],
+      "lstm_hidden": 32,
+      "lstm_layers": 2,
+      "bottleneck_dim": 16,
+      "decoder_dims": [
+        64,
+        128
+      ],
+      "dropout": 0.3,
+      "sequence_length": 10,
+      "classification_head": true
+    }
+  },
+  "weightsManifest": [
+    {
+      "paths": [
+        "weights.bin"
+      ],
+      "weights": [
+        {
+          "name": "encoder.dense.0.weight",
+          "shape": [
+            128,
+            46
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "encoder.dense.0.bias",
+          "shape": [
+            128
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "encoder.dense.1.weight",
+          "shape": [
+            128
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "encoder.dense.1.bias",
+          "shape": [
+            128
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "encoder.dense.1.running_mean",
+          "shape": [
+            128
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "encoder.dense.1.running_var",
+          "shape": [
+            128
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "encoder.dense.1.num_batches_tracked",
+          "shape": [],
+          "dtype": "float32"
+        },
+        {
+          "name": "encoder.dense.4.weight",
+          "shape": [
+            64,
+            128
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "encoder.dense.4.bias",
+          "shape": [
+            64
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "encoder.dense.5.weight",
+          "shape": [
+            64
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "encoder.dense.5.bias",
+          "shape": [
+            64
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "encoder.dense.5.running_mean",
+          "shape": [
+            64
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "encoder.dense.5.running_var",
+          "shape": [
+            64
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "encoder.dense.5.num_batches_tracked",
+          "shape": [],
+          "dtype": "float32"
+        },
+        {
+          "name": "encoder.lstm.weight_ih_l0",
+          "shape": [
+            128,
+            64
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "encoder.lstm.weight_hh_l0",
+          "shape": [
+            128,
+            32
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "encoder.lstm.bias_ih_l0",
+          "shape": [
+            128
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "encoder.lstm.bias_hh_l0",
+          "shape": [
+            128
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "encoder.lstm.weight_ih_l1",
+          "shape": [
+            128,
+            32
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "encoder.lstm.weight_hh_l1",
+          "shape": [
+            128,
+            32
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "encoder.lstm.bias_ih_l1",
+          "shape": [
+            128
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "encoder.lstm.bias_hh_l1",
+          "shape": [
+            128
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "encoder.bottleneck.0.weight",
+          "shape": [
+            16,
+            32
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "encoder.bottleneck.0.bias",
+          "shape": [
+            16
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "decoder.expand.0.weight",
+          "shape": [
+            32,
+            16
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "decoder.expand.0.bias",
+          "shape": [
+            32
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "decoder.lstm.weight_ih_l0",
+          "shape": [
+            128,
+            32
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "decoder.lstm.weight_hh_l0",
+          "shape": [
+            128,
+            32
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "decoder.lstm.bias_ih_l0",
+          "shape": [
+            128
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "decoder.lstm.bias_hh_l0",
+          "shape": [
+            128
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "decoder.lstm.weight_ih_l1",
+          "shape": [
+            128,
+            32
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "decoder.lstm.weight_hh_l1",
+          "shape": [
+            128,
+            32
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "decoder.lstm.bias_ih_l1",
+          "shape": [
+            128
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "decoder.lstm.bias_hh_l1",
+          "shape": [
+            128
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "decoder.dense.0.weight",
+          "shape": [
+            64,
+            32
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "decoder.dense.0.bias",
+          "shape": [
+            64
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "decoder.dense.1.weight",
+          "shape": [
+            64
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "decoder.dense.1.bias",
+          "shape": [
+            64
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "decoder.dense.1.running_mean",
+          "shape": [
+            64
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "decoder.dense.1.running_var",
+          "shape": [
+            64
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "decoder.dense.1.num_batches_tracked",
+          "shape": [],
+          "dtype": "float32"
+        },
+        {
+          "name": "decoder.dense.3.weight",
+          "shape": [
+            128,
+            64
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "decoder.dense.3.bias",
+          "shape": [
+            128
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "decoder.dense.4.weight",
+          "shape": [
+            128
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "decoder.dense.4.bias",
+          "shape": [
+            128
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "decoder.dense.4.running_mean",
+          "shape": [
+            128
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "decoder.dense.4.running_var",
+          "shape": [
+            128
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "decoder.dense.4.num_batches_tracked",
+          "shape": [],
+          "dtype": "float32"
+        },
+        {
+          "name": "decoder.output.weight",
+          "shape": [
+            46,
+            128
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "decoder.output.bias",
+          "shape": [
+            46
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "classification_head.classifier.0.weight",
+          "shape": [
+            32,
+            16
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "classification_head.classifier.0.bias",
+          "shape": [
+            32
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "classification_head.classifier.3.weight",
+          "shape": [
+            16,
+            32
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "classification_head.classifier.3.bias",
+          "shape": [
+            16
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "classification_head.classifier.5.weight",
+          "shape": [
+            2,
+            16
+          ],
+          "dtype": "float32"
+        },
+        {
+          "name": "classification_head.classifier.5.bias",
+          "shape": [
+            2
+          ],
+          "dtype": "float32"
+        }
+      ]
+    }
+  ]
+}

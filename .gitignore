@@ -47,3 +47,4 @@ STACK.md
 # Local database files
 dev.db
 audit-db.json
+ai_training/data/

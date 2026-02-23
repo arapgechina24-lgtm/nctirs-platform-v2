@@ -1,0 +1,36 @@
+{
+  "training": {
+    "total_samples": 182332,
+    "train_samples": 127623,
+    "val_samples": 27341,
+    "test_samples": 27341,
+    "best_epoch": 50,
+    "best_val_loss": 0.5043233025853879,
+    "total_time_seconds": 1977.8728759288788
+  },
+  "evaluation": {
+    "reconstruction": {
+      "accuracy": 0.6301159430891335,
+      "f1_macro": 0.4336995292327019,
+      "threshold": 0.9545302867889398
+    },
+    "classification": {
+      "accuracy": 0.9645587213342599,
+      "precision": 0.9797848059993479,
+      "recall": 0.9200857317819964,
+      "f1_macro": 0.9609207635887458,
+      "f1_binary": 0.948997315648192,
+      "roc_auc": 0.9956881151107819,
+      "confusion_matrix": [
+        [
+          17357,
+          186
+        ],
+        [
+          783,
+          9015
+        ]
+      ]
+    }
+  }
+}
