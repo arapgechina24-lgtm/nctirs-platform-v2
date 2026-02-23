@@ -45,15 +45,21 @@ function checkRateLimit(ip: string): boolean {
 
 export async function POST(req: NextRequest) {
     try {
-        const session = await auth();
-        if (!session) {
-            return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+        // Auth is optional — unauthenticated users get fallback analysis
+        // Authenticated users get full AI (Gemini/Claude) analysis
+        let isAuthenticated = false;
+        let userEmail: string | undefined;
+        try {
+            const session = await auth();
+            isAuthenticated = !!session;
+            userEmail = session?.user?.email ?? undefined;
+        } catch {
+            // Auth failed — proceed with fallback
         }
 
-        // Rate limiting
+        // Rate limiting (use email or IP)
         const clientIP = req.headers.get('x-forwarded-for') || 'unknown';
-        // Simple distinct rate limit for authenticated users (could use user ID instead of IP)
-        if (!checkRateLimit(session.user?.email || clientIP)) {
+        if (!checkRateLimit(userEmail || clientIP)) {
             return NextResponse.json(
                 { success: false, error: 'Rate limit exceeded. Try again in 60 seconds.' },
                 { status: 429 }

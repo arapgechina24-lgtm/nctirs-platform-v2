@@ -83,7 +83,9 @@ export function IncidentList({ incidents, maxItems = 10 }: IncidentListProps) {
                     description: incident.description,
                     location: incident.location.name,
                     region: incident.location.region,
-                    status: incident.status
+                    status: incident.status,
+                    dataProtectionImpact: incident.dataProtectionImpact,
+                    mitreAttackId: incident.mitreAttackId,
                   }}
                   compact
                 />
