@@ -28,7 +28,9 @@
       "hft_system/",
       "node_modules/",
       ".next/",
-      "scripts/"
+      ".vercel/",
+      "scripts/",
+      "prisma/"
     ]
   },
   "dependencies": {

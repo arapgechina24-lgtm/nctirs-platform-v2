@@ -2,7 +2,7 @@
 
 import {
     Eye, Brain, Shield, Wifi, Camera, Radio, Cpu,
-    Database, Link2, CheckCircle, AlertTriangle, Layers
+    Database, Link2, AlertTriangle, Layers
 } from "lucide-react"
 import {
     PerceptionLayerStatus,

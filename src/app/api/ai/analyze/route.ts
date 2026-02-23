@@ -47,11 +47,9 @@ export async function POST(req: NextRequest) {
     try {
         // Auth is optional — unauthenticated users get fallback analysis
         // Authenticated users get full AI (Gemini/Claude) analysis
-        let isAuthenticated = false;
         let userEmail: string | undefined;
         try {
             const session = await auth();
-            isAuthenticated = !!session;
             userEmail = session?.user?.email ?? undefined;
         } catch {
             // Auth failed — proceed with fallback

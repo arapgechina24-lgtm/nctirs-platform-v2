@@ -1,0 +1,16 @@
+# Build artifacts
+.next/
+.vercel/
+out/
+
+# Dependencies
+node_modules/
+
+# Vendor code
+hft_system/
+
+# Generated files
+scripts/
+prisma/
+*.min.js
+*.bundle.js

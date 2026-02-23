@@ -22,7 +22,7 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
     ...authConfig,
     providers: [
         Credentials({
-            async authorize(credentials, req) {
+            async authorize(credentials) {
                 // Rate Limiting by IP Address using headers (fallback to 'unknown')
                 const headersList = await headers();
                 const ip = headersList.get('x-forwarded-for') || '127.0.0.1'; // Fallback for local development

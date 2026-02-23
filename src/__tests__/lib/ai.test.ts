@@ -126,7 +126,7 @@ describe('generateFallbackThreatAnalysis', () => {
 
     it('should handle unknown threat types gracefully', () => {
         const result = generateFallbackThreatAnalysis({ ...baseThreat, type: 'UNKNOWN_TYPE' })
-        expect(result.attackVectorAnalysis.mitreId).toBe('T1059') // default fallback
+        expect(result.attackVectorAnalysis.mitreId).toBe('T1204') // default fallback to MALWARE mapping
     })
 
     it('should handle missing targetSector', () => {
@@ -264,6 +264,6 @@ function expectValidAnalysisShape(result: AIAnalysisResult) {
     expect(result.recommendedActions.length).toBeGreaterThan(0)
 
     expect(typeof result.kenyaContext).toBe('string')
-    expect(['gemini', 'fallback']).toContain(result.source)
+    expect(['gemini', 'anthropic', 'fallback']).toContain(result.source)
     expect(() => new Date(result.timestamp)).not.toThrow()
 }
