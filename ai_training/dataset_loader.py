@@ -83,7 +83,7 @@ class DatasetLoader:
 
         # Extract labels
         label_col = "Label" if "Label" in raw_df.columns else raw_df.columns[-1]
-        raw_labels = raw_df[label_col].str.strip()
+        raw_labels = raw_df[label_col].str.strip().str.upper()
         binary_labels = (raw_labels != "BENIGN").astype(int).values
 
         # Extract features

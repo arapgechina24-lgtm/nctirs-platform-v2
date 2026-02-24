@@ -1,0 +1,86 @@
+{
+  "threshold": 0.2493635833263397,
+  "threshold_percentile": 95,
+  "total_samples": 347063,
+  "normal_samples": 296589,
+  "attack_samples": 50474,
+  "reconstruction": {
+    "accuracy": 0.8190933634527449,
+    "precision": 0.145146414572285,
+    "recall": 0.04988707057098704,
+    "f1_macro": 0.48700237526409507,
+    "f1_micro": 0.8190933634527449,
+    "f1_weighted": 0.7796978374564292,
+    "f1_binary": 0.07425319217952876,
+    "roc_auc": 0.43075073147002174,
+    "confusion_matrix": [
+      [
+        281759,
+        14830
+      ],
+      [
+        47956,
+        2518
+      ]
+    ],
+    "true_positives": 2518,
+    "true_negatives": 281759,
+    "false_positives": 14830,
+    "false_negatives": 47956,
+    "false_positive_rate": 0.05000185441806675,
+    "false_negative_rate": 0.9501129294290129,
+    "threshold": 0.2493635833263397
+  },
+  "classification": {
+    "accuracy": 0.996349365965257,
+    "precision": 0.994811254349094,
+    "recall": 0.9800095098466537,
+    "f1_macro": 0.9926108296040279,
+    "f1_micro": 0.996349365965257,
+    "f1_weighted": 0.9963379928283841,
+    "f1_binary": 0.9873549108256734,
+    "roc_auc": 0.9989266950981093,
+    "confusion_matrix": [
+      [
+        296331,
+        258
+      ],
+      [
+        1009,
+        49465
+      ]
+    ],
+    "true_positives": 49465,
+    "true_negatives": 296331,
+    "false_positives": 258,
+    "false_negatives": 1009,
+    "false_positive_rate": 0.0008698906567674459,
+    "false_negative_rate": 0.019990490153346276
+  },
+  "ensemble": {
+    "accuracy": 0.9947790458792785,
+    "precision": 0.9984226483120289,
+    "recall": 0.9656258667828981,
+    "f1_macro": 0.989352105129021,
+    "f1_micro": 0.9947790458792785,
+    "f1_weighted": 0.9947427309145166,
+    "f1_binary": 0.9817504280390774,
+    "roc_auc": 0.997309848181388,
+    "confusion_matrix": [
+      [
+        296512,
+        77
+      ],
+      [
+        1735,
+        48739
+      ]
+    ],
+    "true_positives": 48739,
+    "true_negatives": 296512,
+    "false_positives": 77,
+    "false_negatives": 1735,
+    "false_positive_rate": 0.000259618529345323,
+    "false_negative_rate": 0.03437413321710187
+  }
+}

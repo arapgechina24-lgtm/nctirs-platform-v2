@@ -12,9 +12,9 @@
   },
   "training": {
     "dataset": "UNSW-NB15 + Synthetic (CICIDS-distributions)",
-    "total_samples": 182332,
-    "normal_samples": 116692,
-    "attack_samples": 65639,
+    "total_samples": 2496142,
+    "normal_samples": 1597530,
+    "attack_samples": 898611,
     "attack_types": [
       "Generic",
       "Exploits",
@@ -36,38 +36,38 @@
       "C2Beacon",
       "DNSTunnel"
     ],
-    "best_epoch": 50,
-    "best_val_loss": 0.5043233025853879,
-    "best_val_accuracy": 0.9645587213342599,
+    "best_epoch": 3,
+    "best_val_loss": 0.23402047382383745,
+    "best_val_accuracy": 0.9878796943482198,
     "cv_folds": 1,
-    "cv_avg_val_loss": 0.5043233025853879,
+    "cv_avg_val_loss": 0.23402047382383745,
     "cv_std_val_loss": 0.0
   },
   "evaluation": {
     "reconstruction": {
-      "accuracy": 0.6301159430891335,
-      "precision": 0.6301159430891335,
-      "recall": 0.6301159430891335,
-      "f1_macro": 0.4336995292327019,
-      "f1_binary": 0.4336995292327019,
-      "roc_auc": 0.9956881151107819,
-      "threshold": 0.9545302867889398
+      "accuracy": 0.8073410912548442,
+      "precision": 0.8073410912548442,
+      "recall": 0.8073410912548442,
+      "f1_macro": 0.4942679823758678,
+      "f1_binary": 0.4942679823758678,
+      "roc_auc": 0.996995135546603,
+      "threshold": 0.5873136550188064
     },
     "classification": {
-      "accuracy": 0.9645587213342599,
-      "precision": 0.9797848059993479,
-      "recall": 0.9200857317819964,
-      "f1_macro": 0.9609207635887458,
-      "f1_binary": 0.948997315648192,
-      "roc_auc": 0.9956881151107819
+      "accuracy": 0.9878796943482198,
+      "precision": 0.956447676608848,
+      "recall": 0.9688251787699301,
+      "f1_macro": 0.9776823839731656,
+      "f1_binary": 0.9625966404562913,
+      "roc_auc": 0.996995135546603
     },
     "ensemble": {
-      "accuracy": 0.9645587213342599,
-      "precision": 0.9797848059993479,
-      "recall": 0.9200857317819964,
-      "f1_macro": 0.9609207635887458,
-      "f1_binary": 0.948997315648192,
-      "roc_auc": 0.9956881151107819
+      "accuracy": 0.9878796943482198,
+      "precision": 0.956447676608848,
+      "recall": 0.9688251787699301,
+      "f1_macro": 0.9776823839731656,
+      "f1_binary": 0.9625966404562913,
+      "roc_auc": 0.996995135546603
     }
   },
   "features": {
