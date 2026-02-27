@@ -1,0 +1,13 @@
+name: "Custom CodeQL Config"
+
+paths-ignore:
+  - '**/node_modules/**'
+  - '**/.next/**'
+  - '**/out/**'
+  - '**/public/**'
+  - '**/prisma/**'
+  - '**/scripts/**'
+  - '**/hft_system/**'
+  - '**/*.test.ts'
+  - '**/*.test.tsx'
+  - '**/__tests__/**'

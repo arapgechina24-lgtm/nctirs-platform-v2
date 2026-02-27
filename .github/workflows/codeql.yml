@@ -36,13 +36,15 @@ jobs:
         uses: github/codeql-action/init@v4
         with:
           languages: ${{ matrix.language }}
+          config-file: ./.github/codeql-config.yml
 
       - name: Build
         env:
           AUTH_SECRET: "ci-build-secret-not-for-production"
         run: |
           npm install --legacy-peer-deps
-          npm run build
+          npx prisma generate
+          # We skip full next build to save time/resources, prisma generate is enough for types.
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4

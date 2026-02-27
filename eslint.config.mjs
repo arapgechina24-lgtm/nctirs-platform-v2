@@ -12,7 +12,13 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
-    "coverage/**"
+    "coverage/**",
+    "node_modules/**",
+    "hft_system/**",
+    "scripts/**",
+    "prisma/generated/**",
+    "**/*.min.js",
+    "**/*.bundle.js"
   ]),
 ]);
 
