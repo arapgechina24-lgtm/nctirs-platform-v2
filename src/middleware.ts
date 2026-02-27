@@ -35,7 +35,20 @@ export default async function middleware(req: NextRequest) {
     // If deployment is unlocked (or correct basic auth provided), run normal auth checks.
     // We bind the req object to auth() so it acts as the middleware handler
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return (auth as any)(req);
+    const response = await (auth as any)(req);
+
+    // 3. Security Headers
+    // Add standard security headers to all responses handled by this middleware
+    if (response instanceof NextResponse) {
+        response.headers.set('X-DNS-Prefetch-Control', 'on');
+        response.headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
+        response.headers.set('X-Frame-Options', 'SAMEORIGIN');
+        response.headers.set('X-Content-Type-Options', 'nosniff');
+        response.headers.set('X-XSS-Protection', '1; mode=block');
+        response.headers.set('Referrer-Policy', 'origin-when-cross-origin');
+    }
+
+    return response;
 }
 
 export const config = {
