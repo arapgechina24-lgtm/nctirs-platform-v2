@@ -1,4 +1,5 @@
 # MAJESTIC SHIELD
+
 ## An AI-Driven National Cyber-Intelligence & Zero-Trust Response System (NCTIRS)
 
 <p align="center">
@@ -14,6 +15,7 @@
 ---
 
 ## Table of Contents
+
 1. [Executive Summary](#executive-summary)
 2. [Problem Statement](#problem-statement)
 3. [The Solution: MAJESTIC SHIELD](#the-solution-majestic-shield)
@@ -52,15 +54,19 @@ The platform unifies cyber threat intelligence with physical security coordinati
 Kenya's digital ecosystem faces an unprecedented convergence of cyber and physical threats. The National Intelligence Service has identified **four critical challenges** that demand immediate, unified intervention:
 
 #### Challenge 1: Sophisticated APT Campaigns
+
 State-sponsored actors and organized crime groups are increasingly targeting Kenya's government infrastructure. The 2023 eCitizen breach exposed vulnerabilities that traditional perimeter-based security cannot address. These adversaries employ polymorphic malware, zero-day exploits, and social engineering tactics that evade signature-based detection.
 
 #### Challenge 2: Critical Infrastructure Vulnerability
+
 Kenya's digital ID systems (Huduma Namba, eCitizen), financial infrastructure (M-Pesa APIs, banking networks), and essential services (power grid SCADA systems, water utilities) operate on interconnected networks. A breach in one system can cascade across the entire national infrastructure.
 
 #### Challenge 3: Fragmented Intelligence Operations
+
 Current cyber threat intelligence operates in silos. The National Computer Incident Response Team (KE-CIRT), the Communications Authority, the Central Bank, and the NIS lack a unified platform for real-time threat sharing and coordinated response.
 
 #### Challenge 4: Regulatory Compliance & Evidence Integrity
+
 The Data Protection Act (2019) mandates strict handling of personal data. Current systems lack automated compliance verification and tamper-proof audit logging required for legal admissibility of digital evidence.
 
 ### Infrastructure Vulnerabilities Identified
@@ -160,7 +166,7 @@ The NCFC serves as Kenya's unified cyber-operations hub, integrating intelligenc
 - **Real-Time Threat Sharing**: Automated IOC distribution using STIX/TAXII protocols
 - **Coordinated Response**: Orchestrated workflows for multi-agency incident handling
 - **War Room Mode**: Emergency escalation for critical national incidents
-- **Automated Response Control Module (ARCM)**: 
+- **Automated Response Control Module (ARCM)**:
   - IP blocking at national gateway
   - DNS sinkholing of malicious domains
   - Automated asset isolation
@@ -218,9 +224,9 @@ The DPCL ensures all MAJESTIC SHIELD operations comply with the **Kenya Data Pro
 | Regulation | Requirement | Implementation |
 |------------|-------------|----------------|
 | **DPA 2019 Section 25** | Lawful processing basis | Consent management engine |
-| **DPA 2019 Section 26** | Data minimization | Automated PII redaction |
-| **DPA 2019 Section 41** | Breach notification | 72-hour automated reporting |
-| **DPA 2019 Section 43** | Data Protection Impact Assessment | Continuous DPIA monitoring |
+| **DPA 2019 Section 25** | Data minimization | Automated PII redaction |
+| **DPA 2019 Section 43** | Breach notification | 72-hour automated reporting |
+| **DPA 2019 Section 31** | Data protection impact assessment | Continuous DPIA monitoring |
 
 #### Blockchain Integrity Ledger
 
@@ -347,6 +353,7 @@ Before deployment, MAJESTIC SHIELD undergoes continuous **Red Team Adversarial A
 The biggest obstacle to unified national threat intelligence is **data sovereignty**. Agencies like KRA, the Central Bank of Kenya (CBK), and Immigration hold critical threat indicators locked in silos—not due to unwillingness, but due to **legal and operational restrictions** under the Data Protection Act (2019).
 
 Traditional approaches require moving sensitive data to a central "Fusion Center," creating:
+
 - A **honeypot target** for adversaries (one breach exposes everything)
 - **Legal liability** under DPA 2019 for unauthorized data sharing
 - **Institutional resistance** from agencies protective of their data
@@ -488,6 +495,7 @@ Every automated action includes a **Human Override Protocol**:
 If MAJESTIC SHIELD relies on OpenAI (GPT-4), Google (Gemini), or any foreign AI API, Kenyan national security data transits foreign servers. This is a **categorical prohibition** for the National Intelligence Service.
 
 **The risk profile of foreign API dependency:**
+
 - **Data Exfiltration**: Raw intelligence transmitted to servers under foreign jurisdiction
 - **Model Access Logs**: Foreign entities can analyze query patterns to infer NIS operations
 - **Kill Switch Vulnerability**: Foreign governments can terminate API access during conflicts
@@ -624,6 +632,7 @@ MAJESTIC SHIELD directly supports Kenya's vision of leveraging Artificial Intell
 ```
 
 ### Phase 1: Foundation (Q1-Q2 2026)
+
 **Objective**: Establish infrastructure and core data pipelines
 
 | Milestone | Deliverable | Success Criteria |
@@ -634,6 +643,7 @@ MAJESTIC SHIELD directly supports Kenya's vision of leveraging Artificial Intell
 | 1.4 | Blockchain ledger genesis | First 1000 evidence blocks recorded |
 
 ### Phase 2: Core Deployment (Q3-Q4 2026)
+
 **Objective**: Activate threat detection and multi-agency integration
 
 | Milestone | Deliverable | Success Criteria |
@@ -644,6 +654,7 @@ MAJESTIC SHIELD directly supports Kenya's vision of leveraging Artificial Intell
 | 2.4 | ARCM automated response | <500ms containment for tier-1 threats |
 
 ### Phase 3: Advanced Features (Q1-Q2 2027)
+
 **Objective**: Full AI capabilities and advanced automation
 
 | Milestone | Deliverable | Success Criteria |
@@ -654,6 +665,7 @@ MAJESTIC SHIELD directly supports Kenya's vision of leveraging Artificial Intell
 | 3.4 | Full DPA compliance automation | Zero manual compliance interventions |
 
 ### Phase 4: Full Operational Capability (Q3 2027+)
+
 **Objective**: National-scale protection and continuous improvement
 
 | Milestone | Deliverable | Success Criteria |
@@ -684,12 +696,12 @@ The platform transforms cybersecurity from a fragmented, reactive capability int
 
 <p align="center">
 <em>Prepared for the Kenya National Intelligence Service (NIS)</em><br/>
-<em>Classification: OFFICIAL - SENSITIVE</em>
+<em>Classification: TOP SECRET // NCTIRS</em>
 </p>
 
 ---
 
 **Document Version**: 1.0  
-**Last Updated**: January 2026  
+**Last Updated**: February 2026  
 **Prepared By**: NCTIRS Development Team  
 **Review Authority**: Office of the Director-General, NIS

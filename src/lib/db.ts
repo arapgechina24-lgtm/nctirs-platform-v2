@@ -28,22 +28,8 @@ const createPrismaClient = () => {
         return new PrismaClient({ adapter })
     }
 
-    // 2. Development (Local LibSQL / SQLite)
-    // Using file:dev.db relative path
-    const url = process.env.DATABASE_URL || "file:dev.db"
-
-    // Ensure we strip ./ if present as it seemed potential cause of URL_INVALID
-    const cleanUrl = url.replace("file:./", "file:")
-
-    try {
-        const adapter = new PrismaLibSql({
-            url: cleanUrl,
-        })
-        return new PrismaClient({ adapter })
-    } catch (e) {
-        console.error("Failed to initialize database client:", e);
-        throw e;
-    }
+    // 2. Development (Local SQLite natively to avoid libsql caching bugs)
+    return new PrismaClient()
 }
 
 export const prisma = globalForPrisma.prisma ?? createPrismaClient()

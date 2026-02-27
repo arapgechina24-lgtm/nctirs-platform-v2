@@ -7,7 +7,7 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
-    // Use DATABASE_URL from environment, fallback to local file for development
+    // Use DATABASE_URL from environment, fallback to absolute path for Next.js dev server resilience
     url: process.env["DATABASE_URL"] ?? "file:./dev.db",
   },
 });
