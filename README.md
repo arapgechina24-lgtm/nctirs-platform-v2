@@ -198,9 +198,13 @@ This system is designed to comply with:
 
 ---
 
-## 🧠 Real AI Integration (Gemini)
+## 🧠 Real AI Integration (Hackathon MVP Phase)
 
-To enable real-time threat analysis powered by Google Gemini 2.0 Flash:
+> **⚠️ HACKATHON PROTOCOL NOTICE:** For the purposes of this 48-hour hackathon MVP, we are utilizing **Google Gemini 2.0 Flash** via public APIs to demonstrate capabilities. However, **this is strictly a prototyping measure**.
+>
+> The production rollout architecture mandates a **Sector-Gapped Sovereign AI** approach. The final system will deploy locally hosted, open-weight models (such as Llama-3 8B or Mistral) running on secure, air-gapped Kenyan government servers (e.g., Konza Technopolis data centers) to guarantee 100% Data Sovereignty and zero foreign API reliance.
+
+To enable the real-time threat analysis MVP powered by Google Gemini 2.0 Flash:
 
 1. Get an API Key from [Google AI Studio](https://aistudio.google.com/).
 2. Add it to your Vercel Project Settings:

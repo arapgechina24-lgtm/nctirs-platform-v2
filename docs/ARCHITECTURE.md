@@ -67,5 +67,6 @@ graph TB
 
 ### 4. AI & Live Data
 
-- **Models**: LSTM Autoencoders implemented in PyTorch for network anomaly detection.
+- **Anomaly Detection Models**: LSTM Autoencoders implemented in PyTorch for network anomaly detection.
+- **Local LLM Strategy (Sector-Gapped Sovereign AI)**: While the Hackathon MVP utilizes Google Gemini 2.0 Flash for demonstration, the production rollout architecture mandates a **Sector-Gapped Sovereign AI**. This involves deploying locally hosted, open-weight models (like Llama-3 8B or Mistral) running on secure Kenyan government servers (e.g., Konza Technopolis) completely air-gapped from the public internet. This ensures National Self-Reliance (zero foreign API dependency) and strict Data Privacy compliance.
 - **Streaming**: A standalone Python service (`stream_live_traffic.py`) that simulates live network traffic, processes it through the AI models, and pushes detections to the dashboard in real-time.
