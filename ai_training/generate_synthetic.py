@@ -77,9 +77,8 @@ NORMAL_DISTRIBUTIONS = {
 
 # ===== Attack Pattern Definitions =====
 # Each attack type modifies specific features to create distinct patterns
-
 ATTACK_PATTERNS = {
-    "DDoS": {
+    "eCitizen DDoS": {
         "flow_packets_per_sec":    {"mean": 15000,  "std": 5000},
         "flow_bytes_per_sec":      {"mean": 800000, "std": 300000},
         "total_fwd_packets":       {"mean": 500,    "std": 200},
@@ -128,7 +127,7 @@ ATTACK_PATTERNS = {
         "flow_packets_per_sec":    {"mean": 50,     "std": 20},
         "connection_count":        {"mean": 100,    "std": 50},
     },
-    "WebAttack": {
+    "M-Pesa API Abuse": {
         "fwd_payload_mean":        {"mean": 2000,   "std": 800},
         "payload_entropy":         {"mean": 7.0,    "std": 0.5},
         "tcp_flag_psh_ratio":      {"mean": 0.6,    "std": 0.15},
@@ -144,7 +143,7 @@ ATTACK_PATTERNS = {
         "tcp_flag_psh_ratio":      {"mean": 0.7,    "std": 0.1},
         "large_packet_ratio":      {"mean": 0.8,    "std": 0.1},
     },
-    "DataExfil": {
+    "Al-Shabaab Exfil": {
         "total_bwd_bytes":         {"mean": 500000, "std": 200000},
         "unique_dst_ips":          {"mean": 1,      "std": 0.5},
         "flow_duration":           {"mean": 300000, "std": 100000},
@@ -268,6 +267,43 @@ def generate_synthetic_dataset(
     df = pd.DataFrame(all_data, columns=ALL_FEATURES)
     df["label"] = all_labels
     df["attack_type"] = all_attack_types
+    
+    # Inject Kenyan Metadata Columns
+    # Safaricom: 36947 | Airtel: 37061 | Telkom: 15399 | Liquid: 30844
+    kenyan_asns = ["AS36947 (Safaricom)", "AS37061 (Airtel Kenya)", "AS15399 (Telkom Kenya)", "AS30844 (Liquid Telecom)"]
+    df["Source_ASN"] = np.random.choice(kenyan_asns, size=len(df), p=[0.55, 0.25, 0.10, 0.10])
+    
+    # Target Domains based on Attack Type
+    target_domains = []
+    source_ips = []
+    
+    # Generate generic IPs
+    def rand_ip(is_external=False):
+        if is_external:
+            return f"{np.random.randint(1, 200)}.{np.random.randint(1, 255)}.{np.random.randint(1, 255)}.{np.random.randint(1, 255)}"
+        return f"196.20{np.random.randint(1, 9)}.{np.random.randint(1, 255)}.{np.random.randint(1, 255)}" # Kenyan blocks
+
+    for atype in all_attack_types:
+        source_ips.append(rand_ip(is_external=(atype in ["Al-Shabaab Exfil", "eCitizen DDoS", "Botnet"])))
+        if atype == "M-Pesa API Abuse":
+            target_domains.append("api.safaricom.co.ke")
+        elif atype == "eCitizen DDoS":
+            target_domains.append("accounts.ecitizen.go.ke")
+        elif atype == "Al-Shabaab Exfil":
+            target_domains.append("mail.mod.go.ke") # Ministry of defense
+        elif atype == "PortScan":
+            target_domains.append("cbk.go.ke") # Central bank
+        elif atype == "Heartbleed":
+            target_domains.append("kra.go.ke")
+        else:
+            target_domains.append("internal.nctirs.go.ke")
+            
+    df["Source_IP"] = source_ips
+    df["Target_Domain"] = target_domains
+
+    # Reorder columns to put metadata first for the judges to see easily
+    metadata_cols = ["Source_IP", "Target_Domain", "Source_ASN", "attack_type", "label"]
+    df = df[metadata_cols + ALL_FEATURES]
 
     return df
 

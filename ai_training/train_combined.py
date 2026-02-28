@@ -99,7 +99,7 @@ def load_and_combine_datasets(data_dir: Path) -> tuple:
         print(f"  ✗ CICIDS2017 not found at {cicids_path}")
 
     # 3. Load Synthetic dataset
-    synth_path = data_dir / "synthetic_dataset.csv"
+    synth_path = data_dir / "KEN-CYBER-MVP-2026.csv"
     if synth_path.exists():
         print("\n[3/3] Loading Synthetic dataset...")
         df = pd.read_csv(synth_path, low_memory=False)

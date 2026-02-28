@@ -149,8 +149,8 @@ DATASET_CONFIG = {
     "synthetic_samples": 100_000,
     "attack_ratio": 0.20,              # 20% attack traffic
     "attack_types": [
-        "DDoS", "PortScan", "BruteForce", "Infiltration",
-        "Botnet", "WebAttack", "Heartbleed", "DataExfil",
+        "eCitizen DDoS", "PortScan", "BruteForce", "Infiltration",
+        "Botnet", "M-Pesa API Abuse", "Heartbleed", "Al-Shabaab Exfil",
         "C2Beacon", "DNSTunnel",
     ],
 }
