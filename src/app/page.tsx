@@ -529,35 +529,160 @@ function CommandCenterView({ data, setIsEmergency, activeCoordinated, highThreat
 }
 
 function FusionCenterView({ data }: { data: DashboardData }) {
+  const criticalReports = data.communityReports.filter(r => r.urgency === 'CRITICAL' || r.urgency === 'HIGH').length;
+  const activeFeeds = data.surveillanceFeeds.filter(f => f.status === 'ACTIVE').length;
+  const alertFeeds = data.surveillanceFeeds.filter(f => f.status === 'ALERT').length;
+
   return (
     <motion.div
-      initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}
-      className="grid grid-cols-12 gap-4 min-h-[calc(100vh-10rem)]"
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}
+      className="flex flex-col gap-5"
     >
-      {/* LEFT - Main Content */}
-      <div className="col-span-12 lg:col-span-8 flex flex-col gap-4">
-        <div className="flex-1 min-h-[300px]">
-          <ThreatMap
-            incidents={data.incidents}
-            predictions={data.predictions}
-            surveillance={data.surveillanceFeeds}
-          />
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <CNIHeatmap />
-          <DataLakeMonitor sources={data.dataLakeSources} />
-        </div>
-      </div>
-      {/* RIGHT - Intel Sidebar */}
-      <div className="col-span-12 lg:col-span-4 flex flex-col gap-4 overflow-y-auto">
-        <div className="bg-black border border-green-900/50 p-4">
-          <h2 className="text-sm font-bold text-green-400 mb-3 border-b border-green-900/50 pb-2 uppercase tracking-wider">
-            Inter-Agency Comms
-          </h2>
-          <AIAssistantPanel />
-        </div>
-        <CommunityReports reports={data.communityReports} maxItems={8} />
-        <SurveillanceMonitor feeds={data.surveillanceFeeds} maxItems={5} />
+      {/* ROW 1: Fusion Status Bar */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+        className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-3"
+      >
+        {[
+          { label: 'FUSION STATUS', value: 'ONLINE', color: 'text-green-400', glow: 'shadow-[0_0_12px_rgba(0,255,65,0.3)]' },
+          { label: 'INTEL REPORTS', value: data.communityReports.length, color: 'text-cyan-400', glow: '' },
+          { label: 'CRITICAL SIGS', value: criticalReports, color: criticalReports > 0 ? 'text-red-400' : 'text-green-400', glow: criticalReports > 0 ? 'shadow-[0_0_12px_rgba(239,68,68,0.3)]' : '' },
+          { label: 'SURV FEEDS', value: `${activeFeeds}/${data.surveillanceFeeds.length}`, color: 'text-green-400', glow: '' },
+          { label: 'ALERT FEEDS', value: alertFeeds, color: alertFeeds > 0 ? 'text-amber-400 animate-pulse' : 'text-green-400', glow: alertFeeds > 0 ? 'shadow-[0_0_12px_rgba(245,158,11,0.3)]' : '' },
+          { label: 'DATA LAKE', value: `${data.dataLakeSources.length} SRC`, color: 'text-purple-400', glow: '' },
+        ].map((stat, i) => (
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.05 * i, type: 'spring', stiffness: 300 }}
+            className={`bg-black/80 border border-green-900/40 p-3 text-center backdrop-blur-sm ${stat.glow}`}
+          >
+            <div className="text-[9px] text-green-800 uppercase tracking-widest font-bold mb-1">{stat.label}</div>
+            <div className={`text-lg font-bold font-mono ${stat.color}`}>{stat.value}</div>
+          </motion.div>
+        ))}
+      </motion.div>
+
+      {/* ROW 2: Main Content — Map + Intel Sidebar */}
+      <div className="grid grid-cols-12 gap-5">
+
+        {/* LEFT: Dominant Map + CNI */}
+        <motion.div
+          initial={{ opacity: 0, x: -15 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2, duration: 0.5 }}
+          className="col-span-12 xl:col-span-8 flex flex-col gap-4"
+        >
+          {/* Map */}
+          <div className="relative border border-green-900/30 rounded-sm overflow-hidden shadow-lg shadow-green-900/10">
+            <div className="absolute top-3 left-3 z-10 bg-black/80 border border-green-500/30 px-3 py-1.5 backdrop-blur-sm">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(0,255,65,0.6)]" />
+                <span className="text-[10px] text-green-400 font-mono uppercase tracking-widest font-bold">Multi-Agency Fusion View — Live</span>
+              </div>
+            </div>
+            <div className="h-[420px]">
+              <ThreatMap
+                incidents={data.incidents}
+                predictions={data.predictions}
+                surveillance={data.surveillanceFeeds}
+              />
+            </div>
+          </div>
+
+          {/* Sub-widgets under map */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+            >
+              <CNIHeatmap />
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
+            >
+              <DataLakeMonitor sources={data.dataLakeSources} />
+            </motion.div>
+          </div>
+        </motion.div>
+
+        {/* RIGHT: Intel Sidebar */}
+        <motion.div
+          initial={{ opacity: 0, x: 15 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.25, duration: 0.5 }}
+          className="col-span-12 xl:col-span-4 flex flex-col gap-4 max-h-[calc(100vh-14rem)] overflow-y-auto pr-1 custom-scrollbar"
+        >
+          {/* Inter-Agency AI Comms */}
+          <div className="bg-black/80 border border-cyan-900/40 p-4 backdrop-blur-sm shadow-[0_0_15px_rgba(0,200,255,0.05)]">
+            <div className="flex items-center gap-2 mb-3 border-b border-cyan-900/30 pb-2">
+              <span className="w-2 h-2 bg-cyan-500 rounded-full shadow-[0_0_6px_rgba(0,200,255,0.5)]" />
+              <h2 className="text-sm font-bold text-cyan-400 uppercase tracking-wider">Inter-Agency Comms</h2>
+              <span className="ml-auto text-[8px] text-cyan-700 font-mono uppercase">Encrypted</span>
+            </div>
+            <AIAssistantPanel />
+          </div>
+
+          {/* Intelligence Field Reports — with staggered animation */}
+          <div className="bg-black/80 border border-green-900/40 p-4 backdrop-blur-sm">
+            <div className="flex items-center justify-between mb-3 border-b border-green-900/30 pb-2">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-green-500 rounded-full" />
+                <h2 className="text-sm font-bold text-green-400 uppercase tracking-wider">Intel Reports</h2>
+              </div>
+              <span className="text-[9px] text-green-700 font-mono">{data.communityReports.filter(r => r.verified).length} VERIFIED</span>
+            </div>
+            <div className="space-y-3 max-h-[320px] overflow-y-auto custom-scrollbar pr-1">
+              {data.communityReports.slice(0, 6).map((report, i) => (
+                <motion.div
+                  key={report.id}
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3 + i * 0.08 }}
+                  whileHover={{ scale: 1.01, borderColor: 'rgba(0,255,65,0.5)' }}
+                  className="border border-green-900/30 bg-black/60 p-3 cursor-pointer transition-shadow hover:shadow-[0_0_15px_rgba(0,255,65,0.1)]"
+                >
+                  <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                    <span className={`text-[8px] font-mono font-bold px-1.5 py-0.5 uppercase tracking-wider ${report.urgency === 'CRITICAL' ? 'bg-red-900/50 text-red-400 border border-red-700/50' :
+                        report.urgency === 'HIGH' ? 'bg-amber-900/50 text-amber-400 border border-amber-700/50' :
+                          'bg-green-900/50 text-green-400 border border-green-700/50'
+                      }`}>{report.urgency}</span>
+                    <span className="text-[8px] font-mono text-cyan-600 uppercase">{report.type.replace(/_/g, ' ')}</span>
+                    {report.verified && <span className="text-[7px] text-green-500 font-mono">✓ VER</span>}
+                  </div>
+                  <p className="text-[10px] text-green-400/80 font-mono leading-relaxed mb-1.5 line-clamp-2">{report.description}</p>
+                  <div className="text-[8px] text-green-900 font-mono uppercase">{report.location.name}</div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+
+          {/* Surveillance Quick View */}
+          <div className="bg-black/80 border border-amber-900/30 p-4 backdrop-blur-sm">
+            <div className="flex items-center justify-between mb-3 border-b border-amber-900/30 pb-2">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
+                <h2 className="text-sm font-bold text-amber-400 uppercase tracking-wider">Surv Network</h2>
+              </div>
+              <span className="text-[9px] text-amber-700 font-mono">{alertFeeds} ALERT</span>
+            </div>
+            <div className="space-y-2 max-h-[200px] overflow-y-auto custom-scrollbar pr-1">
+              {data.surveillanceFeeds.slice(0, 8).map((feed, i) => (
+                <motion.div
+                  key={feed.id}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 + i * 0.06 }}
+                  className={`flex items-center justify-between p-2 text-[10px] font-mono border ${feed.status === 'ALERT' ? 'border-red-900/50 bg-red-950/20' : 'border-green-900/20 bg-black/40'
+                    }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className={`w-1.5 h-1.5 rounded-full ${feed.status === 'ALERT' ? 'bg-red-500 animate-pulse' : 'bg-green-500'}`} />
+                    <span className="text-green-400 uppercase truncate max-w-[120px]">{feed.location}</span>
+                  </div>
+                  <span className={`uppercase font-bold ${feed.status === 'ALERT' ? 'text-red-400' : 'text-green-700'}`}>{feed.status}</span>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+
       </div>
     </motion.div>
   );
