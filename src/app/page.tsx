@@ -640,8 +640,8 @@ function FusionCenterView({ data }: { data: DashboardData }) {
                 >
                   <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                     <span className={`text-[8px] font-mono font-bold px-1.5 py-0.5 uppercase tracking-wider ${report.urgency === 'CRITICAL' ? 'bg-red-900/50 text-red-400 border border-red-700/50' :
-                        report.urgency === 'HIGH' ? 'bg-amber-900/50 text-amber-400 border border-amber-700/50' :
-                          'bg-green-900/50 text-green-400 border border-green-700/50'
+                      report.urgency === 'HIGH' ? 'bg-amber-900/50 text-amber-400 border border-amber-700/50' :
+                        'bg-green-900/50 text-green-400 border border-green-700/50'
                       }`}>{report.urgency}</span>
                     <span className="text-[8px] font-mono text-cyan-600 uppercase">{report.type.replace(/_/g, ' ')}</span>
                     {report.verified && <span className="text-[7px] text-green-500 font-mono">✓ VER</span>}
@@ -689,39 +689,252 @@ function FusionCenterView({ data }: { data: DashboardData }) {
 }
 
 function ThreatMatrixView({ data }: { data: DashboardData }) {
+  const [selectedThreat, setSelectedThreat] = useState<string | null>(null);
+  const criticalCount = data.incidents.filter(i => i.threatLevel === 'CRITICAL').length;
+  const highCount = data.incidents.filter(i => i.threatLevel === 'HIGH').length;
+  const activeCount = data.incidents.filter(i => i.status === 'ACTIVE' || i.status === 'INVESTIGATING').length;
+  const containedCount = data.cyberThreats.filter(t => t.status === 'CONTAINED' || t.status === 'NEUTRALIZED').length;
+
   return (
     <motion.div
-      initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}
-      className="grid grid-cols-12 gap-4 min-h-[calc(100vh-10rem)]"
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}
+      className="flex flex-col gap-5"
     >
-      {/* LEFT - Threat List */}
-      <div className="col-span-12 lg:col-span-4 flex flex-col gap-4 overflow-y-auto pr-1">
-        <IncidentList incidents={data.incidents} maxItems={15} />
-        <ThreatAnalyticsEngine
-          cyberThreats={data.cyberThreats}
-          coordinatedAttacks={data.coordinatedAttacks}
-        />
-      </div>
-      {/* RIGHT - Map & Metrics */}
-      <div className="col-span-12 lg:col-span-8 flex flex-col gap-4">
-        <KeyMetrics metrics={{
-          threatLevel: 'CRITICAL',
-          activeIncidents: 42,
-          aiConfidence: 89.5,
-          systemLoad: 65,
-          responsesActive: 12,
-          networkTraffic: '12 TB/s'
-        }} />
-        <div className="flex-1 bg-black border border-red-900/30 p-2 relative min-h-[300px]">
-          <div className="absolute top-2 right-2 bg-red-900/30 text-red-500 text-[9px] px-2 py-1 font-bold uppercase tracking-wider z-10">
-            Live Attack Vectors
+      {/* ROW 1: Threat Severity Counters */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+        className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-3"
+      >
+        {[
+          { label: 'MATRIX STATUS', value: 'TRACKING', color: 'text-red-400', border: 'border-red-900/50', glow: 'shadow-[0_0_12px_rgba(239,68,68,0.2)]', pulse: true },
+          { label: 'CRITICAL', value: criticalCount, color: 'text-red-500', border: 'border-red-900/50', glow: criticalCount > 0 ? 'shadow-[0_0_15px_rgba(239,68,68,0.4)]' : '', pulse: criticalCount > 0 },
+          { label: 'HIGH', value: highCount, color: 'text-amber-400', border: 'border-amber-900/40', glow: '', pulse: false },
+          { label: 'ACTIVE NOW', value: activeCount, color: 'text-cyan-400', border: 'border-cyan-900/40', glow: '', pulse: false },
+          { label: 'CONTAINED', value: containedCount, color: 'text-green-400', border: 'border-green-900/40', glow: '', pulse: false },
+          { label: 'TOTAL THREATS', value: data.incidents.length + data.cyberThreats.length, color: 'text-purple-400', border: 'border-purple-900/40', glow: '', pulse: false },
+        ].map((stat, i) => (
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.05 * i, type: 'spring', stiffness: 300 }}
+            className={`bg-black/80 border ${stat.border} p-3 text-center backdrop-blur-sm ${stat.glow}`}
+          >
+            <div className="text-[9px] text-green-800 uppercase tracking-widest font-bold mb-1">{stat.label}</div>
+            <div className={`text-lg font-bold font-mono ${stat.color} ${stat.pulse ? 'animate-pulse' : ''}`}>{stat.value}</div>
+          </motion.div>
+        ))}
+      </motion.div>
+
+      {/* ROW 2: Main Content */}
+      <div className="grid grid-cols-12 gap-5">
+
+        {/* LEFT: Threat List with clickable rows */}
+        <motion.div
+          initial={{ opacity: 0, x: -15 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2, duration: 0.5 }}
+          className="col-span-12 xl:col-span-5 flex flex-col gap-3"
+        >
+          <div className="flex items-center justify-between px-1">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.6)]" />
+              <span className="text-xs text-red-400 font-mono uppercase tracking-widest font-bold">Live Threat Feed</span>
+            </div>
+            <span className="text-[9px] text-green-800 font-mono">{data.incidents.length} EVENTS</span>
           </div>
-          <ThreatMap
-            incidents={data.incidents}
-            predictions={data.predictions}
-            surveillance={data.surveillanceFeeds}
-          />
-        </div>
+
+          <div className="space-y-2 max-h-[calc(100vh-18rem)] overflow-y-auto pr-1 custom-scrollbar">
+            {data.incidents.slice(0, 12).map((incident, i) => (
+              <motion.div
+                key={incident.id}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.15 + i * 0.06 }}
+                whileHover={{ scale: 1.01 }}
+                onClick={() => setSelectedThreat(selectedThreat === incident.id ? null : incident.id)}
+                className={`cursor-pointer border p-3 transition-all ${selectedThreat === incident.id
+                    ? 'border-red-500/60 bg-red-950/20 shadow-[0_0_20px_rgba(239,68,68,0.15)]'
+                    : 'border-green-900/30 bg-black/60 hover:border-green-500/40 hover:shadow-[0_0_10px_rgba(0,255,65,0.05)]'
+                  }`}
+              >
+                <div className="flex items-center justify-between mb-1.5">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className={`text-[8px] font-mono font-bold px-1.5 py-0.5 uppercase tracking-wider ${incident.threatLevel === 'CRITICAL' ? 'bg-red-900/60 text-red-400 border border-red-700/50' :
+                        incident.threatLevel === 'HIGH' ? 'bg-amber-900/60 text-amber-400 border border-amber-700/50' :
+                          incident.threatLevel === 'MEDIUM' ? 'bg-yellow-900/50 text-yellow-400 border border-yellow-700/50' :
+                            'bg-green-900/50 text-green-400 border border-green-700/50'
+                      }`}>{incident.threatLevel}</span>
+                    <span className={`text-[8px] font-mono px-1.5 py-0.5 uppercase ${incident.status === 'ACTIVE' ? 'bg-red-950/50 text-red-400 border border-red-900/50' :
+                        incident.status === 'INVESTIGATING' ? 'bg-cyan-950/50 text-cyan-400 border border-cyan-900/50' :
+                          'bg-green-950/50 text-green-400 border border-green-900/50'
+                      }`}>{incident.status}</span>
+                    <span className="text-[8px] font-mono text-purple-500 uppercase">{incident.type.replace(/_/g, ' ')}</span>
+                  </div>
+                  <span className="text-[8px] font-mono text-green-700">{incident.aiConfidence}% AI</span>
+                </div>
+
+                <h4 className="text-[11px] text-green-300 font-mono font-bold truncate mb-1">{incident.title}</h4>
+
+                <div className="flex items-center gap-3 text-[8px] text-green-900 font-mono uppercase">
+                  <span>{incident.location.name}</span>
+                  {incident.mitreAttackId && <span className="text-purple-500">{incident.mitreAttackId}</span>}
+                </div>
+
+                {selectedThreat === incident.id && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    transition={{ duration: 0.3 }}
+                    className="mt-3 pt-3 border-t border-green-900/30 space-y-2"
+                  >
+                    <p className="text-[10px] text-green-400/80 font-mono leading-relaxed">{incident.description}</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="bg-black/60 border border-green-900/20 p-2">
+                        <div className="text-[7px] text-green-800 uppercase mb-0.5">Region</div>
+                        <div className="text-[10px] text-green-400 font-mono">{incident.location.region}</div>
+                      </div>
+                      <div className="bg-black/60 border border-green-900/20 p-2">
+                        <div className="text-[7px] text-green-800 uppercase mb-0.5">Data Impact</div>
+                        <div className="text-[10px] text-amber-400 font-mono">{incident.dataProtectionImpact.replace(/_/g, ' ')}</div>
+                      </div>
+                      <div className="bg-black/60 border border-green-900/20 p-2">
+                        <div className="text-[7px] text-green-800 uppercase mb-0.5">AI Confidence</div>
+                        <div className={`text-[10px] font-mono font-bold ${incident.aiConfidence > 80 ? 'text-green-400' : 'text-amber-400'}`}>{incident.aiConfidence}%</div>
+                      </div>
+                      <div className="bg-black/60 border border-green-900/20 p-2">
+                        <div className="text-[7px] text-green-800 uppercase mb-0.5">Affected Area</div>
+                        <div className="text-[10px] text-cyan-400 font-mono">{incident.affectedArea} km²</div>
+                      </div>
+                    </div>
+                    {incident.mitreAttackId && (
+                      <div className="bg-purple-950/20 border border-purple-900/30 p-2">
+                        <div className="text-[7px] text-purple-500 uppercase mb-0.5">MITRE ATT&CK</div>
+                        <div className="text-[10px] text-purple-400 font-mono font-bold">{incident.mitreAttackId}</div>
+                      </div>
+                    )}
+                    <div className="flex flex-wrap gap-1">
+                      {incident.sources.map((src, idx) => (
+                        <span key={idx} className="text-[7px] font-mono bg-green-950/30 text-green-600 border border-green-900/30 px-1.5 py-0.5 uppercase">{src}</span>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* RIGHT: Map + Cyber Threats + Coordinated Attacks */}
+        <motion.div
+          initial={{ opacity: 0, x: 15 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.25, duration: 0.5 }}
+          className="col-span-12 xl:col-span-7 flex flex-col gap-4"
+        >
+          {/* Live Attack Map */}
+          <div className="relative border border-red-900/30 rounded-sm overflow-hidden shadow-lg shadow-red-900/10">
+            <div className="absolute top-3 left-3 z-10 bg-black/80 border border-red-500/30 px-3 py-1.5 backdrop-blur-sm">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.6)]" />
+                <span className="text-[10px] text-red-400 font-mono uppercase tracking-widest font-bold">Live Attack Vectors</span>
+              </div>
+            </div>
+            <div className="absolute top-3 right-3 z-10 bg-red-900/30 text-red-400 text-[9px] px-2 py-1 font-bold uppercase tracking-wider font-mono border border-red-800/50">
+              {activeCount} Active
+            </div>
+            <div className="h-[350px]">
+              <ThreatMap
+                incidents={data.incidents}
+                predictions={data.predictions}
+                surveillance={data.surveillanceFeeds}
+              />
+            </div>
+          </div>
+
+          {/* Cyber Threats Detail */}
+          <div className="bg-black/80 border border-red-900/30 p-4 backdrop-blur-sm">
+            <div className="flex items-center justify-between mb-3 border-b border-red-900/30 pb-2">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-red-500 rounded-full" />
+                <h2 className="text-sm font-bold text-red-400 uppercase tracking-wider">Cyber Threat Intelligence</h2>
+              </div>
+              <span className="text-[9px] text-green-700 font-mono">{data.cyberThreats.length} TRACKED</span>
+            </div>
+            <div className="space-y-2 max-h-[280px] overflow-y-auto custom-scrollbar pr-1">
+              {data.cyberThreats.slice(0, 8).map((threat, i) => (
+                <motion.div
+                  key={threat.id}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.4 + i * 0.06 }}
+                  className={`border p-3 ${threat.status === 'DETECTED' ? 'border-red-900/40 bg-red-950/10' :
+                      threat.status === 'ANALYZING' ? 'border-amber-900/40 bg-amber-950/10' :
+                        'border-green-900/30 bg-black/40'
+                    }`}
+                >
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className={`text-[8px] font-mono font-bold px-1.5 py-0.5 uppercase ${threat.severity === 'CRITICAL' ? 'bg-red-900/60 text-red-400 border border-red-700/50' :
+                          threat.severity === 'HIGH' ? 'bg-amber-900/60 text-amber-400 border border-amber-700/50' :
+                            'bg-green-900/50 text-green-400 border border-green-700/50'
+                        }`}>{threat.severity}</span>
+                      <span className="text-[8px] font-mono text-cyan-500 uppercase">{threat.type.replace(/_/g, ' ')}</span>
+                      <span className={`text-[8px] font-mono uppercase font-bold ${threat.status === 'DETECTED' ? 'text-red-400' :
+                          threat.status === 'ANALYZING' ? 'text-amber-400' :
+                            threat.status === 'CONTAINED' ? 'text-blue-400' : 'text-green-400'
+                        }`}>{threat.status}</span>
+                    </div>
+                    <span className="text-[8px] font-mono text-green-700">{threat.aiConfidence}% CONF</span>
+                  </div>
+                  <h4 className="text-[11px] text-green-300 font-mono font-bold mb-1">{threat.name}</h4>
+                  <p className="text-[9px] text-green-600 font-mono leading-relaxed mb-1.5 line-clamp-2">{threat.description}</p>
+                  <div className="flex items-center gap-3 text-[8px] font-mono flex-wrap">
+                    <span className="text-purple-500">{threat.targetSector}</span>
+                    <span className="text-cyan-600">{threat.targetSystem}</span>
+                    {threat.sourceIP && <span className="text-red-500">{threat.sourceIP}</span>}
+                    {threat.aptSignature && <span className="text-amber-500">{threat.aptSignature}</span>}
+                  </div>
+                  {threat.iocIndicators.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {threat.iocIndicators.slice(0, 3).map((ioc, idx) => (
+                        <span key={idx} className="text-[7px] font-mono bg-red-950/30 text-red-500 border border-red-900/30 px-1.5 py-0.5 truncate max-w-[200px]">{ioc}</span>
+                      ))}
+                    </div>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </div>
+
+          {/* Coordinated Attacks */}
+          {data.coordinatedAttacks.length > 0 && (
+            <div className="bg-black/80 border border-amber-900/30 p-4 backdrop-blur-sm">
+              <div className="flex items-center gap-2 mb-3 border-b border-amber-900/30 pb-2">
+                <span className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
+                <h2 className="text-sm font-bold text-amber-400 uppercase tracking-wider">Coordinated Attacks</h2>
+                <span className="ml-auto text-[9px] text-amber-700 font-mono">{data.coordinatedAttacks.length} DETECTED</span>
+              </div>
+              <div className="space-y-2">
+                {data.coordinatedAttacks.slice(0, 4).map((attack, i) => (
+                  <motion.div
+                    key={attack.id}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.6 + i * 0.08 }}
+                    className="flex items-center justify-between p-2 border border-amber-900/20 bg-black/40 text-[10px] font-mono"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className={`w-1.5 h-1.5 rounded-full ${attack.status === 'DETECTED' ? 'bg-red-500 animate-pulse' : 'bg-green-500'}`} />
+                      <span className="text-amber-400 uppercase">{attack.attackVector}</span>
+                    </div>
+                    <span className="text-green-600 truncate max-w-[120px]">{attack.targetFacility}</span>
+                    <span className="text-cyan-500">{(attack.correlationScore * 100).toFixed(0)}%</span>
+                    <span className={`uppercase font-bold ${attack.status === 'DETECTED' ? 'text-red-400' : attack.status === 'RESPONDING' ? 'text-amber-400' : 'text-green-400'
+                      }`}>{attack.status}</span>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          )}
+        </motion.div>
+
       </div>
     </motion.div>
   );
