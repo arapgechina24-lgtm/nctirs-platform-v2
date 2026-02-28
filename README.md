@@ -254,6 +254,7 @@ This project was developed for the **NIRU Hackathon** to demonstrate how AI and 
 | ✅ v2.0 | Backend API & Authentication (NextAuth v5) | Completed |
 | ✅ v2.1 | AI Intelligence Engine (Gemini 2.0 Flash) | Completed |
 | ✅ v2.2 | SOAR Automation & Audit Compliance | Completed |
+| 📋 v2.3 | **KE-CIRT Traffic Mirroring (Indigenous Dataset Generation)** | Planned (Phase 2) |
 | 📋 v3.0 | Multi-agency Role-Based Access | Planned |
 | 📋 v3.1 | Production Deployment Guides | Planned |
 

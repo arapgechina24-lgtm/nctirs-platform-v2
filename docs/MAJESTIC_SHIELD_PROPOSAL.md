@@ -650,8 +650,9 @@ MAJESTIC SHIELD directly supports Kenya's vision of leveraging Artificial Intell
 |-----------|-------------|------------------|
 | 2.1 | ATAE v2.0 (advanced NLP, RNNs) | >95% APT detection accuracy |
 | 2.2 | Agency integration (NIS, KE-CIRT, CBK) | Real-time data sharing active |
-| 2.3 | Zero-Trust CAA pilot | 1000 users enrolled, <2% friction complaints |
-| 2.4 | ARCM automated response | <500ms containment for tier-1 threats |
+| 2.3 | **KE-CIRT Traffic Mirroring** | First Indigenous Kenyan Cyber Dataset generated |
+| 2.4 | Zero-Trust CAA pilot | 1000 users enrolled, <2% friction complaints |
+| 2.5 | ARCM automated response | <500ms containment for tier-1 threats |
 
 ### Phase 3: Advanced Features (Q1-Q2 2027)
 

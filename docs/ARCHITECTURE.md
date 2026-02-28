@@ -27,7 +27,7 @@ graph TB
     subgraph AI_Intelligence ["AI Intelligence & Live Feeds"]
         PyTorch["AI Model (LSTM Autoencoder)"]
         Streamer["Live Traffic Streamer (Python)"]
-        Datasets["Datasets (CICIDS2017 / UNSW-NB15)"]
+        Datasets["Hackathon MVP: CICIDS2017 / UNSW-NB15<br/>Phase 2: KEN-CYBER-2026 (Indigenous Dataset)"]
     end
 
     %% Connections
@@ -69,4 +69,5 @@ graph TB
 
 - **Anomaly Detection Models**: LSTM Autoencoders implemented in PyTorch for network anomaly detection.
 - **Local LLM Strategy (Sector-Gapped Sovereign AI)**: While the Hackathon MVP utilizes Google Gemini 2.0 Flash for demonstration, the production rollout architecture mandates a **Sector-Gapped Sovereign AI**. This involves deploying locally hosted, open-weight models (like Llama-3 8B or Mistral) running on secure Kenyan government servers (e.g., Konza Technopolis) completely air-gapped from the public internet. This ensures National Self-Reliance (zero foreign API dependency) and strict Data Privacy compliance.
+- **Indigenous Dataset Strategy (Phase 2)**: While the MVP utilizes CICIDS2017 for baseline anomaly detection, Phase 2 involves creating the first indigenous Kenyan Cyber Dataset by mirroring traffic from the National KE-CIRT to fine-tune the weights for local infrastructural anomalies (e.g., M-Pesa API abuse patterns, Safaricom/Airtel topologies).
 - **Streaming**: A standalone Python service (`stream_live_traffic.py`) that simulates live network traffic, processes it through the AI models, and pushes detections to the dashboard in real-time.
