@@ -116,10 +116,45 @@ async function executeAIQuery(
     const gemini = getGeminiClient();
 
     let text = '';
-    let source: 'gemini' | 'anthropic' | 'fallback' = 'gemini';
+    let source: 'gemini' | 'anthropic' | 'ollama' | 'fallback' = 'gemini';
 
-    // 1. Try Claude if selected
-    if ((provider === 'claude' || provider === 'anthropic') && anthropic) {
+    const isSovereignEnabled = process.env.SOVEREIGN_AI_ENABLED === 'true';
+
+    // 1. Try Sovereign AI (Ollama) FIRST if enabled
+    if (isSovereignEnabled) {
+        try {
+            const endpoint = process.env.OLLAMA_ENDPOINT || 'http://localhost:11434';
+            const model = process.env.OLLAMA_MODEL || 'mistral';
+
+            // Format system prompt and user prompt
+            const ollamaPrompt = `System: ${systemPrompt}\n\nUser: ${prompt}`;
+
+            const response = await fetch(`${endpoint}/api/generate`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    model: model,
+                    prompt: ollamaPrompt,
+                    stream: false,
+                    format: 'json' // Force JSON return where supported by Ollama
+                }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                text = data.response;
+                source = 'ollama';
+                console.log(`[AI] Successfully queried Sovereign AI (${model})`);
+            } else {
+                console.warn(`[AI] Sovereign AI (Ollama) returned non-OK status: ${response.status}`);
+            }
+        } catch (err) {
+            console.error('[AI] Sovereign AI (Ollama) connection failed. Ensure Ollama is running locally:', err);
+        }
+    }
+
+    // 2. Try Claude if selected and Sovereign AI didn't return text
+    if (!text && (provider === 'claude' || provider === 'anthropic') && anthropic) {
         try {
             const response = await anthropic.messages.create({
                 model: 'claude-3-opus-20240229',
@@ -135,7 +170,7 @@ async function executeAIQuery(
         }
     }
 
-    // 2. Try Gemini if Claude failed or wasn't selected
+    // 3. Try Gemini if Claude/Ollama failed or wasn't selected
     if (!text && gemini) {
         try {
             const result = await gemini.generateContent({
@@ -213,7 +248,7 @@ Return exactly this JSON structure:
             recommendedActions: parsed.recommendedActions || ['Investigate further', 'Monitor network traffic'],
             kenyaContext: parsed.kenyaContext || 'Assessment pending for local infrastructure impact.',
             timestamp: new Date().toISOString(),
-            source: source as 'gemini' | 'anthropic' | 'fallback',
+            source: source as 'gemini' | 'anthropic' | 'ollama' | 'fallback',
         };
 
     } catch (error) {
@@ -278,7 +313,7 @@ Return exactly this JSON structure:
             recommendedActions: parsed.recommendedActions || ['Investigate further', 'Coordinate with local agencies'],
             kenyaContext: parsed.kenyaContext || 'Assessment pending for local context.',
             timestamp: new Date().toISOString(),
-            source: source as 'gemini' | 'anthropic' | 'fallback',
+            source: source as 'gemini' | 'anthropic' | 'ollama' | 'fallback',
         };
 
     } catch (error) {
@@ -418,7 +453,7 @@ export interface IOCClassificationResult {
     totalIndicators: number;
     criticalCount: number;
     timestamp: string;
-    source: 'gemini' | 'anthropic' | 'fallback';
+    source: 'gemini' | 'anthropic' | 'ollama' | 'fallback';
 }
 
 const MITRE_CLASSIFIER_PROMPT = `You are a MITRE ATT&CK classification engine. Given a list of Indicators of Compromise (IOCs), classify each one against the MITRE ATT&CK framework.
@@ -492,7 +527,7 @@ export async function classifyIOCs(input: IOCClassificationInput, providerOverri
             totalIndicators: classifications.length,
             criticalCount,
             timestamp: new Date().toISOString(),
-            source: source as 'gemini' | 'anthropic' | 'fallback',
+            source: source as 'gemini' | 'anthropic' | 'ollama' | 'fallback',
         };
     } catch (error) {
         console.error('[AI] MITRE classification failed, using fallback:', error);

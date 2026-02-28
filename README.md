@@ -196,21 +196,33 @@ This system is designed to comply with:
 - 🇰🇪 **Kenya Data Protection Act (2019)** - PII exposure monitoring
 - 🌍 **NIST SP 800-53** - Security controls framework
 
----
+## 🧠 Sovereign AI Integration (Ollama)
 
-## 🧠 Real AI Integration (Hackathon MVP Phase)
+To guarantee National Self-Reliance and strict Data Sovereignty, the platform supports locally hosted, open-weight models via **Ollama**. This ensures no intelligence data ever travels over the public internet to foreign APIs.
 
-> **⚠️ HACKATHON PROTOCOL NOTICE:** For the purposes of this 48-hour hackathon MVP, we are utilizing **Google Gemini 2.0 Flash** via public APIs to demonstrate capabilities. However, **this is strictly a prototyping measure**.
->
-> The production rollout architecture mandates a **Sector-Gapped Sovereign AI** approach. The final system will deploy locally hosted, open-weight models (such as Llama-3 8B or Mistral) running on secure, air-gapped Kenyan government servers (e.g., Konza Technopolis data centers) to guarantee 100% Data Sovereignty and zero foreign API reliance.
+**To enable Sovereign AI Mode (Recommended for Production):**
 
-To enable the real-time threat analysis MVP powered by Google Gemini 2.0 Flash:
+1. Install Ollama locally from [ollama.com](https://ollama.com).
+2. Download a model suitable for analysis (e.g., Mistral):
 
-1. Get an API Key from [Google AI Studio](https://aistudio.google.com/).
-2. Add it to your Vercel Project Settings:
-    - Key: `GEMINI_API_KEY`
-    - Value: `your-api-key-here`
-3. Redeploy the application.
+   ```bash
+   ollama run mistral
+   ```
+
+3. Update your `.env.local` file:
+
+   ```env
+   SOVEREIGN_AI_ENABLED=true
+   OLLAMA_ENDPOINT=http://localhost:11434
+   OLLAMA_MODEL=mistral
+   NEXT_PUBLIC_SOVEREIGN_AI_ENABLED=true
+   ```
+
+**Hackathon Prototyping Fallback (Gemini)**
+If you are unable to run local models on your demo machine, the system falls back to Google Gemini 2.0 Flash:
+
+1. Set `SOVEREIGN_AI_ENABLED=false`
+2. Provide a `GEMINI_API_KEY` from Google AI Studio.
 
 The AI operates as **SENTINEL-OMEGA**, an elite Director-Level Intelligence Fusion Engine providing CIA/FBI/Mossad-grade threat analysis with specific Kenyan operational context.
 

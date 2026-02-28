@@ -130,6 +130,16 @@ export function SystemArchitecture({ perception, cognition, integrity }: SystemA
 
                         <div className="flex items-center justify-between group-hover/card:pl-1 transition-all">
                             <div className="flex items-center gap-2">
+                                <Cpu className="h-3.5 w-3.5 text-purple-600" />
+                                <span className="text-[10px] text-gray-400 font-medium">Sovereign Mode</span>
+                            </div>
+                            <span className={`text-[9px] font-black tracking-wider px-1.5 py-0.5 rounded ${process.env.NEXT_PUBLIC_SOVEREIGN_AI_ENABLED === 'true' ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-gray-500/10 text-gray-400 border border-gray-500/20'}`}>
+                                {process.env.NEXT_PUBLIC_SOVEREIGN_AI_ENABLED === 'true' ? 'ACTIVE' : 'OFFLINE'}
+                            </span>
+                        </div>
+
+                        <div className="flex items-center justify-between group-hover/card:pl-1 transition-all">
+                            <div className="flex items-center gap-2">
                                 <AlertTriangle className="h-3.5 w-3.5 text-purple-600" />
                                 <span className="text-[10px] text-gray-400 font-medium">APT Signatures</span>
                             </div>
