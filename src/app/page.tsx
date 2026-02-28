@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion } from "framer-motion"
 // Layout components
 import { Header } from "@/components/layout/Header"
 // Threat components
