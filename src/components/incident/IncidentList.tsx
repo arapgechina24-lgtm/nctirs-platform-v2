@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ThreatBadge, StatusBadge, Badge } from "@/components/ui/badge"
 import { SecurityIncident } from "@/lib/mockData"
 import { MapPin, Clock, Users, AlertCircle } from "lucide-react"
+import { motion } from "framer-motion"
 import { formatDistanceToNow } from "date-fns"
 import { AIAnalysisPanel } from "@/components/intelligence/AIAnalysisPanel"
 
@@ -25,10 +26,14 @@ export function IncidentList({ incidents, maxItems = 10 }: IncidentListProps) {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {displayIncidents.map((incident) => (
-            <div
+          {displayIncidents.map((incident, i) => (
+            <motion.div
               key={incident.id}
-              className="flex flex-col gap-3 rounded-none border border-green-900/30 bg-black/50 p-4 transition-all hover:border-green-500/50 hover:bg-green-950/10 hover:shadow-[0_0_20px_rgba(0,255,65,0.05)]"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, delay: i * 0.1 }}
+              whileHover={{ scale: 1.01, backgroundColor: "rgba(0, 255, 65, 0.05)" }}
+              className="flex flex-col gap-3 rounded-none border border-green-900/30 bg-black/50 p-4 transition-all hover:border-green-500/50 hover:shadow-[0_0_20px_rgba(0,255,65,0.15)] cursor-pointer"
             >
               <div className="flex flex-wrap sm:flex-nowrap items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
@@ -90,7 +95,7 @@ export function IncidentList({ incidents, maxItems = 10 }: IncidentListProps) {
                   compact
                 />
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </CardContent>

@@ -46,6 +46,7 @@
     "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "framer-motion": "^12.34.3",
     "jspdf": "^4.0.0",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.562.0",

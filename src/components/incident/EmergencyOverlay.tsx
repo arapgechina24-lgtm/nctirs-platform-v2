@@ -4,6 +4,7 @@
 import { createPortal } from 'react-dom';
 import { useEffect, useState } from 'react';
 import { NC4IncidentReport } from '@/lib/soar-logic';
+import { motion } from 'framer-motion';
 
 interface EmergencyOverlayProps {
     isActive: boolean;
@@ -70,14 +71,24 @@ export default function EmergencyOverlay({ isActive, onMitigate, onDismiss, targ
     if (!isActive || !mounted) return null;
 
     return createPortal(
-        <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-red-950/90 backdrop-blur-md font-mono">
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-red-950/90 backdrop-blur-md font-mono"
+        >
             {/* Moving Scanline Effect */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="w-full h-1 bg-red-500/30 shadow-[0_0_15px_rgba(239,68,68,0.8)] animate-scanline" />
             </div>
 
             {/* Main Alert Content */}
-            <div className="relative z-10 text-center px-6 max-w-4xl w-full flex flex-col items-center">
+            <motion.div
+                initial={{ scale: 1.5, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: "spring", damping: 12, stiffness: 200 }}
+                className="relative z-10 text-center px-6 max-w-4xl w-full flex flex-col items-center"
+            >
                 <h1 className="text-6xl md:text-8xl font-black text-red-500 animate-glitch tracking-tighter uppercase mb-4">
                     National Emergency
                 </h1>
@@ -120,11 +131,11 @@ export default function EmergencyOverlay({ isActive, onMitigate, onDismiss, targ
                         </button>
                     </div>
                 )}
-            </div>
+            </motion.div>
 
             {/* Background Grid Pattern */}
             <div className="absolute inset-0 bg-[linear-gradient(rgba(255,0,0,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,0,0,0.05)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
-        </div>,
+        </motion.div>,
         document.body
     );
 }

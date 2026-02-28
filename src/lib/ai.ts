@@ -42,7 +42,7 @@ export interface AIAnalysisResult {
     recommendedActions: string[];
     kenyaContext: string;
     timestamp: string;
-    source: 'gemini' | 'anthropic' | 'fallback';
+    source: 'gemini' | 'anthropic' | 'fallback' | 'ollama';
 }
 
 const SYSTEM_PROMPT = `You are SENTINEL-OMEGA, the Director-Level AI Intelligence Fusion Engine for Kenya's National Intelligence Service (NCTIRS). You operate at the apex of the "Majestic Shield" doctrine.
@@ -110,7 +110,7 @@ async function executeAIQuery(
     prompt: string,
     systemPrompt: string,
     providerOverride?: string,
-): Promise<{ text: string, source: 'gemini' | 'anthropic' | 'fallback' }> {
+): Promise<{ text: string, source: 'gemini' | 'anthropic' | 'fallback' | 'ollama' }> {
     const provider = providerOverride?.toLowerCase() || process.env.AI_PROVIDER?.toLowerCase() || 'gemini';
     const anthropic = getAnthropicClient();
     const gemini = getGeminiClient();

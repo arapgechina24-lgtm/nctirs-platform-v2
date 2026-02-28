@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 // Layout components
 import { Header } from "@/components/layout/Header"
 // Threat components
@@ -424,11 +425,16 @@ function CommandCenterView({ data, setIsEmergency, activeCoordinated, highThreat
         </button>
       </div>
 
-      {/* MAIN CONTENT: 2-Column Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* MAIN CONTENT: 12-Column Grid */}
+      <div className="grid grid-cols-12 gap-6">
 
-        {/* COLUMN 1: Infrastructure Status */}
-        <div className="flex flex-col gap-5">
+        {/* LEFT WING: Infrastructure Status (col-3) */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="col-span-12 md:col-span-6 xl:col-span-3 flex flex-col gap-5"
+        >
           <div className="text-xs text-green-500 uppercase tracking-widest font-bold px-1 flex items-center gap-2">
             <span className="w-2 h-2 bg-green-500 rounded-full" />
             System Infrastructure
@@ -449,10 +455,15 @@ function CommandCenterView({ data, setIsEmergency, activeCoordinated, highThreat
             cyberTraces={data.cyberTraces}
           />
           <DataLakeMonitor sources={data.dataLakeSources} />
-        </div>
+        </motion.div>
 
-        {/* COLUMN 2: Threat Visualization */}
-        <div className="flex flex-col gap-5">
+        {/* CENTER FOCAL POINT: Threat Visualization (col-6) */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="col-span-12 xl:col-span-6 order-first xl:order-none flex flex-col gap-5"
+        >
           <div className="text-xs text-green-500 uppercase tracking-widest font-bold px-1 flex items-center gap-2">
             <span className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
             Cyber Threat Visualization
@@ -482,10 +493,15 @@ function CommandCenterView({ data, setIsEmergency, activeCoordinated, highThreat
           {/* Charts - Full Width Stacked */}
           <ThreatAnalyticsChart analytics={data.threatAnalytics} />
           <IncidentTrendsChart data={data.timeSeriesData} />
-        </div>
+        </motion.div>
 
-        {/* COLUMN 3: Intelligence & Response */}
-        <div className="flex flex-col gap-5">
+        {/* RIGHT WING: Intelligence & Response (col-3) */}
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="col-span-12 md:col-span-6 xl:col-span-3 flex flex-col gap-5"
+        >
           <div className="text-xs text-green-500 uppercase tracking-widest font-bold px-1 flex items-center gap-2">
             <span className="w-2 h-2 bg-cyan-500 rounded-full" />
             Cyber Intelligence Feed
@@ -500,21 +516,24 @@ function CommandCenterView({ data, setIsEmergency, activeCoordinated, highThreat
           <CommunityReports reports={data.communityReports} maxItems={5} />
 
           <AIAssistantPanel />
-        </div>
+        </motion.div>
 
-      </div>
+      </div >
 
       {/* FULL WIDTH: Surveillance Network */}
-      <div className="flex flex-col gap-4">
+      < div className="flex flex-col gap-4" >
         <SurveillanceMonitor feeds={data.surveillanceFeeds} maxItems={12} />
-      </div>
-    </div>
+      </div >
+    </div >
   );
 }
 
 function FusionCenterView({ data }: { data: DashboardData }) {
   return (
-    <div className="grid grid-cols-12 gap-4 h-[calc(100vh-10rem)]">
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}
+      className="grid grid-cols-12 gap-4 min-h-[calc(100vh-10rem)]"
+    >
       {/* LEFT - Main Content */}
       <div className="col-span-12 lg:col-span-8 flex flex-col gap-4">
         <div className="flex-1 min-h-[300px]">
@@ -540,13 +559,16 @@ function FusionCenterView({ data }: { data: DashboardData }) {
         <CommunityReports reports={data.communityReports} maxItems={8} />
         <SurveillanceMonitor feeds={data.surveillanceFeeds} maxItems={5} />
       </div>
-    </div>
+    </motion.div>
   );
 }
 
 function ThreatMatrixView({ data }: { data: DashboardData }) {
   return (
-    <div className="grid grid-cols-12 gap-4 h-[calc(100vh-10rem)]">
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}
+      className="grid grid-cols-12 gap-4 min-h-[calc(100vh-10rem)]"
+    >
       {/* LEFT - Threat List */}
       <div className="col-span-12 lg:col-span-4 flex flex-col gap-4 overflow-y-auto pr-1">
         <IncidentList incidents={data.incidents} maxItems={15} />
@@ -576,13 +598,16 @@ function ThreatMatrixView({ data }: { data: DashboardData }) {
           />
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
 function AnalyticsView({ data }: { data: DashboardData }) {
   return (
-    <div className="grid grid-cols-12 gap-4 h-[calc(100vh-10rem)]">
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}
+      className="grid grid-cols-12 gap-4 min-h-[calc(100vh-10rem)]"
+    >
       {/* LEFT - Charts */}
       <div className="col-span-12 lg:col-span-8 flex flex-col gap-4">
         <div className="h-80">
@@ -611,13 +636,16 @@ function AnalyticsView({ data }: { data: DashboardData }) {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
 function OperationsView({ data }: { data: DashboardData }) {
   return (
-    <div className="flex flex-col gap-4">
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}
+      className="flex flex-col gap-4"
+    >
       {/* 4 PILLARS HEADER */}
       <div className="flex items-center justify-between px-1 shrink-0">
         <div className="text-xs text-green-500 uppercase tracking-widest font-bold flex items-center gap-2">
@@ -648,6 +676,6 @@ function OperationsView({ data }: { data: DashboardData }) {
       <div className="shrink-0">
         <AutomatedResponsePanel responses={data.automatedResponses} />
       </div>
-    </div>
+    </motion.div>
   );
 }
