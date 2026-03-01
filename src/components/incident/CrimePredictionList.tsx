@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { CrimePrediction } from "@/lib/mockData"
+import { CrimePrediction } from "@/types"
 import { TrendingUp, MapPin, Clock } from "lucide-react"
 
 interface CrimePredictionListProps {

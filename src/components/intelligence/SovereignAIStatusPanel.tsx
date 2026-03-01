@@ -1,13 +1,15 @@
 'use client'
 
-import { SovereignAIStatus } from '@/lib/mockData'
-import { Server, Cpu, MapPin, ShieldCheck, Globe, Ban, Clock } from 'lucide-react'
+import { SovereignAIStatus } from '@/types'
+import { Server, Cpu, MapPin, ShieldCheck, Globe, Ban, Clock, Cloud } from 'lucide-react'
+import { useSovereign } from '@/contexts/SovereignContext'
 
 interface SovereignAIStatusPanelProps {
     status: SovereignAIStatus
 }
 
 export function SovereignAIStatusPanel({ status }: SovereignAIStatusPanelProps) {
+    const { isSovereign } = useSovereign()
     const onlineEdgeNodes = status.edgeNodes.filter(n => n.status === 'ONLINE').length
 
     return (
@@ -18,25 +20,31 @@ export function SovereignAIStatusPanel({ status }: SovereignAIStatusPanelProps) 
                     <Server className="w-4 h-4" />
                     Sovereign AI Infrastructure
                 </h3>
-                <div className="text-[9px] bg-green-950/30 text-green-400 px-2 py-1 uppercase tracking-wider">
-                    100% On-Premise
+                <div className={`text-[9px] px-2 py-1 uppercase tracking-wider font-bold border ${isSovereign ? 'bg-green-950/30 text-green-400 border-green-500/50' : 'bg-blue-950/30 text-blue-400 border-blue-500/50'}`}>
+                    {isSovereign ? '100% On-Premise' : 'Hybrid Cloud Active'}
                 </div>
             </div>
 
             {/* Zero Foreign API Banner */}
-            <div className="bg-green-950/30 border-2 border-green-500/50 p-3 mb-4">
+            <div className={`border-2 p-3 mb-4 transition-all duration-500 ${isSovereign ? 'bg-green-950/30 border-green-500/50' : 'bg-blue-950/30 border-blue-500/50'}`}>
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-green-900/50 rounded-full flex items-center justify-center">
-                            <Ban className="w-5 h-5 text-green-400" />
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${isSovereign ? 'bg-green-900/50' : 'bg-blue-900/50'}`}>
+                            {isSovereign ? <Ban className="w-5 h-5 text-green-400" /> : <Cloud className="w-5 h-5 text-blue-400" />}
                         </div>
                         <div>
-                            <div className="text-green-400 font-bold text-sm">ZERO FOREIGN API CALLS</div>
-                            <div className="text-[9px] text-green-600">No data leaves Kenya jurisdiction</div>
+                            <div className={`font-bold text-sm ${isSovereign ? 'text-green-400' : 'text-blue-400'}`}>
+                                {isSovereign ? 'ZERO FOREIGN API CALLS' : 'CLOUD ANALYTICS ACTIVE'}
+                            </div>
+                            <div className={`text-[9px] ${isSovereign ? 'text-green-600' : 'text-blue-600'}`}>
+                                {isSovereign ? 'No data leaves Kenya jurisdiction' : 'Accelerated synthesis enabled'}
+                            </div>
                         </div>
                     </div>
                     <div className="text-right">
-                        <div className="text-2xl font-bold text-green-400">{status.foreignAPICallsToday}</div>
+                        <div className={`text-2xl font-bold ${isSovereign ? 'text-green-400' : 'text-blue-400'}`}>
+                            {isSovereign ? '0' : status.foreignAPICallsToday}
+                        </div>
                         <div className="text-[8px] text-gray-500">External API Calls Today</div>
                     </div>
                 </div>
@@ -115,17 +123,21 @@ export function SovereignAIStatusPanel({ status }: SovereignAIStatusPanelProps) 
 
             {/* Sovereignty Stats */}
             <div className="grid grid-cols-3 gap-2">
-                <div className="bg-black border border-green-900/30 p-3 text-center">
-                    <div className="text-xl font-bold text-green-400">{status.onPremisePercentage}%</div>
+                <div className={`bg-black border p-3 text-center transition-colors ${isSovereign ? 'border-green-900/30' : 'border-blue-900/30'}`}>
+                    <div className={`text-xl font-bold ${isSovereign ? 'text-green-400' : 'text-blue-400'}`}>
+                        {isSovereign ? '100%' : '15%'}
+                    </div>
                     <div className="text-[9px] text-gray-500 uppercase">On-Premise</div>
                 </div>
-                <div className="bg-black border border-cyan-900/30 p-3 text-center">
-                    <ShieldCheck className="w-5 h-5 mx-auto text-cyan-400 mb-1" />
+                <div className={`bg-black border p-3 text-center transition-colors ${isSovereign ? 'border-cyan-900/30' : 'border-blue-900/30'}`}>
+                    <ShieldCheck className={`w-5 h-5 mx-auto mb-1 ${isSovereign ? 'text-cyan-400' : 'text-blue-400'}`} />
                     <div className="text-[9px] text-gray-500 uppercase">DPA Compliant</div>
                 </div>
-                <div className="bg-black border border-purple-900/30 p-3 text-center">
-                    <Globe className="w-5 h-5 mx-auto text-purple-400 mb-1" />
-                    <div className="text-[9px] text-gray-500 uppercase">Kenya Only</div>
+                <div className={`bg-black border p-3 text-center transition-colors ${isSovereign ? 'border-purple-900/30' : 'border-blue-900/30'}`}>
+                    <Globe className={`w-5 h-5 mx-auto mb-1 ${isSovereign ? 'text-purple-400' : 'text-blue-400'}`} />
+                    <div className="text-[9px] text-gray-500 uppercase">
+                        {isSovereign ? 'Kenya Only' : 'Global Net'}
+                    </div>
                 </div>
             </div>
 
@@ -135,7 +147,7 @@ export function SovereignAIStatusPanel({ status }: SovereignAIStatusPanelProps) 
                     <Clock className="w-3 h-3" />
                     Audit: {status.lastSecurityAudit.toLocaleDateString()}
                 </span>
-                <span>{status.sovereignCloudProvider}</span>
+                <span>{isSovereign ? status.sovereignCloudProvider : 'Commercial Cloud (Gemini v2)'}</span>
             </div>
         </div>
     )

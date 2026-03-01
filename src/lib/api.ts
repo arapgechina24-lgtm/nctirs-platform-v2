@@ -2,7 +2,7 @@
 // API Client for NCTIRS Dashboard
 // Fetches data from backend API routes with fallback to mock data
 import {
-    generateMockIncidents,
+    generateIncidents,
     generateCyberThreats,
     SecurityIncident,
     CyberThreat,
@@ -79,7 +79,7 @@ export async function fetchIncidents(options?: {
         return data.incidents.map(mapDBIncidentToSecurityIncident)
     } catch (error) {
         console.warn('Failed to fetch incidents from API, using mock data:', error)
-        return generateMockIncidents(30)
+        return generateIncidents(30)
     }
 }
 

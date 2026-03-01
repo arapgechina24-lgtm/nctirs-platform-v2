@@ -118,25 +118,31 @@ async function executeAIQuery(
     let text = '';
     let source: 'gemini' | 'anthropic' | 'ollama' | 'fallback' = 'gemini';
 
-    const isSovereignEnabled = process.env.SOVEREIGN_AI_ENABLED === 'true';
+    const sovereignModeRequested = providerOverride === 'sovereign' || providerOverride === 'ollama';
+    const isSovereignEnabled = process.env.SOVEREIGN_AI_ENABLED === 'true' || sovereignModeRequested;
 
-    // 1. Try Sovereign AI (Ollama) FIRST if enabled
+    // 1. Try Sovereign AI (Ollama) FIRST if enabled or requested
+    // This is the CRITICAL SOVEREIGNTY LAYER for National Security
     if (isSovereignEnabled) {
         try {
             const endpoint = process.env.OLLAMA_ENDPOINT || 'http://localhost:11434';
-            const model = process.env.OLLAMA_MODEL || 'mistral';
+            const model = process.env.OLLAMA_MODEL || 'llama3:8b'; // Default to Llama-3 for the pitch
 
-            // Format system prompt and user prompt
-            const ollamaPrompt = `System: ${systemPrompt}\n\nUser: ${prompt}`;
+            console.log(`[AI] Attempting Sovereign Inference: ${model} at ${endpoint}`);
 
             const response = await fetch(`${endpoint}/api/generate`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     model: model,
-                    prompt: ollamaPrompt,
+                    prompt: `[SYSTEM]\n${systemPrompt}\n\n[USER]\n${prompt}`,
                     stream: false,
-                    format: 'json' // Force JSON return where supported by Ollama
+                    raw: true, // Use raw mode for precise control
+                    options: {
+                        temperature: 0.1, // Low temp for intelligence reports
+                        top_p: 0.9,
+                        stop: ["[USER]", "/USER"]
+                    }
                 }),
             });
 
@@ -144,12 +150,12 @@ async function executeAIQuery(
                 const data = await response.json();
                 text = data.response;
                 source = 'ollama';
-                console.log(`[AI] Successfully queried Sovereign AI (${model})`);
+                console.log(`[AI] Sovereign AI SUCCESS: Data sovereignty maintained.`);
             } else {
-                console.warn(`[AI] Sovereign AI (Ollama) returned non-OK status: ${response.status}`);
+                console.warn(`[AI] Sovereign AI offline: ${response.status}. Falling back to encrypted cloud tunnel.`);
             }
         } catch (err) {
-            console.error('[AI] Sovereign AI (Ollama) connection failed. Ensure Ollama is running locally:', err);
+            console.error('[AI] Sovereign AI Connection Failure. Security Warning: Defaulting to Cloud Fallback.', err);
         }
     }
 

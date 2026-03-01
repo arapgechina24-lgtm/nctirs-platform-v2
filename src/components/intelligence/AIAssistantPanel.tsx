@@ -2,11 +2,13 @@
 
 import React, { useState } from 'react';
 import { DesignSystem } from '@/lib/designSystem';
-import { Bot, Send } from 'lucide-react';
+import { Bot, Send, ShieldCheck, Cpu } from 'lucide-react';
+import { useSovereign } from '@/contexts/SovereignContext';
 
 const AIAssistantPanel: React.FC = () => {
+    const { isSovereign } = useSovereign();
     const [messages, setMessages] = useState<{ role: 'user' | 'ai'; content: string }[]>([
-        { role: 'ai', content: 'NCTIRS AI Core Online. Ready to assist with threat mitigation strategies.' }
+        { role: 'ai', content: 'NCTIRS Alpha-Cognition Core Online. Ready to assist with national security mitigation strategies.' }
     ]);
     const [input, setInput] = useState('');
     const [isTyping, setIsTyping] = useState(false);
@@ -82,12 +84,17 @@ Suggestion: Review system logs for "Sudo" elevation attempts within the last 15 
 
     return (
         <div className={`flex flex-col h-full border border-[#003b00] bg-black/90 ${DesignSystem.layout.cardShadow} rounded-md overflow-hidden`}>
-            <div className="flex items-center justify-between p-3 border-b border-[#003b00] bg-[#001000]">
+            <div className={`flex items-center justify-between p-3 border-b border-[#003b00] ${isSovereign ? 'bg-green-950/20' : 'bg-[#001000]'}`}>
                 <div className="flex items-center gap-2">
-                    <Bot className="w-5 h-5 text-purple-400" />
-                    <h2 className={`font-bold text-sm ${DesignSystem.layout.terminalText} text-purple-400`}>AI STRATEGIC ADVISOR</h2>
+                    <Bot className={`w-5 h-5 ${isSovereign ? 'text-green-400' : 'text-purple-400'}`} />
+                    <h2 className={`font-bold text-sm ${DesignSystem.layout.terminalText} ${isSovereign ? 'text-green-400' : 'text-purple-400'}`}>
+                        {isSovereign ? 'SOVEREIGN ADVISOR' : 'AI STRATEGIC ADVISOR'}
+                    </h2>
                 </div>
-                <div className="text-[10px] text-gray-500 font-mono">MODEL: GPT-4o-SOVEREIGN</div>
+                <div className={`flex items-center gap-2 px-2 py-1 text-[9px] font-mono border ${isSovereign ? 'border-green-500/50 text-green-400 bg-green-900/20' : 'border-purple-500/50 text-purple-400 bg-purple-900/20'}`}>
+                    {isSovereign ? <ShieldCheck className="w-3 h-3" /> : <Cpu className="w-3 h-3" />}
+                    MODEL: {isSovereign ? 'LLAMA-3-SOVEREIGN' : 'GEMINI-2.0-FLASH'}
+                </div>
             </div>
 
             <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
@@ -95,7 +102,9 @@ Suggestion: Review system logs for "Sudo" elevation attempts within the last 15 
                     <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                         <div className={`max-w-[85%] rounded p-3 text-sm font-mono whitespace-pre-wrap ${msg.role === 'user'
                             ? 'bg-[#003b00/50] border border-[#005500] text-[#00ff41]'
-                            : 'bg-black border border-purple-900/50 text-purple-300 shadow-[0_0_10px_rgba(168,85,247,0.1)]'
+                            : isSovereign
+                                ? 'bg-green-950/20 border border-green-900/50 text-green-300 shadow-[0_0_10px_rgba(34,197,94,0.1)]'
+                                : 'bg-black border border-purple-900/50 text-purple-300 shadow-[0_0_10px_rgba(168,85,247,0.1)]'
                             }`}>
                             {msg.role === 'ai' && <span className="opacity-50 text-[10px] block mb-1"> SYSTEM_RESPONSE //</span>}
                             {msg.content}

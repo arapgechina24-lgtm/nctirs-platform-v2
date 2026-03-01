@@ -25,6 +25,19 @@ export type {
   PerceptionLayerStatus,
   CognitionLayerStatus,
   IntegrityLayerStatus,
+  DataProtectionImpact,
+  SovereignAIStatus,
+  DigitalPulse,
+  HateSpeechAlert,
+  AdversarialMetrics,
+  FederatedLearningStatus,
+  XAIExplanation,
+  FederatedNode,
+  AgencyID,
+  IncidentParticipant,
+  RansomwareCampaign,
+  RansomwareVariant,
+  DecryptorStatus,
 } from '@/types';
 
 import type {
@@ -43,6 +56,7 @@ import type {
   CyberThreatSeverity,
   CyberTargetType,
   CyberThreat,
+  DataSourceType,
   DataLakeSource,
   BlockchainLedgerEntry,
   CoordinatedAttack,
@@ -52,569 +66,347 @@ import type {
   CognitionLayerStatus,
   IntegrityLayerStatus,
   DataProtectionImpact,
+  SovereignAIStatus,
+  DigitalPulse,
+  HateSpeechAlert,
+  AdversarialMetrics,
+  FederatedLearningStatus,
+  XAIExplanation,
+  FederatedNode,
+  AgencyID,
+  IncidentParticipant,
+  RansomwareCampaign,
+  RansomwareVariant,
+  DecryptorStatus,
 } from '@/types';
-
 // Kenyan locations with realistic coordinates
 const kenyaLocations = {
-  NAIROBI: [
-    { name: 'CBD', coordinates: [-1.2864, 36.8172] as [number, number] },
-    { name: 'Eastleigh', coordinates: [-1.2764, 36.8392] as [number, number] },
-    { name: 'Westlands', coordinates: [-1.2672, 36.8078] as [number, number] },
-    { name: 'Kibera', coordinates: [-1.3127, 36.7885] as [number, number] },
-    { name: 'Industrial Area', coordinates: [-1.3246, 36.8433] as [number, number] },
-  ],
-  MOMBASA: [
-    { name: 'Mombasa CBD', coordinates: [-4.0435, 39.6682] as [number, number] },
-    { name: 'Likoni', coordinates: [-4.0889, 39.6647] as [number, number] },
-    { name: 'Nyali', coordinates: [-4.0181, 39.7121] as [number, number] },
-    { name: 'Port Reitz', coordinates: [-4.0733, 39.6347] as [number, number] },
-  ],
-  KISUMU: [
-    { name: 'Kisumu Central', coordinates: [-0.0917, 34.7680] as [number, number] },
-    { name: 'Kondele', coordinates: [-0.0831, 34.7492] as [number, number] },
-  ],
-  NAKURU: [
-    { name: 'Nakuru Town', coordinates: [-0.3031, 36.0800] as [number, number] },
-  ],
-  ELDORET: [
-    { name: 'Eldoret Town', coordinates: [0.5143, 35.2698] as [number, number] },
-  ],
-  TURKANA: [
-    { name: 'Lodwar', coordinates: [3.1190, 35.5970] as [number, number] },
-    { name: 'Kakuma', coordinates: [3.7294, 34.8530] as [number, number] },
-  ],
-  GARISSA: [
-    { name: 'Garissa Town', coordinates: [-0.4569, 39.6403] as [number, number] },
-  ],
-  MANDERA: [
-    { name: 'Mandera Town', coordinates: [3.9366, 41.8550] as [number, number] },
-  ],
-};
+  'NAIROBI': { name: 'Nairobi HQ', coordinates: [-1.2921, 36.8219] },
+  'MOMBASA': { name: 'Mombasa Port Authority', coordinates: [-4.0435, 39.6682] },
+  'KISUMU': { name: 'Kisumu Tech Hub', coordinates: [-0.0917, 34.7680] },
+  'NAKURU': { name: 'Nakuru Data Center', coordinates: [-0.3031, 36.0613] },
+  'ELDORET': { name: 'Eldoret Regional Office', coordinates: [0.5143, 35.2697] },
+  'TURKANA': { name: 'Turkana Energy Site', coordinates: [3.5833, 35.9167] },
+  'GARISSA': { name: 'Garissa Border Post', coordinates: [-0.4532, 39.6461] },
+  'MANDERA': { name: 'Mandera Command Center', coordinates: [3.9366, 41.8569] },
+} as const;
 
-const incidentTitles: Record<IncidentType, string[]> = {
-  PHISHING: [
-    'Spearphishing campaign targeting eCitizen users',
-    'KRA iTax credential harvesting detected',
-    'M-Pesa agent verification scam active',
-    'Business email compromise attempt',
-  ],
-  RANSOMWARE: [
-    'LOCKBIT 4.0 deployment on critical infrastructure',
-    'BlackCat variant encrypting government systems',
-    'Ransomware attack on hospital network',
-    'County government systems encrypted',
-  ],
-  DATA_BREACH: [
-    'Government database exfiltration detected',
-    'Citizen PII exposed on dark web',
-    'Financial records breach at banking institution',
-    'Voter registration data leak identified',
-  ],
-  MALWARE: [
-    'RAT detected on telecom infrastructure',
-    'Wiper malware targeting SCADA systems',
-    'Banking Trojan distributed via fake apps',
-    'Supply chain compromise via trojanized update',
-  ],
-  DDOS: [
-    'Volumetric DDoS on government portal',
-    'Application layer attack on financial exchange',
-    'DNS amplification against ISP backbone',
-    'Service disruption attack on e-Services',
-  ],
-  APT: [
-    'State-sponsored espionage on diplomatic systems',
-    'Persistent access to submarine cable infrastructure',
-    'Defense network firmware compromise detected',
-    'DNS hijacking of government domains',
-  ],
-  INSIDER_THREAT: [
-    'Privileged user exfiltrating procurement data',
-    'Employee selling customer records externally',
-    'Unauthorized access to classified systems',
-    'Data processor confidentiality breach',
-  ],
-  IDENTITY_THEFT: [
-    'Digital ID fraud ring using stolen biometrics',
-    'Synthetic identity fraud on lending platforms',
-    'SIM swap fraud targeting M-Pesa accounts',
-    'Deepfake voice bypass on KYC systems',
-  ],
-};
+const regions: Region[] = ['NAIROBI', 'MOMBASA', 'KISUMU', 'NAKURU', 'ELDORET', 'TURKANA', 'GARISSA', 'MANDERA'];
 
-const dataProtectionImpacts: Record<IncidentType, DataProtectionImpact[]> = {
-  PHISHING: ['CREDENTIALS_LEAKED', 'FINANCIAL_DATA', 'PII_EXPOSED'],
-  RANSOMWARE: ['NONE', 'FINANCIAL_DATA', 'HEALTH_RECORDS'],
-  DATA_BREACH: ['PII_EXPOSED', 'FINANCIAL_DATA', 'CREDENTIALS_LEAKED', 'HEALTH_RECORDS'],
-  MALWARE: ['CREDENTIALS_LEAKED', 'NONE', 'FINANCIAL_DATA'],
-  DDOS: ['NONE'],
-  APT: ['PII_EXPOSED', 'CREDENTIALS_LEAKED', 'NONE'],
-  INSIDER_THREAT: ['PII_EXPOSED', 'FINANCIAL_DATA', 'CREDENTIALS_LEAKED'],
-  IDENTITY_THEFT: ['PII_EXPOSED', 'FINANCIAL_DATA'],
-};
+// Mock Security Incidents
+export const initialIncidents: SecurityIncident[] = [
+  {
+    id: 'INC-2024-001',
+    type: 'APT',
+    title: 'Advanced Persistent Threat: Silver Fox',
+    description: 'Sophisticated state-sponsored actor targeting critical government financial systems via spear-phishing and custom malware.',
+    location: {
+      name: 'Central Bank of Kenya',
+      region: 'NAIROBI',
+      coordinates: [-1.2921, 36.8219],
+    },
+    threatLevel: 'CRITICAL',
+    status: 'ACTIVE',
+    timestamp: new Date(),
+    affectedArea: 5,
+    aiConfidence: 0.94,
+    sources: ['SIGINT', 'NETWORK_LOGS'],
+    dataProtectionImpact: 'FINANCIAL_DATA',
+    mitreAttackId: 'T1190',
+  },
+  {
+    id: 'INC-2024-002',
+    type: 'RANSOMWARE',
+    title: 'LockBit 3.0: Energy Sector Attack',
+    description: 'Ransomware-as-a-Service attack encrypting critical databases at a major energy utility provider.',
+    location: {
+      name: 'KenGen Hub',
+      region: 'TURKANA',
+      coordinates: [3.5833, 35.9167],
+    },
+    threatLevel: 'HIGH',
+    status: 'INVESTIGATING',
+    timestamp: new Date(Date.now() - 3600000),
+    affectedArea: 12,
+    aiConfidence: 0.88,
+    sources: ['EDR', 'HUMINT'],
+    dataProtectionImpact: 'NONE',
+    mitreAttackId: 'T1486',
+  }
+];
 
-const mitreAttackIds: Record<IncidentType, string[]> = {
-  PHISHING: ['T1566.001', 'T1566.002', 'T1566.003', 'T1598.003'],
-  RANSOMWARE: ['T1486', 'T1490', 'T1489'],
-  DATA_BREACH: ['T1530', 'T1005', 'T1190', 'T1213'],
-  MALWARE: ['T1059.001', 'T1485', 'T1014', 'T1195.002'],
-  DDOS: ['T1498.001', 'T1499.003', 'T1499.002', 'T1498.002'],
-  APT: ['T1078.004', 'T1040', 'T1195.003', 'T1071.001'],
-  INSIDER_THREAT: ['T1567.002', 'T1078', 'T1078.001', 'T1530'],
-  IDENTITY_THEFT: ['T1588.002', 'T1589.001', 'T1556', 'T1589.003'],
-};
+// Helper to generate random incidents for demonstration
+export function generateIncidents(count: number = 20): SecurityIncident[] {
+  const types: IncidentType[] = ['PHISHING', 'RANSOMWARE', 'DATA_BREACH', 'MALWARE', 'DDOS', 'APT', 'INSIDER_THREAT', 'IDENTITY_THEFT'];
+  const titles = [
+    'Unauthorized Cloud Access Detected',
+    'Financial Exfiltration Attempt',
+    'Coordinated DDoS on E-Citizen',
+    'Malicious Insider Activity',
+    'Suspicious API Traffic Burst',
+    'SQL Injection on Public Registry',
+    'Credential Stuffing Attack',
+    'Rogue Access Point Found'
+  ];
 
-// Generate mock security incidents
-export function generateMockIncidents(count: number = 20): SecurityIncident[] {
-  const incidents: SecurityIncident[] = [];
-  const regions = Object.keys(kenyaLocations) as Region[];
-  const types = Object.keys(incidentTitles) as IncidentType[];
-  const statuses: IncidentStatus[] = ['ACTIVE', 'INVESTIGATING', 'RESOLVED', 'MONITORING'];
-  const threatLevels: ThreatLevel[] = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'];
+  const incidents: SecurityIncident[] = [...initialIncidents];
 
   for (let i = 0; i < count; i++) {
     const region = regions[Math.floor(Math.random() * regions.length)];
-    const locations = kenyaLocations[region];
-    const location = locations[Math.floor(Math.random() * locations.length)];
     const type = types[Math.floor(Math.random() * types.length)];
-    const titles = incidentTitles[type];
+    const loc = kenyaLocations[region];
 
     incidents.push({
-      id: `INC-${Date.now()}-${i}`,
+      id: `INC-2024-${(i + 3).toString().padStart(3, '0')}`,
       type,
-      title: titles[Math.floor(Math.random() * titles.length)],
-      description: `AI-detected ${type.toLowerCase().replace('_', ' ')} activity targeting Kenyan infrastructure.`,
+      title: titles[i % titles.length],
+      description: `Automated detection of ${type.toLowerCase()} pattern affecting systems in the ${region} region.`,
       location: {
-        name: location.name,
+        name: loc.name,
         region,
-        coordinates: location.coordinates,
+        coordinates: loc.coordinates as [number, number],
       },
-      threatLevel: threatLevels[Math.floor(Math.random() * threatLevels.length)],
-      status: statuses[Math.floor(Math.random() * statuses.length)],
-      timestamp: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000),
-      affectedArea: Math.floor(Math.random() * 50) + 1,
-      casualties: undefined,
-      suspects: Math.random() > 0.5 ? Math.floor(Math.random() * 5) + 1 : undefined,
-      aiConfidence: Math.floor(Math.random() * 30) + 70,
-      sources: ['KE-CIRT/CC', 'OSINT', 'Network Logs', 'Dark Web Intel', 'SOC Alert', 'Threat Intel Feed'].slice(0, Math.floor(Math.random() * 3) + 1),
-      dataProtectionImpact: (() => {
-        const impacts = dataProtectionImpacts[type];
-        return impacts[Math.floor(Math.random() * impacts.length)];
-      })(),
-      mitreAttackId: (() => {
-        const ids = mitreAttackIds[type];
-        return ids[Math.floor(Math.random() * ids.length)];
-      })(),
+      threatLevel: Math.random() > 0.7 ? 'HIGH' : Math.random() > 0.4 ? 'MEDIUM' : 'LOW',
+      status: Math.random() > 0.5 ? 'MONITORING' : 'RESOLVED',
+      timestamp: new Date(Date.now() - Math.random() * 86400000 * 7),
+      affectedArea: Math.floor(Math.random() * 50),
+      aiConfidence: 0.7 + Math.random() * 0.25,
+      sources: ['CLOUD_WATCH', 'INTERNAL_IDS'],
+      dataProtectionImpact: Math.random() > 0.8 ? 'PII_EXPOSED' : 'NONE',
     });
   }
 
   return incidents.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
 }
 
-// Generate crime predictions
-export function generateCrimePredictions(count: number = 15): CrimePrediction[] {
+export function generateCrimePredictions(count: number = 8): CrimePrediction[] {
+  const crimes: IncidentType[] = ['PHISHING', 'RANSOMWARE', 'DATA_BREACH', 'MALWARE'];
   const predictions: CrimePrediction[] = [];
-  const regions = Object.keys(kenyaLocations) as Region[];
-  const types = Object.keys(incidentTitles) as IncidentType[];
 
   for (let i = 0; i < count; i++) {
     const region = regions[Math.floor(Math.random() * regions.length)];
-    const locations = kenyaLocations[region];
-    const location = locations[Math.floor(Math.random() * locations.length)];
-    const crimeCount = Math.floor(Math.random() * 2) + 1;
-    const crimeTypes = Array.from({ length: crimeCount }, () =>
-      types[Math.floor(Math.random() * types.length)]
-    );
-
+    const loc = kenyaLocations[region];
     predictions.push({
-      id: `PRED-${Date.now()}-${i}`,
-      location: {
-        name: location.name,
-        region,
-        coordinates: location.coordinates,
-      },
-      crimeTypes,
-      probability: Math.floor(Math.random() * 40) + 60,
-      timeWindow: ['Next 24 hours', 'Next 48 hours', 'Next 72 hours'][Math.floor(Math.random() * 3)],
-      riskFactors: [
-        'High population density',
-        'Historical crime patterns',
-        'Social media intelligence',
-        'Economic indicators',
-        'Political tensions',
-        'Recent similar incidents',
-      ].slice(0, Math.floor(Math.random() * 3) + 2),
-      recommendedActions: [
-        'Increase patrol presence',
-        'Deploy undercover units',
-        'Community engagement',
-        'Surveillance enhancement',
-        'Inter-agency coordination',
-      ].slice(0, Math.floor(Math.random() * 2) + 2),
+      id: `PRED-${i}`,
+      location: { name: loc.name, region, coordinates: loc.coordinates as [number, number] },
+      crimeTypes: [crimes[Math.floor(Math.random() * crimes.length)]],
+      probability: 0.6 + Math.random() * 0.35,
+      timeWindow: 'Next 24 Hours',
+      riskFactors: ['High Latency Peaks', 'Known APT Infrastructure Active', 'Dormant Malware Heartbeats'],
+      recommendedActions: ['Patch External Hubs', 'Increase Monitoring Depth'],
     });
   }
-
-  return predictions.sort((a, b) => b.probability - a.probability);
+  return predictions;
 }
 
-// Generate surveillance feeds
-export function generateSurveillanceFeeds(count: number = 30): SurveillanceFeed[] {
-  const feeds: SurveillanceFeed[] = [];
-  const regions = Object.keys(kenyaLocations) as Region[];
-  const types: Array<'CCTV' | 'DRONE' | 'IOT_SENSOR'> = ['CCTV', 'DRONE', 'IOT_SENSOR'];
-  const statuses: Array<'ACTIVE' | 'INACTIVE' | 'ALERT'> = ['ACTIVE', 'INACTIVE', 'ALERT'];
-
+export function generateCommunityReports(count: number = 5): CommunityReport[] {
+  const reports: CommunityReport[] = [];
   for (let i = 0; i < count; i++) {
     const region = regions[Math.floor(Math.random() * regions.length)];
-    const locations = kenyaLocations[region];
-    const location = locations[Math.floor(Math.random() * locations.length)];
-    const status = statuses[Math.floor(Math.random() * statuses.length)];
-
-    feeds.push({
-      id: `CAM-${region}-${i.toString().padStart(3, '0')}`,
-      location: location.name,
-      region,
-      coordinates: location.coordinates,
-      status,
-      lastActivity: status === 'ALERT' ? 'Suspicious activity detected' : undefined,
-      alerts: status === 'ALERT' ? Math.floor(Math.random() * 5) + 1 : 0,
-      type: types[Math.floor(Math.random() * types.length)],
+    const loc = kenyaLocations[region];
+    reports.push({
+      id: `CR-${i}`,
+      type: 'PHISHING',
+      description: 'Suspicious portal impersonating government login.',
+      location: { name: loc.name, region, coordinates: loc.coordinates as [number, number] },
+      timestamp: new Date(),
+      verified: Math.random() > 0.3,
+      urgency: Math.random() > 0.7 ? 'HIGH' : 'MEDIUM',
+      mediaAttachments: Math.floor(Math.random() * 3),
     });
   }
+  return reports;
+}
 
+export function generateEmergencyResponses(count: number = 3): EmergencyResponse[] {
+  const responses: EmergencyResponse[] = [];
+  for (let i = 0; i < count; i++) {
+    const region = regions[Math.floor(Math.random() * regions.length)];
+    responses.push({
+      id: `ERR-${i}`,
+      incident: `INC-2024-00${i + 1}`,
+      location: 'Industrial Area Sector 4',
+      region,
+      unitsDispatched: 2 + i,
+      eta: 5 + i * 2,
+      status: 'EN_ROUTE',
+      coordinatingAgencies: ['NIS', 'KE-CIRT'],
+      timestamp: new Date(),
+    });
+  }
+  return responses;
+}
+
+// === INFRASTRUCTURE & SURVEILLANCE MOCK DATA ===
+
+export function generateSurveillanceFeeds(count: number = 8): SurveillanceFeed[] {
+  const feeds: SurveillanceFeed[] = [];
+  for (let i = 0; i < count; i++) {
+    const region = regions[Math.floor(Math.random() * regions.length)];
+    const loc = kenyaLocations[region];
+    feeds.push({
+      id: `CAM-${i + 100}`,
+      location: loc.name,
+      region,
+      coordinates: loc.coordinates as [number, number],
+      status: Math.random() > 0.1 ? 'ACTIVE' : 'ALERT',
+      alerts: Math.floor(Math.random() * 5),
+      type: i % 2 === 0 ? 'CCTV' : 'DRONE',
+      lastActivity: '2 mins ago',
+    });
+  }
   return feeds;
 }
 
-// Generate community reports
-export function generateCommunityReports(count: number = 25): CommunityReport[] {
-  const reports: CommunityReport[] = [];
-  const regions = Object.keys(kenyaLocations) as Region[];
-  const types = Object.keys(incidentTitles) as IncidentType[];
-  const urgencyLevels: ThreatLevel[] = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'];
-
-  for (let i = 0; i < count; i++) {
-    const region = regions[Math.floor(Math.random() * regions.length)];
-    const locations = kenyaLocations[region];
-    const location = locations[Math.floor(Math.random() * locations.length)];
-    const type = types[Math.floor(Math.random() * types.length)];
-
-    reports.push({
-      id: `REP-${Date.now()}-${i}`,
-      type,
-      description: `Anonymous citizen report: ${incidentTitles[type][0].toLowerCase()} observed in the vicinity.`,
-      location: {
-        name: location.name,
-        region,
-        coordinates: location.coordinates,
-      },
-      timestamp: new Date(Date.now() - Math.random() * 3 * 24 * 60 * 60 * 1000),
-      verified: Math.random() > 0.4,
-      urgency: urgencyLevels[Math.floor(Math.random() * urgencyLevels.length)],
-      mediaAttachments: Math.floor(Math.random() * 4),
-    });
-  }
-
-  return reports.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
-}
-
-// Generate emergency responses
-export function generateEmergencyResponses(count: number = 10): EmergencyResponse[] {
-  const responses: EmergencyResponse[] = [];
-  const regions = Object.keys(kenyaLocations) as Region[];
-  const statuses: Array<'DISPATCHED' | 'EN_ROUTE' | 'ON_SCENE' | 'RESOLVED'> = ['DISPATCHED', 'EN_ROUTE', 'ON_SCENE', 'RESOLVED'];
-  const agencies = ['NIS', 'National Police Service', 'County Security', 'GSU', 'Military', 'Emergency Services'];
-
-  for (let i = 0; i < count; i++) {
-    const region = regions[Math.floor(Math.random() * regions.length)];
-    const locations = kenyaLocations[region];
-    const location = locations[Math.floor(Math.random() * locations.length)];
-
-    responses.push({
-      id: `ER-${Date.now()}-${i}`,
-      incident: `Emergency incident at ${location.name}`,
-      location: location.name,
-      region,
-      unitsDispatched: Math.floor(Math.random() * 5) + 1,
-      eta: Math.floor(Math.random() * 30) + 5,
-      status: statuses[Math.floor(Math.random() * statuses.length)],
-      coordinatingAgencies: agencies.slice(0, Math.floor(Math.random() * 3) + 2),
-      timestamp: new Date(Date.now() - Math.random() * 2 * 60 * 60 * 1000),
-    });
-  }
-
-  return responses.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
-}
-
-// Generate threat analytics by region
-export function generateThreatAnalytics(): ThreatAnalytics[] {
-  const regions = Object.keys(kenyaLocations) as Region[];
-  const threatLevels: ThreatLevel[] = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'];
-  const trends: Array<'INCREASING' | 'STABLE' | 'DECREASING'> = ['INCREASING', 'STABLE', 'DECREASING'];
-
-  return regions.map(region => ({
-    region,
-    threatLevel: threatLevels[Math.floor(Math.random() * threatLevels.length)],
-    activeIncidents: Math.floor(Math.random() * 20) + 1,
-    resolvedIncidents: Math.floor(Math.random() * 50) + 10,
-    crimeTrend: trends[Math.floor(Math.random() * trends.length)],
-    riskScore: Math.floor(Math.random() * 100),
+export function generateDataLakeSources(): DataLakeSource[] {
+  const sources: DataSourceType[] = ['NETWORK_LOGS', 'DARK_WEB', 'CCTV_STREAM', 'CITIZEN_REPORT', 'OSINT', 'SIGINT'];
+  return sources.map((type, i) => ({
+    id: `DS-${i}`,
+    type,
+    name: type.replace('_', ' '),
+    status: Math.random() > 0.1 ? 'ACTIVE' : 'PROCESSING',
+    dataRate: Math.floor(Math.random() * 500) + 50,
+    lastUpdate: new Date(),
+    recordsProcessed: Math.floor(Math.random() * 1000000),
+    alertsGenerated: Math.floor(Math.random() * 100),
   }));
 }
 
-// Generate time-series data for charts
-export function generateTimeSeriesData(days: number = 30) {
-  const data = [];
-  const types = Object.keys(incidentTitles) as IncidentType[];
+// === SYSTEM HEALTH & AI STATUS ===
 
-  for (let i = days; i >= 0; i--) {
-    const date = new Date();
-    date.setDate(date.getDate() - i);
-
-    const dayData: TimeSeriesData = {
-      date: date.toISOString().split('T')[0],
-      total: 0,
-    };
-
-    types.forEach(type => {
-      const count = Math.floor(Math.random() * 10) + 1;
-      dayData[type] = count;
-      dayData.total += count;
-    });
-
-    data.push(dayData);
-  }
-
-  return data;
+export function generatePerceptionLayerStatus(): PerceptionLayerStatus {
+  return {
+    iotSensorsActive: 1242,
+    iotSensorsTotal: 1250,
+    dronesActive: 18,
+    dronesTotal: 25,
+    networkSniffersActive: 89,
+    cctvFeeds: 4521,
+    dataIngestionRate: 4.2, // GB/s
+  };
 }
 
-// === NCTIRS UNIFIED PLATFORM GENERATORS ===
+export function generateCognitionLayerStatus(): CognitionLayerStatus {
+  return {
+    mlModelsActive: 12,
+    aptSignaturesLoaded: 4231,
+    threatClassificationsToday: 842,
+    averageProcessingTimeMs: 142,
+    falsePositiveRate: 0.02,
+    modelAccuracy: 0.985,
+  };
+}
 
-const cyberThreatNames: Record<CyberThreatType, string[]> = {
-  APT: ['APT-KE-001 SANDSTORM', 'APT-KE-002 BUSHFIRE', 'APT-KE-003 MONSOON', 'APT-KE-004 SAVANNA'],
-  ZERO_DAY: ['CVE-2026-0041 Kernel Exploit', 'CVE-2026-0089 Browser RCE', 'CVE-2026-0123 Network Stack'],
-  DDOS: ['Volumetric Flood Attack', 'Application Layer Assault', 'Protocol Exploitation'],
-  RANSOMWARE: ['LOCKBIT-4.0', 'BLACKCAT-KENYA', 'REVIL-VARIANT', 'CONTI-RESURGENCE'],
-  PHISHING: ['Spear Phishing Campaign', 'Credential Harvesting', 'Business Email Compromise'],
-  DATA_BREACH: ['Database Exfiltration', 'API Data Leak', 'Insider Threat Detected'],
-  MALWARE: ['Trojan Deployment', 'Rootkit Installation', 'Wiper Malware'],
-  SQL_INJECTION: ['SQLi on Public Portal', 'Database Manipulation', 'Authentication Bypass'],
-};
+export function generateIntegrityLayerStatus(): IntegrityLayerStatus {
+  return {
+    blockchainHeight: 842100,
+    lastBlockHash: '0000...a4f2',
+    pendingTransactions: 12,
+    nodesOnline: 48,
+    dataProtectionCompliant: true,
+    lastAuditDate: new Date(Date.now() - 86400000),
+  };
+}
 
-const targetSystems: Record<CyberTargetType, string[]> = {
-  GOVERNMENT: ['eCitizen Portal', 'Huduma Centers', 'IFMIS', 'Digital ID System', 'KRA iTax'],
-  FINANCIAL: ['CBK Core Banking', 'M-Pesa Infrastructure', 'NSE Trading Platform', 'RTGS System'],
-  INFRASTRUCTURE: ['KPLC Grid Control', 'Nairobi Water SCADA', 'Kenya Ports Authority'],
-  HEALTHCARE: ['NHIF Database', 'Kenyatta Hospital EHR', 'Medical Supply Chain'],
-  TELECOM: ['Safaricom Core Network', 'Airtel Kenya Systems', 'National Fiber Backbone'],
-  ENERGY: ['Geothermal Plant SCADA', 'Oil Pipeline Monitoring', 'Fuel Distribution Network'],
-  TRANSPORT: ['JKIA Control Systems', 'SGR Operations', 'Kenya Airways Reservation'],
-};
+// === THREAT ANALYTICS ===
 
-// Generate cyber threats
-export function generateCyberThreats(count: number = 15): CyberThreat[] {
+export function generateThreatAnalytics(): ThreatAnalytics[] {
+  return regions.map(region => ({
+    region,
+    threatLevel: Math.random() > 0.8 ? 'HIGH' : Math.random() > 0.5 ? 'MEDIUM' : 'LOW',
+    activeIncidents: Math.floor(Math.random() * 15),
+    resolvedIncidents: Math.floor(Math.random() * 100),
+    crimeTrend: Math.random() > 0.7 ? 'INCREASING' : Math.random() > 0.3 ? 'STABLE' : 'DECREASING',
+    riskScore: 30 + Math.random() * 50,
+  }));
+}
+
+// === CYBER THREATS ===
+
+export function generateCyberThreats(count: number = 10): CyberThreat[] {
+  const cyberTypes: CyberThreatType[] = ['APT', 'ZERO_DAY', 'DDOS', 'RANSOMWARE', 'PHISHING', 'DATA_BREACH'];
+  const targets: CyberTargetType[] = ['GOVERNMENT', 'FINANCIAL', 'INFRASTRUCTURE', 'HEALTHCARE', 'TELECOM', 'ENERGY'];
   const threats: CyberThreat[] = [];
-  const types = Object.keys(cyberThreatNames) as CyberThreatType[];
-  const sectors = Object.keys(targetSystems) as CyberTargetType[];
-  const severities: CyberThreatSeverity[] = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'];
-  const statuses: Array<'DETECTED' | 'ANALYZING' | 'CONTAINED' | 'NEUTRALIZED'> = ['DETECTED', 'ANALYZING', 'CONTAINED', 'NEUTRALIZED'];
 
   for (let i = 0; i < count; i++) {
-    const type = types[Math.floor(Math.random() * types.length)];
-    const sector = sectors[Math.floor(Math.random() * sectors.length)];
-    const names = cyberThreatNames[type];
-    const systems = targetSystems[sector];
-
     threats.push({
-      id: `CTH-${Date.now()}-${i}`,
-      type,
-      name: names[Math.floor(Math.random() * names.length)],
-      description: `AI-detected ${type.toLowerCase().replace('_', ' ')} targeting ${sector.toLowerCase()} sector infrastructure.`,
-      severity: severities[Math.floor(Math.random() * severities.length)],
-      targetSector: sector,
-      sourceIP: `${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`,
-      targetSystem: systems[Math.floor(Math.random() * systems.length)],
-      aptSignature: type === 'APT' ? `SIG-${Math.random().toString(36).substr(2, 8).toUpperCase()}` : undefined,
-      timestamp: new Date(Date.now() - Math.random() * 24 * 60 * 60 * 1000),
-      aiConfidence: Math.floor(Math.random() * 25) + 75,
-      status: statuses[Math.floor(Math.random() * statuses.length)],
-      iocIndicators: [
-        `hash:${Math.random().toString(36).substr(2, 32)}`,
-        `domain:malicious-${Math.floor(Math.random() * 1000)}.ke`,
-        `ip:${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.0.0/16`,
-      ].slice(0, Math.floor(Math.random() * 3) + 1),
+      id: `CT-${2024}-${i.toString().padStart(3, '0')}`,
+      type: cyberTypes[Math.floor(Math.random() * cyberTypes.length)],
+      name: `Cyber Op: ${['Crimson', 'Azure', 'Golden', 'Shadow'][i % 4]} ${['Dragon', 'Wolf', 'Eagle', 'Storm'][i % 4]}`,
+      description: 'Sophisticated campaign targeting critical infrastructure via lateral movement.',
+      severity: Math.random() > 0.8 ? 'CRITICAL' : Math.random() > 0.5 ? 'HIGH' : 'MEDIUM',
+      targetSector: targets[Math.floor(Math.random() * targets.length)],
+      targetSystem: `System-X${i + 100}`,
+      timestamp: new Date(Date.now() - Math.random() * 86400000),
+      aiConfidence: 0.85 + Math.random() * 0.12,
+      status: 'DETECTED',
+      iocIndicators: ['192.168.1.1', 'malware_hash_alpha', 'c2_domain_xyz.com'],
     });
   }
 
   return threats.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
 }
 
-// Generate data lake sources
-export function generateDataLakeSources(): DataLakeSource[] {
-  const sources: DataLakeSource[] = [
-    {
-      id: 'DLS-001',
-      type: 'NETWORK_LOGS',
-      name: 'National Firewall Logs',
-      status: 'ACTIVE',
-      dataRate: 2450,
-      lastUpdate: new Date(),
-      recordsProcessed: 15420000,
-      alertsGenerated: 342,
-    },
-    {
-      id: 'DLS-002',
-      type: 'DARK_WEB',
-      name: 'Dark Web Intelligence Feed',
-      status: 'ACTIVE',
-      dataRate: 128,
-      lastUpdate: new Date(Date.now() - 5 * 60 * 1000),
-      recordsProcessed: 89450,
-      alertsGenerated: 67,
-    },
-    {
-      id: 'DLS-003',
-      type: 'CCTV_STREAM',
-      name: 'National CCTV Network',
-      status: 'ACTIVE',
-      dataRate: 8500,
-      lastUpdate: new Date(),
-      recordsProcessed: 4520000,
-      alertsGenerated: 156,
-    },
-    {
-      id: 'DLS-004',
-      type: 'CITIZEN_REPORT',
-      name: 'Community Intelligence App',
-      status: 'ACTIVE',
-      dataRate: 45,
-      lastUpdate: new Date(Date.now() - 2 * 60 * 1000),
-      recordsProcessed: 12890,
-      alertsGenerated: 89,
-    },
-    {
-      id: 'DLS-005',
-      type: 'OSINT',
-      name: 'Open Source Intelligence',
-      status: 'PROCESSING',
-      dataRate: 890,
-      lastUpdate: new Date(Date.now() - 10 * 60 * 1000),
-      recordsProcessed: 2340000,
-      alertsGenerated: 234,
-    },
-    {
-      id: 'DLS-006',
-      type: 'SIGINT',
-      name: 'Signals Intelligence',
-      status: 'ACTIVE',
-      dataRate: 1200,
-      lastUpdate: new Date(),
-      recordsProcessed: 890000,
-      alertsGenerated: 45,
-    },
-  ];
-  return sources;
-}
+// === BLOCKCHAIN LEDGER ===
 
-// Generate blockchain ledger entries
-export function generateBlockchainLedger(count: number = 20): BlockchainLedgerEntry[] {
+export function generateBlockchainLedger(count: number = 10): BlockchainLedgerEntry[] {
+  const types: BlockchainLedgerEntry['dataType'][] = ['THREAT_ALERT', 'EVIDENCE', 'RESPONSE_ACTION', 'AUDIT_LOG'];
   const entries: BlockchainLedgerEntry[] = [];
-  const dataTypes: Array<'THREAT_ALERT' | 'EVIDENCE' | 'RESPONSE_ACTION' | 'AUDIT_LOG'> = ['THREAT_ALERT', 'EVIDENCE', 'RESPONSE_ACTION', 'AUDIT_LOG'];
-  const agencies = ['NIS', 'NPS', 'KDF', 'DCI', 'NCTC', 'CAK'];
-
-  let prevHash = '0000000000000000000000000000000000000000000000000000000000000000';
 
   for (let i = 0; i < count; i++) {
-    const hash = Array(64).fill(0).map(() => Math.floor(Math.random() * 16).toString(16)).join('');
-    const dataType = dataTypes[Math.floor(Math.random() * dataTypes.length)];
-
     entries.push({
-      id: `BLK-${i.toString().padStart(6, '0')}`,
-      blockHash: hash,
-      previousHash: prevHash,
-      timestamp: new Date(Date.now() - (count - i) * 15 * 60 * 1000),
-      dataType,
-      content: `${dataType.replace('_', ' ')} recorded at block ${i}`,
-      agencyId: agencies[Math.floor(Math.random() * agencies.length)],
+      id: `BLK-${i}`,
+      blockHash: '0x' + Math.random().toString(16).slice(2, 18),
+      previousHash: '0x' + Math.random().toString(16).slice(2, 18),
+      timestamp: new Date(Date.now() - i * 600000),
+      dataType: types[Math.floor(Math.random() * types.length)],
+      content: `Encrypted audit trail for action-id: ${Math.floor(Math.random() * 1000)}`,
+      agencyId: ['NIS', 'DCI', 'KE-CIRT', 'CENTRAL_BANK'][i % 4],
       verified: true,
-      courtAdmissible: Math.random() > 0.2,
+      courtAdmissible: true,
     });
-
-    prevHash = hash;
   }
 
-  return entries.reverse();
+  return entries;
 }
 
-// Generate coordinated attacks
-export function generateCoordinatedAttacks(count: number = 5): CoordinatedAttack[] {
-  const attacks: CoordinatedAttack[] = [];
-  const regions = Object.keys(kenyaLocations) as Region[];
-  const statuses: Array<'DETECTED' | 'RESPONDING' | 'CONTAINED' | 'RESOLVED'> = ['DETECTED', 'RESPONDING', 'CONTAINED', 'RESOLVED'];
-  const facilities = [
-    'KPLC Grid Station Alpha',
-    'Mombasa Port Control Center',
-    'JKIA Terminal Control',
-    'CBK Data Center',
-    'Safaricom NOC',
-    'Water Treatment Plant',
-  ];
-  const vectors = [
-    'Cyber intrusion timed with physical breach',
-    'DDoS cover for facility infiltration',
-    'Network disruption with simultaneous sabotage',
-    'Ransomware deployment with insider threat',
-  ];
+// === COORDINATED ATTACKS ===
 
+export function generateCoordinatedAttacks(count: number = 2): CoordinatedAttack[] {
+  const attacks: CoordinatedAttack[] = [];
   for (let i = 0; i < count; i++) {
     attacks.push({
-      id: `COORD-${Date.now()}-${i}`,
-      cyberId: `CTH-${Date.now()}-${Math.floor(Math.random() * 10)}`,
-      physicalId: `INC-${Date.now()}-${Math.floor(Math.random() * 10)}`,
-      correlationScore: Math.floor(Math.random() * 30) + 70,
-      attackVector: vectors[Math.floor(Math.random() * vectors.length)],
-      targetFacility: facilities[Math.floor(Math.random() * facilities.length)],
-      region: regions[Math.floor(Math.random() * regions.length)],
-      timestamp: new Date(Date.now() - Math.random() * 6 * 60 * 60 * 1000),
-      status: statuses[Math.floor(Math.random() * statuses.length)],
-      responseActions: [
-        'IP blocking initiated',
-        'Physical security dispatched',
-        'System isolation in progress',
-        'Evidence preservation active',
-      ].slice(0, Math.floor(Math.random() * 3) + 2),
+      id: `COORD-${i}`,
+      cyberId: `CT-2024-00${i}`,
+      physicalId: `INC-2024-00${i}`,
+      correlationScore: 0.92,
+      attackVector: 'Hybrid Cyber-Physical Sabotage',
+      targetFacility: 'Grid Substation Apha',
+      region: 'NAIROBI',
+      timestamp: new Date(),
+      status: 'DETECTED',
+      responseActions: ['ISOLATE_SUBNET', 'DEPLOY_QRF', 'LOCKDOWN_FACILITY'],
     });
   }
-
-  return attacks.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+  return attacks;
 }
 
-// Generate automated responses
-export function generateAutomatedResponses(count: number = 12): AutomatedResponse[] {
-  const responses: AutomatedResponse[] = [];
-  const types: ResponseType[] = ['IP_BLOCK', 'SYSTEM_ISOLATE', 'POLICE_DISPATCH', 'ALERT_AGENCY', 'LOCKDOWN', 'EVIDENCE_PRESERVE'];
-  const statuses: Array<'PENDING' | 'EXECUTING' | 'COMPLETED' | 'FAILED'> = ['PENDING', 'EXECUTING', 'COMPLETED', 'FAILED'];
-  const agencies = ['NIS', 'NPS', 'KDF', 'DCI', 'NCTC', 'CAK', 'GSU'];
+// === AUTOMATED RESPONSES ===
 
-  const descriptions: Record<ResponseType, string[]> = {
-    IP_BLOCK: ['Blocking malicious IP range', 'Firewall rule deployed', 'Traffic blackhole initiated'],
-    SYSTEM_ISOLATE: ['Critical system isolated', 'Network segment quarantined', 'Server taken offline'],
-    POLICE_DISPATCH: ['Quick response unit dispatched', 'Patrol units redirected', 'GSU team deployed'],
-    ALERT_AGENCY: ['Inter-agency alert sent', 'Threat notification broadcast', 'Emergency coordination initiated'],
-    LOCKDOWN: ['Facility lockdown initiated', 'Access control override', 'Perimeter secured'],
-    EVIDENCE_PRESERVE: ['Memory dump captured', 'Log files preserved', 'Blockchain record created'],
-  };
+export function generateAutomatedResponses(count: number = 5): AutomatedResponse[] {
+  const responseTypes: ResponseType[] = ['IP_BLOCK', 'SYSTEM_ISOLATE', 'POLICE_DISPATCH', 'ALERT_AGENCY', 'LOCKDOWN'];
+  const agencies = ['NIS', 'DCI', 'KE-CIRT', 'KE_POLICE'];
+  const responses: AutomatedResponse[] = [];
 
   for (let i = 0; i < count; i++) {
-    const type = types[Math.floor(Math.random() * types.length)];
-    const descs = descriptions[type];
-
+    const type = responseTypes[Math.floor(Math.random() * responseTypes.length)];
     responses.push({
-      id: `RESP-${Date.now()}-${i}`,
-      triggerThreatId: `CTH-${Date.now()}-${Math.floor(Math.random() * 10)}`,
+      id: `RESP-${i}`,
+      triggerThreatId: `CT-2024-00${i}`,
       responseType: type,
-      description: descs[Math.floor(Math.random() * descs.length)],
-      timestamp: new Date(Date.now() - Math.random() * 60 * 60 * 1000),
-      status: statuses[Math.floor(Math.random() * statuses.length)],
+      description: `Automated protocol ${type} executed against detected threat vector.`,
+      timestamp: new Date(Date.now() - i * 1800000),
+      status: i === 0 ? 'EXECUTING' : 'COMPLETED',
       executionTimeMs: Math.floor(Math.random() * 5000) + 100,
       targetSystem: type === 'IP_BLOCK' || type === 'SYSTEM_ISOLATE' ? 'Target System ' + Math.floor(Math.random() * 100) : undefined,
       unitsDispatched: type === 'POLICE_DISPATCH' ? Math.floor(Math.random() * 5) + 1 : undefined,
@@ -625,290 +417,231 @@ export function generateAutomatedResponses(count: number = 12): AutomatedRespons
   return responses.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
 }
 
-// Generate system layer statuses
-export function generatePerceptionLayerStatus(): PerceptionLayerStatus {
-  return {
-    iotSensorsActive: Math.floor(Math.random() * 500) + 4500,
-    iotSensorsTotal: 5000,
-    dronesActive: Math.floor(Math.random() * 5) + 20,
-    dronesTotal: 25,
-    networkSniffersActive: Math.floor(Math.random() * 10) + 40,
-    cctvFeeds: Math.floor(Math.random() * 500) + 4500,
-    dataIngestionRate: Math.floor(Math.random() * 100) + 850,
-  };
-}
+// === DIGITAL SURVEILLANCE & SOCIAL INTELLIGENCE ===
 
-export function generateCognitionLayerStatus(): CognitionLayerStatus {
-  return {
-    mlModelsActive: 12,
-    aptSignaturesLoaded: 15420,
-    threatClassificationsToday: Math.floor(Math.random() * 5000) + 10000,
-    averageProcessingTimeMs: Math.floor(Math.random() * 50) + 25,
-    falsePositiveRate: Math.random() * 2 + 1,
-    modelAccuracy: 97 + Math.random() * 2,
-  };
-}
-
-export function generateIntegrityLayerStatus(): IntegrityLayerStatus {
-  return {
-    blockchainHeight: Math.floor(Math.random() * 10000) + 150000,
-    lastBlockHash: Array(64).fill(0).map(() => Math.floor(Math.random() * 16).toString(16)).join(''),
-    pendingTransactions: Math.floor(Math.random() * 50),
-    nodesOnline: Math.floor(Math.random() * 3) + 7,
-    dataProtectionCompliant: true,
-    lastAuditDate: new Date(Date.now() - 24 * 60 * 60 * 1000),
-  };
-}
-
-// === NEW MULTIPLAYER INCIDENT TYPES (re-exported from @/types) ===
-
-export type {
-  AgencyID,
-  IncidentParticipant,
-  AuditEntry,
-  ThreatIncident,
-} from '@/types';
-
-// Removed unused IncidentParticipant import
-import type { AgencyID, ThreatIncident } from '@/types';
-
-// Generate advanced threat incidents
-export function generateThreatIncidents(count: number = 5): ThreatIncident[] {
-  const incidents: ThreatIncident[] = [];
-  const agencies: AgencyID[] = ['ICT_MINISTRY', 'CENTRAL_BANK', 'KE_CIRT', 'ENERGY_REGULATOR'];
-  const severities: Array<'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'> = ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'];
-  const statuses: Array<'DETECTED' | 'TRIAGED' | 'CONTAINED' | 'RESOLVED'> = ['DETECTED', 'TRIAGED', 'CONTAINED', 'RESOLVED'];
-  const mitreIds = ['T1566', 'T1190', 'T1078', 'T1204', 'T1003'];
+export function generateDigitalPulse(count: number = 10): DigitalPulse[] {
+  const platforms: ('X' | 'FACEBOOK' | 'TIKTOK' | 'TELEGRAM' | 'WHATSAPP')[] = ['X', 'FACEBOOK', 'TIKTOK', 'TELEGRAM', 'WHATSAPP'];
+  const locations = ['Nairobi', 'Mombasa', 'Kisumu', 'Nakuru', 'Garissa', 'Mandera'];
+  const pulse: DigitalPulse[] = [];
 
   for (let i = 0; i < count; i++) {
-    const assigned = agencies.slice(0, Math.floor(Math.random() * 3) + 1);
-
-    incidents.push({
-      id: `ADV-INC-${Date.now()}-${i}`,
-      mitreAttackId: mitreIds[Math.floor(Math.random() * mitreIds.length)],
-      severity: severities[Math.floor(Math.random() * severities.length)],
-      status: statuses[Math.floor(Math.random() * statuses.length)],
-      assignedAgencies: assigned,
-      activeWarRoom: Array.from({ length: Math.floor(Math.random() * 3) + 1 }, (_, idx) => ({
-        id: `USR-${idx}`,
-        agency: assigned[idx % assigned.length],
-        activeStatus: ['VIEWING', 'REMEDIATING', 'IDLE'][Math.floor(Math.random() * 3)] as 'VIEWING' | 'REMEDIATING' | 'IDLE',
-        lastSeen: new Date()
-      })),
-      auditTrail: [
-        {
-          timestamp: new Date().toISOString(),
-          actor: 'SYSTEM',
-          action: 'INCIDENT_CREATED',
-          previousState: 'NULL',
-          newState: 'DETECTED'
-        }
-      ]
+    const sentiment = Math.floor(Math.random() * 60) + 10;
+    pulse.push({
+      id: `DP-${Date.now()}-${i}`,
+      platform: platforms[Math.floor(Math.random() * platforms.length)],
+      sentimentScore: sentiment,
+      hateSpeechSurge: Math.floor(Math.random() * 15),
+      topHashtags: ['#KenyaSecurity', '#NCTIRS', '#DigitalSovereignty', '#StableKE'].slice(0, 3),
+      threatLevel: sentiment > 50 ? 'HIGH' : sentiment > 30 ? 'MEDIUM' : 'LOW',
+      location: locations[Math.floor(Math.random() * locations.length)],
     });
   }
-
-  return incidents;
+  return pulse;
 }
 
-// === 4 WINNING PILLARS: MAJESTIC SHIELD (types re-exported from @/types) ===
+export function generateHateSpeechAlerts(count: number = 5): HateSpeechAlert[] {
+  const content = [
+    "Incitement detected against specific community in regional dialect.",
+    "Hate speech surge identified on encrypted messaging platforms.",
+    "Coordinated influence campaign spreading misinformation about border security.",
+    "Extremist recruitment indicators found in vernacular forums.",
+    "Linguistic analysis flags high-risk inflammatory rhetoric."
+  ];
 
-export type {
-  AdversarialMetrics,
-  FederatedNode,
-  FederatedLearningStatus,
-  XAIExplanation,
-  SovereignLLM,
-  EdgeNode,
-  SovereignAIStatus,
-} from '@/types';
+  const dialects: ('SHENG' | 'SWAHILI' | 'ENGLISH' | 'VERNACULAR')[] = ['SHENG', 'SWAHILI', 'ENGLISH', 'VERNACULAR'];
+  const alerts: HateSpeechAlert[] = [];
 
-import type {
-  AdversarialMetrics,
-  FederatedLearningStatus,
-  XAIExplanation,
-  SovereignLLM,
-  EdgeNode,
-  SovereignAIStatus,
-} from '@/types';
+  for (let i = 0; i < count; i++) {
+    alerts.push({
+      id: `HS-${Date.now()}-${i}`,
+      timestamp: new Date(Date.now() - i * 3600000),
+      content: content[i % content.length],
+      dialect: dialects[Math.floor(Math.random() * dialects.length)],
+      severity: i === 0 ? 'CRITICAL' : i < 3 ? 'HIGH' : 'MEDIUM',
+      targetGroup: 'National Unity / Critical Infrastructure',
+      coordinates: [-1.2921 + (Math.random() * 0.1), 36.8219 + (Math.random() * 0.1)],
+    });
+  }
+  return alerts;
+}
 
-// Pillar 1: Adversarial Robustness Layer
+// === PILLAR 1: ADVERSARIAL DEFENSE ===
 
 export function generateAdversarialMetrics(): AdversarialMetrics {
   return {
-    attacksDetected: Math.floor(Math.random() * 500) + 1200,
-    attacksBlocked: Math.floor(Math.random() * 480) + 1180,
-    evasionAttempts: Math.floor(Math.random() * 50) + 30,
-    poisoningAttempts: Math.floor(Math.random() * 10) + 5,
-    modelExtractionAttempts: Math.floor(Math.random() * 8) + 2,
+    attacksDetected: 1420,
+    attacksBlocked: 1412,
+    evasionAttempts: 842,
+    poisoningAttempts: 124,
+    modelExtractionAttempts: 454,
     defenseStatus: {
       gradientMasking: 'ACTIVE',
       noiseInjection: 'ACTIVE',
       adversarialTraining: 'ACTIVE',
       ensembleVoting: 'ACTIVE',
-      certifiedRobustness: Math.random() > 0.3 ? 'ACTIVE' : 'INACTIVE',
+      certifiedRobustness: 'ACTIVE',
     },
     redTeamCycle: {
-      lastRun: new Date(Date.now() - Math.random() * 24 * 60 * 60 * 1000),
-      attacksGenerated: Math.floor(Math.random() * 1000) + 500,
-      failuresAnalyzed: Math.floor(Math.random() * 50) + 10,
-      modelsRetrained: Math.floor(Math.random() * 5) + 1,
+      lastRun: new Date(),
+      attacksGenerated: 12000,
+      failuresAnalyzed: 42,
+      modelsRetrained: 3,
     },
-    hardeningProgress: Math.floor(Math.random() * 15) + 85,
+    hardeningProgress: 94.5,
   };
 }
 
-// Pillar 2: Federated Learning Architecture
+// === PILLAR 2: FEDERATED LEARNING ===
 
-export function generateFederatedNodes(): FederatedLearningStatus {
-  const agencies = [
-    { id: 'NIS-FL-001', agency: 'National Intelligence Service' },
-    { id: 'KRA-FL-002', agency: 'Kenya Revenue Authority' },
-    { id: 'CBK-FL-003', agency: 'Central Bank of Kenya' },
-    { id: 'IMM-FL-004', agency: 'Immigration Department' },
-    { id: 'DCI-FL-005', agency: 'Directorate of Criminal Investigations' },
-    { id: 'CAK-FL-006', agency: 'Communications Authority' },
+export function generateFederatedNodes(): FederatedNode[] {
+  return [
+    {
+      id: 'N-1',
+      agency: 'ICT Ministry',
+      status: 'ONLINE',
+      lastSync: new Date(),
+      localDataPoints: 452000,
+      gradientsSent: 42,
+      modelVersion: 'v2.1',
+      privacyBudget: 0.82,
+    },
+    {
+      id: 'N-2',
+      agency: 'Central Bank',
+      status: 'TRAINING',
+      lastSync: new Date(),
+      localDataPoints: 891000,
+      gradientsSent: 12,
+      modelVersion: 'v2.1',
+      privacyBudget: 0.91,
+    },
+    {
+      id: 'N-3',
+      agency: 'NIS HQ',
+      status: 'SYNCING',
+      lastSync: new Date(),
+      localDataPoints: 2400000,
+      gradientsSent: 156,
+      modelVersion: 'v2.1',
+      privacyBudget: 0.45,
+    }
   ];
+}
 
-  const statuses: Array<'ONLINE' | 'TRAINING' | 'SYNCING' | 'OFFLINE'> = ['ONLINE', 'TRAINING', 'SYNCING', 'OFFLINE'];
-
+export function generateFederatedStatus(): FederatedLearningStatus {
   return {
-    globalModelVersion: `v${Math.floor(Math.random() * 5) + 3}.${Math.floor(Math.random() * 10)}.${Math.floor(Math.random() * 100)}`,
-    trainingRound: Math.floor(Math.random() * 50) + 150,
-    totalRounds: 200,
-    nodes: agencies.map(a => ({
-      ...a,
-      status: statuses[Math.floor(Math.random() * (statuses.length - 1))], // Avoid OFFLINE mostly
-      lastSync: new Date(Date.now() - Math.random() * 60 * 60 * 1000),
-      localDataPoints: Math.floor(Math.random() * 500000) + 100000,
-      gradientsSent: Math.floor(Math.random() * 1000) + 500,
-      modelVersion: `v${Math.floor(Math.random() * 5) + 3}.${Math.floor(Math.random() * 10)}.${Math.floor(Math.random() * 100)}`,
-      privacyBudget: Math.random() * 0.5 + 0.3,
-    })),
-    aggregationProgress: Math.floor(Math.random() * 100),
-    differentialPrivacyEpsilon: 0.8 + Math.random() * 0.4,
+    globalModelVersion: 'SENTINEL-OMEGA-v1.4',
+    trainingRound: 422,
+    totalRounds: 500,
+    nodes: generateFederatedNodes(),
+    aggregationProgress: 68,
+    differentialPrivacyEpsilon: 0.1,
     dataTransferred: 'GRADIENTS_ONLY',
-    lastGlobalUpdate: new Date(Date.now() - Math.random() * 2 * 60 * 60 * 1000),
+    lastGlobalUpdate: new Date(),
   };
 }
 
-// Pillar 3: Explainable AI (XAI)
+// === PILLAR 3: EXPLAINABLE AI (XAI) ===
 
 export function generateXAIExplanations(count: number = 5): XAIExplanation[] {
   const explanations: XAIExplanation[] = [];
-  const actions = [
-    'IP Blocked',
-    'Session Terminated',
-    'User Account Locked',
-    'System Isolated',
-    'Alert Escalated',
-    'Evidence Preserved',
-  ];
-  const threatTypes = ['APT', 'Ransomware', 'Phishing', 'DDoS', 'Insider Threat', 'Data Breach'];
-
-  const factorTemplates = [
-    { name: 'Mouse pattern anomaly', description: 'Right-handed to left-handed transition detected' },
-    { name: 'Geo-fence violation', description: 'Access from outside authorized coordinates' },
-    { name: 'Keystroke cadence', description: 'Typing rhythm deviation from baseline' },
-    { name: 'Access time anomaly', description: 'Login outside normal working hours' },
-    { name: 'IP reputation', description: 'Source IP associated with known threat actors' },
-    { name: 'Behavioral score', description: 'Session behavior deviates from user profile' },
-    { name: 'Network traffic pattern', description: 'Unusual data exfiltration pattern detected' },
-    { name: 'Authentication failures', description: 'Multiple failed authentication attempts' },
-  ];
-
   for (let i = 0; i < count; i++) {
-    const selectedFactors = factorTemplates
-      .sort(() => Math.random() - 0.5)
-      .slice(0, Math.floor(Math.random() * 3) + 2)
-      .map(f => ({
-        ...f,
-        weight: Math.random() * 0.5 + 0.1,
-      }))
-      .sort((a, b) => b.weight - a.weight);
-
-    const threatType = threatTypes[Math.floor(Math.random() * threatTypes.length)];
-    const action = actions[Math.floor(Math.random() * actions.length)];
-
     explanations.push({
-      id: `XAI-${Date.now()}-${i}`,
-      threatId: `CTH-${Date.now()}-${i}`,
-      threatType,
-      action,
-      confidence: Math.floor(Math.random() * 15) + 85,
-      factors: selectedFactors,
-      naturalLanguage: `${action} because ${selectedFactors[0].description.toLowerCase()} (${(selectedFactors[0].weight * 100).toFixed(0)}% confidence) AND ${selectedFactors[1]?.description.toLowerCase() || 'additional anomalies detected'}.`,
-      timestamp: new Date(Date.now() - Math.random() * 2 * 60 * 60 * 1000),
-      overrideLevel: Math.random() > 0.8 ? (['L1', 'L2', 'L3', 'L4'][Math.floor(Math.random() * 4)] as 'L1' | 'L2' | 'L3' | 'L4') : null,
-      analystApproved: Math.random() > 0.3,
+      id: `XAI-${i}`,
+      threatId: `INC-2024-001`,
+      threatType: 'APT',
+      action: 'SYSTEM_ISOLATION',
+      confidence: 94.2,
+      factors: [
+        { name: 'LATERAL_MOVEMENT', weight: 0.45, description: 'Unusual SSH patterns across segments' },
+        { name: 'ENCRYPTED_EXFIL', weight: 0.30, description: 'High entropy outbound traffic' },
+        { name: 'KNOWN_APT_SIG', weight: 0.25, description: 'Silver Fox signature match' }
+      ],
+      naturalLanguage: 'The model flagged this as an APT due to abnormal lateral movement and high-entropy outbound traffic matching the Silver Fox actor signature.',
+      timestamp: new Date(),
+      overrideLevel: null,
+      analystApproved: true,
     });
   }
-
-  return explanations.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+  return explanations;
 }
 
-// Pillar 4: Sovereign AI Status
+// === PILLAR 4: SOVEREIGN AI ===
 
 export function generateSovereignAIStatus(): SovereignAIStatus {
-  const llms: SovereignLLM[] = [
-    {
-      id: 'LLM-001',
-      name: 'LLaMA-70B',
-      version: '2.1.0',
-      status: 'ONLINE',
-      gpuUtilization: Math.floor(Math.random() * 30) + 60,
-      inferenceLatencyMs: Math.floor(Math.random() * 20) + 35,
-      requestsPerSecond: Math.floor(Math.random() * 50) + 100,
-      memoryUsageGB: Math.floor(Math.random() * 20) + 120,
-    },
-    {
-      id: 'LLM-002',
-      name: 'Mistral-22B',
-      version: '1.8.0',
-      status: 'ONLINE',
-      gpuUtilization: Math.floor(Math.random() * 25) + 45,
-      inferenceLatencyMs: Math.floor(Math.random() * 15) + 25,
-      requestsPerSecond: Math.floor(Math.random() * 80) + 150,
-      memoryUsageGB: Math.floor(Math.random() * 15) + 45,
-    },
-    {
-      id: 'LLM-003',
-      name: 'Falcon-40B (Swahili)',
-      version: '3.2.1',
-      status: Math.random() > 0.9 ? 'UPDATING' : 'ONLINE',
-      gpuUtilization: Math.floor(Math.random() * 20) + 50,
-      inferenceLatencyMs: Math.floor(Math.random() * 18) + 30,
-      requestsPerSecond: Math.floor(Math.random() * 60) + 80,
-      memoryUsageGB: Math.floor(Math.random() * 18) + 80,
-    },
-  ];
-
-  const edgeLocations = [
-    'JKIA Border Control',
-    'Port of Mombasa',
-    'Busia Checkpoint',
-    'Malaba Border',
-    'Namanga Border',
-    'Wilson Airport',
-    'NIS HQ Nairobi',
-    'Regional HQ Mombasa',
-  ];
-
-  const edgeNodes: EdgeNode[] = edgeLocations.map((location, i) => ({
-    id: `EDGE-${i.toString().padStart(3, '0')}`,
-    location,
-    status: Math.random() > 0.1 ? 'ONLINE' : (Math.random() > 0.5 ? 'MAINTENANCE' : 'OFFLINE'),
-    lastHeartbeat: new Date(Date.now() - Math.random() * 60 * 1000),
-    inferenceCount: Math.floor(Math.random() * 10000) + 1000,
-  }));
-
   return {
-    llms,
-    edgeNodes,
-    foreignAPICallsToday: 0, // ALWAYS 0 - Digital Sovereignty
-    dataEgressToday: 0, // ALWAYS 0 - No data leaves Kenya
-    onPremisePercentage: 100, // ALWAYS 100
-    sovereignCloudProvider: 'NIS Secure Data Center (Nairobi)',
-    lastSecurityAudit: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+    llms: [
+      {
+        id: 'LLM-1',
+        name: 'Sentinel-KE',
+        version: 'v2.0-Sovereign',
+        status: 'ONLINE',
+        gpuUtilization: 72,
+        inferenceLatencyMs: 142,
+        requestsPerSecond: 15,
+        memoryUsageGB: 48,
+      },
+      {
+        id: 'LLM-2',
+        name: 'Nyayo-Small',
+        version: 'v1.4',
+        status: 'ONLINE',
+        gpuUtilization: 24,
+        inferenceLatencyMs: 45,
+        requestsPerSecond: 120,
+        memoryUsageGB: 12,
+      }
+    ],
+    edgeNodes: [
+      { id: 'EDGE-1', location: 'Mombasa Port', status: 'ONLINE', lastHeartbeat: new Date(), inferenceCount: 45210 },
+      { id: 'EDGE-2', location: 'Namanga Border', status: 'ONLINE', lastHeartbeat: new Date(), inferenceCount: 12100 },
+      { id: 'EDGE-3', location: 'JKIA Terminal', status: 'ONLINE', lastHeartbeat: new Date(), inferenceCount: 89201 },
+    ],
+    foreignAPICallsToday: 0,
+    dataEgressToday: 0.4,
+    onPremisePercentage: 100,
+    sovereignCloudProvider: 'Konza Private Cloud',
+    lastSecurityAudit: new Date(Date.now() - 3600000 * 4),
     dpaCompliant: true,
   };
 }
+
+export function generateSovereignStatus(): SovereignAIStatus {
+  return generateSovereignAIStatus();
+}
+
+// Historical data for charts
+export function generateTimeSeriesData(count: number = 24): TimeSeriesData[] {
+  const data: TimeSeriesData[] = [];
+  const hours = count;
+  for (let i = 0; i < hours; i++) {
+    const hour = (i * (24 / hours)).toFixed(0).padStart(2, '0');
+    data.push({
+      date: `${hour}:00`,
+      total: Math.floor(Math.random() * 50) + 10,
+      ransomware: Math.floor(Math.random() * 20),
+      phishing: Math.floor(Math.random() * 30),
+    });
+  }
+  return data;
+}
+
+export const threatLevelHistory: TimeSeriesData[] = generateTimeSeriesData();
+
+export const ransomwareCampaigns: RansomwareCampaign[] = [
+  {
+    id: 'CMP-2024-001',
+    name: 'Operation DarkWater',
+    variant: 'LOCKBIT',
+    firstSeen: new Date(Date.now() - 30 * 86400000),
+    lastSeen: new Date(),
+    active: true,
+    victimCount: 142,
+    targetSectors: ['FINANCIAL', 'GOVERNMENT', 'INFRASTRUCTURE'],
+    averageRansomDemandUSD: 1500000,
+    encryptionMethod: 'AES-256 + RSA-4096',
+    decryptorStatus: 'NONE',
+    attributionConfidence: 0.82,
+    description: 'Highly active campaign targeting Kenyan financial institutions with double extortion tactics.',
+  }
+];

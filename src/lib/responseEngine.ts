@@ -1,4 +1,4 @@
-import { CyberThreatSeverity, ResponseType } from '@/types';
+import { CyberThreatSeverity, ResponseType, IncidentType } from '@/types';
 
 export interface AutomatedResponseTrigger {
     id: string;
@@ -50,6 +50,31 @@ const RESPONSE_PLAYBOOKS: AutomatedResponseTrigger[] = [
         action: 'ALERT_AGENCY',
         autoApprove: false,
         description: 'Alert all agencies and lock affected user accounts for credential reset.',
+    },
+    // ELITE TIER: CIA/MOSSAD CALIBER RESPONSES
+    {
+        id: 'PB-006',
+        threatType: 'APT',
+        severity: 'CRITICAL',
+        action: 'SHADOW_IP_ROUTING',
+        autoApprove: true,
+        description: 'Elite Level: Transparently redirect suspected state-actor traffic to high-interaction honeypots.',
+    },
+    {
+        id: 'PB-007',
+        threatType: 'DATA_BREACH',
+        severity: 'CRITICAL',
+        action: 'AUTONOMOUS_TAKEDOWN',
+        autoApprove: true,
+        description: 'Elite Level: Deploy autonomous scrubbers to neutralize exfiltrated data artifacts on public nodes.',
+    },
+    {
+        id: 'PB-008',
+        threatType: 'IDENTITY_THEFT',
+        severity: 'HIGH',
+        action: 'PROPAGANDA_NEUTRALIZATION',
+        autoApprove: true,
+        description: 'Elite Level: Counter identified influence ops by broadcasting verified truth-vectors to affected nodes.',
     },
 ];
 

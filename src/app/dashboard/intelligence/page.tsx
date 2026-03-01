@@ -11,7 +11,7 @@ import {
     XAIPanel
 } from '@/components/intelligence';
 import AnomalyDetectionPanel from '@/components/intelligence/AnomalyDetectionPanel';
-import { generateSovereignAIStatus, generateFederatedNodes } from '@/lib/mockData';
+import { generateSovereignAIStatus, generateFederatedStatus } from '@/lib/mockData';
 
 import type { RansomwareCampaign } from '@/types';
 
@@ -44,7 +44,7 @@ const MOCK_CAMPAIGNS_ANALYTICS: Partial<RansomwareCampaign>[] = [
 export default function IntelligencePage() {
     const [aiProvider, setAiProvider] = useState<string>('gemini');
     const sovereignStatus = generateSovereignAIStatus();
-    const federatedStatus = generateFederatedNodes();
+    const federatedStatus = generateFederatedStatus();
 
     return (
         <div className="p-6 space-y-6 h-full overflow-hidden flex flex-col">

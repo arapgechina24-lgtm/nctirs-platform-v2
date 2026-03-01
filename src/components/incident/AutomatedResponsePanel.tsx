@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from "react"
-import { Shield, Ban, Truck, Bell, Lock, FileCheck, Zap, Clock, CheckCircle, XCircle, Loader, UserCheck, AlertOctagon } from "lucide-react"
-import { AutomatedResponse, ResponseType } from "@/lib/mockData"
+import { Shield, Ban, Truck, Bell, Lock, FileCheck, Zap, Clock, CheckCircle, XCircle, Loader, UserCheck, AlertOctagon, Route, Trash2, Megaphone } from "lucide-react"
+import { AutomatedResponse, ResponseType } from "@/types"
 
 interface AutomatedResponsePanelProps {
     responses: AutomatedResponse[];
@@ -23,6 +23,9 @@ const responseIcons: Record<ResponseType, typeof Shield> = {
     ALERT_AGENCY: Bell,
     LOCKDOWN: Shield,
     EVIDENCE_PRESERVE: FileCheck,
+    SHADOW_IP_ROUTING: Route,
+    AUTONOMOUS_TAKEDOWN: Trash2,
+    PROPAGANDA_NEUTRALIZATION: Megaphone,
 }
 
 const responseColors: Record<ResponseType, string> = {
@@ -32,6 +35,9 @@ const responseColors: Record<ResponseType, string> = {
     ALERT_AGENCY: 'text-yellow-400 bg-yellow-950/50',
     LOCKDOWN: 'text-purple-400 bg-purple-950/50',
     EVIDENCE_PRESERVE: 'text-cyan-400 bg-cyan-950/50',
+    SHADOW_IP_ROUTING: 'text-indigo-400 bg-indigo-950/50',
+    AUTONOMOUS_TAKEDOWN: 'text-rose-400 bg-rose-950/50',
+    PROPAGANDA_NEUTRALIZATION: 'text-emerald-400 bg-emerald-950/50',
 }
 
 const statusIcons = {

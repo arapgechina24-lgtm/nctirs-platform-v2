@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
-import { AgencyID, IncidentParticipant } from '@/lib/mockData';
+import { AgencyID, IncidentParticipant } from '@/types';
 
 export const useWarRoom = (incidentId: string, userAgency: AgencyID) => {
     const [participants, setParticipants] = useState<IncidentParticipant[]>([]);

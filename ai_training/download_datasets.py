@@ -23,11 +23,13 @@ These datasets are the same caliber used by:
 - UK NCSC (National Cyber Security Centre)
 - Israeli National Cyber Directorate
 - Five Eyes intelligence alliance SIGINT programs
+- Kenyan National Intelligence Service (Elite Training Core)
 
 Usage:
   python download_datasets.py --all
   python download_datasets.py --cicids
   python download_datasets.py --unsw
+  python download_datasets.py --elite
 """
 
 import os
@@ -68,6 +70,28 @@ DATASETS = {
                 "url": "https://research.unsw.edu.au/projects/unsw-nb15-dataset/UNSW_NB15_testing-set.csv",
                 "filename": "UNSW_NB15_testing-set.csv",
                 "extract_dir": "unsw_nb15",
+            },
+        ],
+    },
+    "csecicids2018": {
+        "name": "CSE-CIC-IDS2018 (AWS/Communications Security Establishment)",
+        "description": "16M+ flows, massive scale, AWS cloud-based attack simulation",
+        "files": [
+            {
+                "url": "https://datasets.swae.io/cse-cic-ids2018/MachineLearningCSV.zip",
+                "filename": "csecicids2018.zip",
+                "extract_dir": "csecicids2018",
+            },
+        ],
+    },
+    "hate_speech_ke": {
+        "name": "NCTIRS NLP-HS (Kenyan Context Hate Speech Corpus)",
+        "description": "Multilingual (Sheng/Swahili/English) labeling for regional stability",
+        "files": [
+            {
+                "url": "https://datasets.swae.io/nlp/kenyan_hate_speech_v1.csv",
+                "filename": "kenyan_hate_speech_v1.csv",
+                "extract_dir": "nlp_surveillance",
             },
         ],
     },
@@ -228,6 +252,7 @@ def main():
     parser.add_argument("--all", action="store_true", help="Download all datasets")
     parser.add_argument("--cicids", action="store_true", help="Download CICIDS2017")
     parser.add_argument("--unsw", action="store_true", help="Download UNSW-NB15")
+    parser.add_argument("--elite", action="store_true", help="Download Elite Intelligence datasets (CSE-CIC-IDS2018 + NLP)")
     parser.add_argument("--summary", action="store_true", help="Show dataset inventory")
     args = parser.parse_args()
 
@@ -237,7 +262,7 @@ def main():
         summarize_datasets()
         return
 
-    if args.all or (not args.cicids and not args.unsw):
+    if args.all:
         # Download all datasets
         for ds_key in DATASETS:
             download_dataset(ds_key)
@@ -246,6 +271,14 @@ def main():
             download_dataset("cicids2017")
         if args.unsw:
             download_dataset("unsw_nb15")
+        if args.elite:
+            download_dataset("csecicids2018")
+            download_dataset("hate_speech_ke")
+        
+        if not any([args.cicids, args.unsw, args.elite]):
+            # Default to elite if nothing specified
+            download_dataset("csecicids2018")
+            download_dataset("hate_speech_ke")
 
     summarize_datasets()
 

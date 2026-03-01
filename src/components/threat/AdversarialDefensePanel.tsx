@@ -1,6 +1,6 @@
 'use client'
 
-import { AdversarialMetrics } from '@/lib/mockData'
+import { AdversarialMetrics } from '@/types'
 import { Shield, ShieldAlert, ShieldCheck, RefreshCw } from 'lucide-react'
 
 interface AdversarialDefensePanelProps {

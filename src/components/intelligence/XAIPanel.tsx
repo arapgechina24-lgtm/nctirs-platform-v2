@@ -59,7 +59,7 @@ export function XAIPanel() {
                         Top Contributing Factors
                     </h3>
                     <div className="space-y-3">
-                        {currentExplanation.factors.map((factor, idx) => (
+                        {currentExplanation.factors.map((factor: { name: string; weight: number; description: string }, idx: number) => (
                             <div key={idx} className="group">
                                 <div className="flex justify-between text-[11px] mb-1 font-mono">
                                     <span className="text-gray-300 group-hover:text-purple-300 transition-colors">

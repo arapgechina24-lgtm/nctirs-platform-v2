@@ -1,7 +1,7 @@
 'use client'
 
 import { Database, Globe, Camera, Users, Radio, Wifi } from "lucide-react"
-import { DataLakeSource } from "@/lib/mockData"
+import { DataLakeSource } from "@/types"
 
 interface DataLakeMonitorProps {
     sources: DataLakeSource[];

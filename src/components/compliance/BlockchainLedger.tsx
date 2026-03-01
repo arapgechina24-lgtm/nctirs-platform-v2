@@ -1,7 +1,7 @@
 'use client'
 
 import { Link2, Shield, FileCheck, Clock, Hash } from "lucide-react"
-import { BlockchainLedgerEntry } from "@/lib/mockData"
+import { BlockchainLedgerEntry } from "@/types"
 
 interface BlockchainLedgerProps {
     entries: BlockchainLedgerEntry[];
@@ -46,8 +46,8 @@ export function BlockchainLedger({ entries, maxItems = 8 }: BlockchainLedgerProp
                         <div key={entry.id} className="flex items-center">
                             <div
                                 className={`w-8 h-8 flex items-center justify-center border ${entry.courtAdmissible
-                                        ? 'border-amber-600/50 bg-amber-950/30'
-                                        : 'border-green-900/50 bg-green-950/30'
+                                    ? 'border-amber-600/50 bg-amber-950/30'
+                                    : 'border-green-900/50 bg-green-950/30'
                                     }`}
                                 title={entry.blockHash}
                             >

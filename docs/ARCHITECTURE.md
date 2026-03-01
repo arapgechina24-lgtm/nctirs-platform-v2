@@ -41,10 +41,24 @@ graph TB
     Streamer -- "Inference" --> PyTorch
     Streamer -- "POST /api/threats" --> API
     
+    %% Sovereignty Flow
+    API -- "Sovereign Mode: ON" --> Ollama["Local Ollama (Llama-3)"]
+    Ollama -- "In-Country Analysis" --> FE
+    
     %% Security
     Auth -.-> RBAC
     RBAC -.-> API
 ```
+
+## Sovereign AI Tier (National Self-Reliance)
+
+To comply with the **NIRU Hackathon Criteria A2 (National Self-Reliance)** and **D1 (Data Protection)**, the NCTIRS platform implements a dual-cognition architecture:
+
+1. **PROTOTYPE LAYER (Foreign Cloud):** Utilizes Google Gemini 2.0 Flash for rapid iteration and high-throughput tactical synthesis during non-sensitive operations.
+2. **SOVEREIGN LAYER (Local On-Prem):** A dedicated, air-gapped deployment path utilizing **Ollama** and **Llama-3 8B**.
+   - **Data Egress:** 0% (No data leaves the internal secure network).
+   - **Model Control:** Open-weight models are hosted on bare-metal servers, ensuring the system remains operational even if foreign API access is revoked.
+   - **Legal Alignment:** Fully compliant with *Kenya Data Protection Act (2019)* regarding sensitive infrastructure data sovereignty.
 
 ## Core Components
 

@@ -8,7 +8,7 @@ import {
     PerceptionLayerStatus,
     CognitionLayerStatus,
     IntegrityLayerStatus
-} from "@/lib/mockData"
+} from "@/types"
 
 interface SystemArchitectureProps {
     perception: PerceptionLayerStatus;

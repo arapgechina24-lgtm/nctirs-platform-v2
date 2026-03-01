@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ThreatBadge, StatusBadge, Badge } from "@/components/ui/badge"
-import { SecurityIncident } from "@/lib/mockData"
+import { SecurityIncident } from "@/types"
 import { MapPin, Clock, Users, AlertCircle } from "lucide-react"
 import { motion } from "framer-motion"
 import { formatDistanceToNow } from "date-fns"

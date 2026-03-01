@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { CommunityReport } from "@/lib/mockData"
+import { CommunityReport } from "@/types"
 import { Users, MapPin, Clock, CheckCircle, Image as ImageIcon } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 

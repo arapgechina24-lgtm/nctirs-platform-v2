@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { Shield, AlertTriangle, Activity, TrendingUp, Lock, Radio, Users, User, LogOut, LogIn } from "lucide-react"
 import { useAuth } from "@/contexts/AuthContext"
+import { useSovereign } from "@/contexts/SovereignContext"
 import Link from "next/link"
 
 export type ViewType = 'COMMAND_CENTER' | 'FUSION_CENTER' | 'THREAT_MATRIX' | 'ANALYTICS' | 'OPERATIONS';
@@ -14,6 +15,7 @@ interface HeaderProps {
 
 export function Header({ currentView, onViewChange }: HeaderProps) {
   const { user, isAuthenticated, logout } = useAuth()
+  const { isSovereign, setIsSovereign } = useSovereign()
   const [currentTime, setCurrentTime] = useState<string>("")
 
   useEffect(() => {
@@ -94,6 +96,32 @@ export function Header({ currentView, onViewChange }: HeaderProps) {
           </div>
 
           <div className="ml-auto flex items-center gap-6">
+            {/* Sovereign Toggle */}
+            <div className="flex flex-col items-end gap-1">
+              <button
+                onClick={() => setIsSovereign(!isSovereign)}
+                className={`flex items-center gap-3 rounded-none border px-4 py-2 transition-all duration-300 group ${isSovereign
+                  ? 'bg-green-600/20 border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.3)]'
+                  : 'bg-black border-green-900/50 hover:border-green-700'
+                  }`}
+              >
+                <div className="relative">
+                  <div className={`h-2 w-2 rounded-full transition-all duration-500 ${isSovereign ? 'bg-green-400 animate-pulse' : 'bg-green-900'}`}></div>
+                  {isSovereign && <div className="absolute inset-0 h-2 w-2 rounded-full bg-green-400 animate-ping"></div>}
+                </div>
+                <div className="flex flex-col items-start pr-2">
+                  <span className={`text-[10px] font-bold tracking-widest transition-colors ${isSovereign ? 'text-green-400' : 'text-green-800'}`}>
+                    {isSovereign ? 'SOVEREIGN CORE' : 'CLOUD ASSIST'}
+                  </span>
+                  <span className="text-[8px] text-green-900 font-mono uppercase tracking-tighter">
+                    {isSovereign ? '100% On-Premise' : 'Foreign API Enabled'}
+                  </span>
+                </div>
+                <div className={`h-4 w-px transition-colors ${isSovereign ? 'bg-green-500/50' : 'bg-green-900/50'}`} />
+                <Activity className={`h-4 w-4 transition-all duration-500 ${isSovereign ? 'text-green-400 rotate-180' : 'text-green-900'}`} />
+              </button>
+            </div>
+
             {/* System Status */}
             <div className="flex flex-col items-end gap-1">
               <div className="flex items-center gap-2 rounded-none bg-black border border-green-900/50 px-4 py-2 shadow-[inset_0_0_10px_rgba(0,255,65,0.05)]">

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { SecurityIncident, CrimePrediction, SurveillanceFeed } from "@/lib/mockData"
+import { SecurityIncident, CrimePrediction, SurveillanceFeed } from "@/types"
 import { Map as MapIcon } from "lucide-react"
 import type * as L from 'leaflet'
 

@@ -99,6 +99,30 @@ export interface ThreatAnalytics {
     riskScore: number;
 }
 
+// ============================================================
+// Elite Surveillance & Social Intelligence
+// ============================================================
+
+export interface DigitalPulse {
+    id: string;
+    platform: 'X' | 'FACEBOOK' | 'TIKTOK' | 'TELEGRAM' | 'WHATSAPP';
+    sentimentScore: number; // 0-100 (100 = Crisis)
+    hateSpeechSurge: number; // % increase
+    topHashtags: string[];
+    threatLevel: ThreatLevel;
+    location: string;
+}
+
+export interface HateSpeechAlert {
+    id: string;
+    timestamp: Date;
+    content: string;
+    dialect: 'SHENG' | 'SWAHILI' | 'ENGLISH' | 'VERNACULAR';
+    severity: 'CRITICAL' | 'HIGH' | 'MEDIUM';
+    targetGroup: string;
+    coordinates: [number, number];
+}
+
 export interface TimeSeriesData {
     date: string;
     total: number;
@@ -196,7 +220,7 @@ export interface CoordinatedAttack {
     responseActions: string[];
 }
 
-export type ResponseType = 'IP_BLOCK' | 'SYSTEM_ISOLATE' | 'POLICE_DISPATCH' | 'ALERT_AGENCY' | 'LOCKDOWN' | 'EVIDENCE_PRESERVE';
+export type ResponseType = 'IP_BLOCK' | 'SYSTEM_ISOLATE' | 'POLICE_DISPATCH' | 'ALERT_AGENCY' | 'LOCKDOWN' | 'EVIDENCE_PRESERVE' | 'SHADOW_IP_ROUTING' | 'AUTONOMOUS_TAKEDOWN' | 'PROPAGANDA_NEUTRALIZATION';
 
 export interface AutomatedResponse {
     id: string;

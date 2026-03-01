@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { EmergencyResponse } from "@/lib/mockData"
+import { EmergencyResponse } from "@/types"
 import { Siren, MapPin, Users, Clock } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 

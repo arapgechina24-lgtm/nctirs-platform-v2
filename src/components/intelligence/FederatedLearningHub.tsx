@@ -1,6 +1,6 @@
 'use client'
 
-import { FederatedLearningStatus } from '@/lib/mockData'
+import { FederatedLearningStatus } from '@/types'
 import { Network, Database, Lock, ArrowUpDown, CheckCircle, RefreshCw, Wifi } from 'lucide-react'
 
 interface FederatedLearningHubProps {

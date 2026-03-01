@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Brain, Cpu, Target, TrendingUp, AlertTriangle, Zap } from "lucide-react"
-import { CyberThreat, CoordinatedAttack } from "@/lib/mockData"
+import { CyberThreat, CoordinatedAttack } from "@/types"
 import { AIAnalysisPanel } from "@/components/intelligence/AIAnalysisPanel"
 
 interface ThreatAnalyticsEngineProps {

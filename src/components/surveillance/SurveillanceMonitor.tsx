@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { SurveillanceFeed } from "@/lib/mockData"
+import { SurveillanceFeed } from "@/types"
 import { Camera, Activity, MapPin, Clock } from "lucide-react"
 
 interface SurveillanceMonitorProps {
