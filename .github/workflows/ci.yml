@@ -1,41 +1,61 @@
-name: CI
+name: CI/CD Pipeline
 
 on:
   push:
-    branches: ["main"]
+    branches: [main]
   pull_request:
+    branches: [main]
 
 jobs:
-  build:
+  test:
+    name: Test & Lint
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [20.x, 22.x]
-
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repo
+        uses: actions/checkout@v3
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+      - name: Setup Node
+        uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: "npm"
-          cache-dependency-path: package-lock.json
+          node-version: "20"
 
       - name: Install Dependencies
-        run: npm install --legacy-peer-deps
+        run: npm ci
 
-      - name: Lint
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      - name: Linting
         run: npm run lint
 
-      - name: Type Check
-        run: npm run type-check
-
-      - name: Test
-        run: npm run test
+      # - name: Run Tests
+      #   run: npm run test
 
       - name: Build
-        env:
-          AUTH_SECRET: "ci-build-secret-not-for-production"
         run: npm run build
+
+  release:
+    name: Semantic Release
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Semantic Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release

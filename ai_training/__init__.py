@@ -1,1 +1,0 @@
-# NCTIRS AI Training Pipeline

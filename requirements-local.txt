@@ -1,0 +1,5 @@
+# Additional dependencies for local ML execution (Too large for Vercel Serverless)
+ultralytics>=8.0.0
+opencv-python-headless>=4.8.0
+beautifulsoup4>=4.12.0
+requests>=2.31.0

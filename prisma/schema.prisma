@@ -1,164 +1,144 @@
-// Prisma Schema for NCTIRS Dashboard
-// National Cyber Threat Intelligence & Response System
-
 generator client {
   provider = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
-  binaryTargets = ["native", "rhel-openssl-1.0.x", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-// User model with role-based access (L1-L4)
+// NextAuth Models
+
 model User {
   id            String    @id @default(cuid())
-  email         String    @unique
   name          String?
-  password      String
-  role          String    @default("L1") // L1=Analyst, L2=Supervisor, L3=Director, L4=Admin
-  agency        String?   // NIS, DCI, KPS, etc.
-  department    String?
-  clearanceLevel Int      @default(1)
-  isActive      Boolean   @default(true)
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  encryptedDetails String? @db.Text // Encrypted PII (Phone, Home Address, etc.)
+  role          UserRole  @default(OFFICER)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  lastLogin     DateTime?
-  
-  // Relations
+
+  accounts      Account[]
+  sessions      Session[]
   incidents     Incident[]
-  auditLogs     AuditLog[]
-  reports       Report[]
+  intelligence  Intelligence[]
 }
 
-// Security Incident model
+enum UserRole {
+  ADMIN
+  COMMANDER
+  OFFICER
+  ANALYST
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String? @db.Text
+  access_token       String? @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String? @db.Text
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Application Models
+
 model Incident {
-  id            String    @id @default(cuid())
-  title         String
-  description   String
-  type          String    // PHISHING, RANSOMWARE, DATA_BREACH, MALWARE, DDOS, APT, INSIDER_THREAT, IDENTITY_THEFT
-  severity      String    // CRITICAL, HIGH, MEDIUM, LOW
-  status        String    @default("ACTIVE") // ACTIVE, INVESTIGATING, CONTAINED, RESOLVED
-  location      String?
-  latitude      Float?
-  longitude     Float?
-  county        String?
-  targetAsset   String?
-  attackVector  String?   // MITRE ATT&CK technique
-  indicators    String?   // JSON string of IOCs
-  dataProtectionImpact String? // PII_EXPOSED, CREDENTIALS_LEAKED, FINANCIAL_DATA, HEALTH_RECORDS, NONE
-  mitreAttackId String?   // MITRE ATT&CK technique ID (e.g. T1566.001)
+  id          String         @id @default(cuid())
+  title       String
+  description String
+  type        String         @default("GENERAL")
+  priority    Priority       @default(MEDIUM)
+  status      IncidentStatus @default(OPEN)
+  location    String?
+  latitude    Float?
+  longitude   Float?
+  county      String?
+  targetAsset String?
+  attackVector String?
+  indicators  String?        @db.Text
   
-  // Timestamps
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  detectedAt    DateTime  @default(now())
-  resolvedAt    DateTime?
-  
-  // Relations
-  createdBy     User?     @relation(fields: [createdById], references: [id])
-  createdById   String?
-  threats       Threat[]
-  responses     Response[]
-  auditLogs     AuditLog[]
+  encryptedDetails String? @db.Text // JSON string of encrypted fields
+  reportedBy  String?
+  reporter    User?          @relation(fields: [reportedBy], references: [id])
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  detectedAt  DateTime       @default(now())
+  resolvedAt  DateTime?
 }
 
-// Cyber Threat model
 model Threat {
-  id            String    @id @default(cuid())
-  name          String
-  type          String    // APT, RANSOMWARE, PHISHING, DDOS, DATA_BREACH, MALWARE, INSIDER_THREAT, IDENTITY_THEFT
-  severity      String
-  source        String?   // Origin country/group
-  targetSector  String?   // GOVERNMENT, FINANCIAL, INFRASTRUCTURE, HEALTHCARE, TELECOM, ENERGY, TRANSPORT
-  confidence    Float     @default(0.0)
-  mitreId       String?   // MITRE ATT&CK ID
-  description   String?
-  indicators    String?   // JSON string of IOCs
-  affectedCitizens Int?   // Number of affected citizens
-  dpaViolation  String?   // Kenya DPA 2019 section violated
-  
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  
-  // Relations
-  incident      Incident? @relation(fields: [incidentId], references: [id])
-  incidentId    String?
+  id          String   @id @default(cuid())
+  name        String
+  type        String
+  severity    String
+  source      String?
+  targetSector String?
+  confidence  Float    @default(0.0)
+  mitreId     String?
+  description String?
+  indicators  String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
-// Automated Response model
-model Response {
-  id            String    @id @default(cuid())
-  type          String    // AIR_GAP, BLOCK_IP, ISOLATE, ALERT
-  status        String    @default("PENDING") // PENDING, EXECUTING, COMPLETED, FAILED
-  target        String
-  protocol      String?
-  result        String?
-  executedAt    DateTime?
-  completedAt   DateTime?
-  
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  
-  // Relations
-  incident      Incident? @relation(fields: [incidentId], references: [id])
-  incidentId    String?
+
+enum IncidentStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
 }
 
-// NC4 Compliance Report model
-model Report {
-  id            String    @id @default(cuid())
-  type          String    // NC4, INCIDENT, THREAT_INTEL
-  title         String
-  content       String    // JSON or HTML content
-  classification String   @default("CONFIDENTIAL")
-  status        String    @default("DRAFT") // DRAFT, SUBMITTED, APPROVED
-  hash          String?   // SHA-256 for integrity
-  
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  submittedAt   DateTime?
-  
-  // Relations
-  createdBy     User?     @relation(fields: [createdById], references: [id])
-  createdById   String?
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
 }
 
-// Audit Log for compliance (blockchain-style)
-model AuditLog {
-  id            String    @id @default(cuid())
-  action        String    // LOGIN, VIEW, CREATE, UPDATE, DELETE, RESPONSE
-  resource      String    // incidents, threats, reports, etc.
-  resourceId    String?
-  details       String?   // JSON string of action details
-  ipAddress     String?
-  userAgent     String?
-  
-  // Blockchain-style fields
-  hash          String?   // SHA-256 hash of this entry
-  previousHash  String?   // Hash of previous entry for chain
-  
-  createdAt     DateTime  @default(now())
-  
-  // Relations
-  user          User?     @relation(fields: [userId], references: [id])
-  userId        String?
-  incident      Incident? @relation(fields: [incidentId], references: [id])
-  incidentId    String?
+model Intelligence {
+  id          String   @id @default(cuid())
+  title       String
+  content     String   @db.Text
+  source      String
+  classification Classification @default(CONFIDENTIAL)
+  createdBy   String 
+  author      User     @relation(fields: [createdBy], references: [id])
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime?
 }
 
-// Surveillance Feed model
-model SurveillanceFeed {
-  id            String    @id @default(cuid())
-  location      String
-  type          String    // CCTV, ANPR, DRONE
-  status        String    @default("ACTIVE")
-  latitude      Float?
-  longitude     Float?
-  streamUrl     String?
-  
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+enum Classification {
+  UNCLASSIFIED
+  CONFIDENTIAL
+  SECRET
+  TOP_SECRET
 }

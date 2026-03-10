@@ -39,12 +39,20 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-STACK.md
-.env*.local
 
-/src/generated/prisma
+/lib/generated/prisma
 
-# Local database files
-dev.db
-audit-db.json
-ai_training/data/
+# python
+/venv
+/__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+
+# model files
+*.pt
+*.h5
+*.joblib
+*.onnx
+yolov8n.pt

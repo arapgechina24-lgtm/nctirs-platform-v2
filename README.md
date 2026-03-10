@@ -1,306 +1,91 @@
-# 🛡️ NCTIRS - National Cyber Threat Intelligence & Response System
+# USALAMA APP – Unified Security & Law-enforcement Alert Management Architecture
 
-<div align="center">
+**A citizen-centric incident reporting portal integrated with the National Security Strategy & Policy Integration Platform (NSSPIP).**
 
-![NCTIRS Banner](https://img.shields.io/badge/NCTIRS-National%20Security-green?style=for-the-badge&logo=shield&logoColor=white)
-[![CI](https://github.com/arapgechina24-lgtm/nctirs-platform-v2/actions/workflows/ci.yml/badge.svg)](https://github.com/arapgechina24-lgtm/nctirs-platform-v2/actions/workflows/ci.yml)
-[![CodeQL](https://github.com/arapgechina24-lgtm/nctirs-platform-v2/actions/workflows/codeql.yml/badge.svg)](https://github.com/arapgechina24-lgtm/nctirs-platform-v2/actions/workflows/codeql.yml)
-[![Scorecard](https://github.com/arapgechina24-lgtm/nctirs-platform-v2/actions/workflows/scorecard.yml/badge.svg)](https://github.com/arapgechina24-lgtm/nctirs-platform-v2/actions/workflows/scorecard.yml)
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-
-**AI-Powered National Security & Smart Policing Intelligence Platform**
-
-[Live Demo](https://nctirs-platform-v2.vercel.app) • [MAJESTIC SHIELD Proposal](./docs/MAJESTIC_SHIELD_PROPOSAL.md) • [Documentation](#-features) • [Getting Started](#-getting-started)
-
-</div>
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Farapgechina24-lgtm%2FNSSPIP&env=DATABASE_URL&project-name=nsspip)
 
 ---
 
-## 📋 MAJESTIC SHIELD Proposal
+## 🏛️ Executive Summary
 
-> **[Read the Full Unified Master Proposal](./docs/MAJESTIC_SHIELD_PROPOSAL.md)** - AI-Driven National Cyber-Intelligence & Zero-Trust Response System for Kenya's National Intelligence Service.
+**USALAMA APP** is the official citizen-facing reporting module of the Kenyan National Security ecosystem. It provides a secure, encrypted channel for citizens to report suspicious activity, cyber threats, and physical incidents directly to the National Command Center.
 
-The proposal outlines:
+Built to the standards of top-tier intelligence agencies (like the NIS or CIA), NSSPIP serves as a centralized Command and Control (C2) Fusion Center. It seamlessly integrates multi-domain data sources—including CCTV surveillance feeds, public OSINT data, and historical crime geometry—leveraging Artificial Intelligence to predict, detect, and neutralize emerging asymmetric threats.
 
-- 🧠 **AI Threat Analytics Engine (ATAE)** - Deep Learning, NLP, Behavioral Biometrics
-- 🏛️ **National Cyber Fusion Center (NCFC)** - Multi-agency intelligence integration
-- 🔐 **Continuous Adaptive Authentication (CAA)** - Zero-Trust Architecture
-- ⛓️ **Data Protection & Compliance Layer (DPCL)** - DPA 2019, Blockchain evidence
+By fusing State-of-the-Art Machine Learning architectures into a highly optimized Hybrid Serverless Environment, the platform empowers commanders with real-time Situational Awareness, Predictive Policing matrices, and rapid Emergency Response coordination.
 
-## 🎬 Demo
+## 🚀 Core Intelligence Capabilities
 
-> **🚀 [Launch Live Demo](https://nctirs-platform-v2.vercel.app)** | Press `Ctrl+Shift+E` to trigger the Emergency Protocol simulation!
+The NSSPIP platform is powered by a robust Python Machine Learning backend seamlessly integrated with a high-performance Next.js 14 frontend dashboard.
 
-![Emergency Overlay Demo](./public/demo.webp)
+### 1. Predictive Risk Engine (Machine Learning Forensics)
 
-The platform simulates a Level 5 National Cyber Emergency with:
+Utilizing a highly optimized **Random Forest Regressor** (`scikit-learn`), the platform analyzes historical incident geometry, regional density hotspots, and temporal patterns.
 
-- 🔴 Cinematic "National Emergency" overlay with glitch effects
-- 🔊 Voice narration using Web Speech API
-- 📄 Real-time NC4 Compliance Report generation
-- ✅ SHA-256 cryptographic audit trail
+* **Capability**: Commanders can dynamically execute real-time risk assessments on active incidents. The AI infers geospatial variables to output a distinct `Risk Score` (0-100) and discrete contributing factors, allowing automated prioritization of kinetic response teams.
 
----
+### 2. Live Operational Intelligence & OSINT Sentiment (NLP)
 
-## 🚀 Features
+Integrating the **Natural Language Toolkit (NLTK) VADER Lexicon** and continuous web scraping architectures (`BeautifulSoup4`).
 
-### 🎯 Command Center
+* **Capability**: The engine autonomously ingests open-source intelligence (OSINT), such as global news RSS feeds (e.g., Al Jazeera unrest reporting) or raw dispatch text. It isolates critical security keywords and grades the operational sentiment volatility (POSITIVE, NEGATIVE, NEUTRAL) to construct an Aggregate Threat Level for early warning of civil unrest.
 
-- **Real-time Threat Map**: Visualize active threats across Kenya's 47 counties
-- **CNI Heatmap**: Monitor Critical National Infrastructure (SEACOM, KPLC, M-Pesa)
-- **AI Threat Analytics**: MITRE ATT&CK framework integration with Google Gemini 2.0 Flash
+### 3. Smart Surveillance & Object Detection (Computer Vision)
 
-## 🔒 Deployment Security (Lockdown Mode)
+Deploying lightweight **YOLOv8** (You Only Look Once) neural networks interfaced with **OpenCV**.
 
-To restrict access to your Vercel deployment (e.g., during a hackathon or private testing), set the following environment variable in your Vercel project settings:
+* **Capability**: Operates a realtime scanning overlay for available CCTV nodes. The computer vision pipeline isolates specific threat classes—such as abandoned bags or visible weapons—generating high-confidence alerts and rendering targeted bounding boxes directly into the command interface.
+
+## 💻 Technical Architecture & Stack
+
+NSSPIP is built for absolute resilience, scaling, and zero-trust security.
+
+* **Frontend C2 Interface**: Next.js 14 (App Router), React, Tailwind CSS, Shadcn UI, Recharts for dynamic telemetry.
+* **Serverless AI Backend**: Python 3.9 natively routed within Next.js API paths (`/api/ai/*`), ensuring seamless internal API gating.
+* **Machine Learning Ecosystem**: PyTorch, Ultralytics YOLO, Scikit-Learn, Pandas, NLTK, OpenCV.
+* **Deployment**: Vercel Serverless Functions with dynamically decoupled ML dependencies for rapid cold starts.
+
+## ⚙️ Getting Started (Local Development)
+
+To initialize the Fusion Center for local operations and development testing:
+
+### 1. Clone & Install Next.js Dependencies
 
 ```bash
-DEPLOYMENT_PASSWORD=your_secret_password
-```
-
-When set, the entire application will be protected by Basic Authentication. Users will be prompted for a username (any value) and password (must match `DEPLOYMENT_PASSWORD`) before they can access the site.
-
-To disable lockdown mode, simply remove the environment variable.
-
-### 🛡️ SOAR Automation
-
-- **Automated Response Protocols**: One-click Air-Gap isolation
-- **NC4 Compliance Reporting**: Aligned with Kenya Computer Misuse Act (2018)
-- **SHA-256 Integrity Hashing**: Tamper-proof audit logs
-
-### 📊 Compliance & Audit
-
-- **National Audit Trail**: Immutable blockchain-backed log of all security actions
-- **Partial Prerendering (PPR)**: Optimized performance with Next.js 16
-- **KDPA 2019 Compliance**: Data protection indicators
-
-### 🎭 Demo Mode
-
-- **Auto-Trigger Simulation**: Watch the system respond to threats automatically
-- **Keyboard Shortcuts**: `Ctrl+Shift+E` for Emergency, `Ctrl+Shift+A` for Audit
-
----
-
-## 🛠️ Tech Stack
-
-| Category | Technology |
-| -------- | ---------- |
-| Framework | Next.js 16 (App Router, PPR) |
-| Language | TypeScript 5 |
-| Styling | Tailwind CSS 4 |
-| AI Engine | Google Gemini 2.0 Flash |
-| Database | Turso (LibSQL) + Prisma ORM |
-| Auth | NextAuth.js v5 (Credentials) |
-| Real-time | Ably WebSockets |
-| Maps | Leaflet + React-Leaflet |
-| Charts | Recharts |
-| Security | Node.js Crypto (SHA-256), bcrypt |
-
----
-
-## �️ Architecture
-
-```mermaid
-flowchart TB
-    subgraph Perception["🔍 Perception Layer"]
-        IoT["IoT Sensors"]
-        Drones["Drone Feeds"]
-        NetSniff["Network Sniffers"]
-        OSINT["OSINT Crawlers"]
-    end
-
-    subgraph Cognition["🧠 Cognition Layer"]
-        Gemini["Google Gemini 2.0 Flash"]
-        MITRE["MITRE ATT&CK Engine"]
-        APT["APT Signature DB"]
-        NLP["NLP Threat Classifier"]
-    end
-
-    subgraph Integrity["⛓️ Integrity Layer"]
-        Blockchain["Blockchain Ledger"]
-        SHA256["SHA-256 Hashing"]
-        Audit["Immutable Audit Trail"]
-        KDPA["KDPA 2019 Compliance"]
-    end
-
-    subgraph Response["🚨 SOAR Response"]
-        AirGap["Air-Gap Isolation"]
-        Dispatch["Police Dispatch"]
-        NC4["NC4 Alert"]
-        Block["IP Blocking"]
-    end
-
-    Perception --> Cognition
-    Cognition --> Integrity
-    Cognition --> Response
-    Integrity --> Response
-```
-
----
-
-## 🏆 Why NCTIRS Wins
-
-| # | Differentiator | Details |
-| - | -------------- | ------- |
-| 1 | **Real AI, Not Mockups** | Live Google Gemini 2.0 Flash integration — SENTINEL-OMEGA analyzes threats in real-time |
-| 2 | **Production-Grade Stack** | Next.js 16, Prisma ORM, Turso DB, NextAuth v5, Ably WebSockets |
-| 3 | **Kenya-First Design** | 47-county threat map, KPLC/M-Pesa/SEACOM CNI monitoring, DPA 2019 compliance |
-| 4 | **Cinematic Demo** | Level 5 Emergency overlay with glitch effects, voice narration, and live audit trail |
-| 5 | **Zero-Trust Architecture** | Continuous Adaptive Authentication with bcrypt + SHA-256 integrity hashing |
-| 6 | **SOAR Automation** | One-click Air-Gap isolation, NC4 alerting, and automated police dispatch |
-| 7 | **Full Compliance** | Computer Misuse Act (2018), KDPA 2019, and NIST SP 800-53 controls |
-| 8 | **Enterprise Governance** | CI/CD, CodeQL, Scorecard, CODEOWNERS, signed commits, CITATION.cff |
-
----
-
-## �🏁 Getting Started
-
-```bash
-# Clone the repository
-git clone https://github.com/arapgechina24-lgtm/nctirs-platform-v2.git
-cd nctirs-platform-v2
-
-# Install dependencies
+git clone https://github.com/arapgechina24-lgtm/NSSPIP.git
+cd NSSPIP
 npm install
-
-# Set up environment variables
-cp .env.example .env.local
-# Edit .env.local with your API keys (GEMINI_API_KEY, DATABASE_URL, AUTH_SECRET)
-
-# Run development server
-npm run dev
-
-# Build for production
-npm run build
 ```
 
-Visit [http://localhost:3000](http://localhost:3000) to see the dashboard.
+### 2. Configure Python ML Environment
+
+Due to the heavy weight of Deep Learning models (YOLO/PyTorch), local testing requires an isolated Python virtual environment.
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+pip install -r requirements-local.txt
+```
+
+### 3. Launch Development Server
+
+```bash
+npm run dev
+# OR launch the Python fastAPI backend independently
+npm run python:dev
+```
+
+Access the operational dashboard at [http://localhost:3000](http://localhost:3000).
 
 ---
 
-## ⌨️ Keyboard Shortcuts
+## 🛡️ Strategic Objectives & Impact
 
-| Shortcut | Action |
-| -------- | ------ |
-| `Ctrl+Shift+E` | Trigger Emergency Overlay |
-| `Ctrl+Shift+A` | Open Audit Trail |
-| `Ctrl+Shift+D` | Toggle Demo Mode |
-
----
-
-## 📜 Legal Compliance
-
-This system is designed to comply with:
-
-- 🇰🇪 **Kenya Computer Misuse and Cybercrime Act (2018)** - Section 11: CII Protection
-- 🇰🇪 **Kenya Data Protection Act (2019)** - PII exposure monitoring
-- 🌍 **NIST SP 800-53** - Security controls framework
-
-## 🧠 Sovereign AI Integration (Ollama)
-
-To guarantee National Self-Reliance and strict Data Sovereignty, the platform supports locally hosted, open-weight models via **Ollama**. This ensures no intelligence data ever travels over the public internet to foreign APIs.
-
-**To enable Sovereign AI Mode (Recommended for Production):**
-
-1. Install Ollama locally from [ollama.com](https://ollama.com).
-2. Download a model suitable for analysis (e.g., Mistral):
-
-   ```bash
-   ollama run mistral
-   ```
-
-3. Update your `.env.local` file:
-
-   ```env
-   SOVEREIGN_AI_ENABLED=true
-   OLLAMA_ENDPOINT=http://localhost:11434
-   OLLAMA_MODEL=mistral
-   NEXT_PUBLIC_SOVEREIGN_AI_ENABLED=true
-   ```
-
-**Hackathon Prototyping Fallback (Gemini)**
-If you are unable to run local models on your demo machine, the system falls back to Google Gemini 2.0 Flash:
-
-1. Set `SOVEREIGN_AI_ENABLED=false`
-2. Provide a `GEMINI_API_KEY` from Google AI Studio.
-
-The AI operates as **SENTINEL-OMEGA**, an elite Director-Level Intelligence Fusion Engine providing CIA/FBI/Mossad-grade threat analysis with specific Kenyan operational context.
+1. **Algorithmic Threat Anticipation**: Decrease average emergency response cycles by forecasting hotspots prior to kinetic escalation.
+2. **Information Superiority**: Break down intelligence silos by fusing multi-domain indicators into a single pane of glass for Strategic Commanders.
+3. **Digital Sovereignty & Security**: Develop indigenous, adaptable AI models capable of operating securely without continuous reliance on external black-box APIs.
+4. **Operational Excellence**: Adheres to strict Zero-Trust and code quality governance methodologies, ensuring the platform remains auditable and legally compliant.
 
 ---
-
-## ⚙️ Environment Variables
-
-| Variable | Required | Description |
-| -------- | -------- | ----------- |
-| `GEMINI_API_KEY` | Yes | Google Gemini 2.0 Flash API key from [AI Studio](https://aistudio.google.com/) |
-| `DATABASE_URL` | Yes | Turso (LibSQL) database connection URL |
-| `AUTH_SECRET` | Yes | NextAuth.js v5 secret for session encryption |
-| `ABLY_API_KEY` | Optional | Ably WebSocket key for real-time collaboration |
-| `NEXTAUTH_URL` | Optional | Override for NextAuth callback URL (default: `http://localhost:3000`) |
-
----
-
-## 🇰🇪 Built for Kenya
-
-<div align="center">
-
-**"Securing Kenya's Digital Backbone"**
-
-This project was developed for the **NIRU Hackathon** to demonstrate how AI and automation can protect Kenya's Critical National Infrastructure from cyber threats.
-
-*Built with ❤️ by Kenyan developers*
-
-</div>
-
----
-
-## 🗺️ Roadmap
-
-| Phase | Feature | Status |
-| ----- | ------- | ------ |
-| ✅ v1.0 | Core Dashboard (5 Views) | Completed |
-| ✅ v1.1 | Four Winning Pillars UI | Completed |
-| ✅ v1.2 | Layout & Accessibility Improvements | Completed |
-| ✅ v1.3 | Community Files & Documentation | Completed |
-| ✅ v1.4 | Real-time WebSocket Integration (Ably) | Completed |
-| ✅ v2.0 | Backend API & Authentication (NextAuth v5) | Completed |
-| ✅ v2.1 | AI Intelligence Engine (Gemini 2.0 Flash) | Completed |
-| ✅ v2.2 | SOAR Automation & Audit Compliance | Completed |
-| 📋 v2.3 | **KE-CIRT Traffic Mirroring (Indigenous Dataset Generation)** | Planned (Phase 2) |
-| 📋 v3.0 | Multi-agency Role-Based Access | Planned |
-| 📋 v3.1 | Production Deployment Guides | Planned |
-
----
-
-## 🤝 Contributing
-
-We welcome contributions! Please see our community resources:
-
-| Document | Description |
-| -------- | ----------- |
-| [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute to the project |
-| [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) | Community standards and behavior |
-| [SECURITY.md](SECURITY.md) | Security vulnerability reporting |
-| [CHANGELOG.md](CHANGELOG.md) | Version history and changes |
-
-### Quick Contribution Steps
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
----
-
-## 👥 Contributors
-
-<a href="https://github.com/arapgechina24-lgtm/nctirs-platform-v2/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=arapgechina24-lgtm/nctirs-platform-v2" alt="Contributors" />
-</a>
-
----
-
-## 📄 License
-
-Apache License 2.0 - See [LICENSE](LICENSE) for details.
+*“In intelligence, time is the only currency that matters. NSSPIP buys time.”*
