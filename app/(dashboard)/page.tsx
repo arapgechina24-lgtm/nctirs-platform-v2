@@ -44,7 +44,7 @@ import { fetchIncidents, fetchThreats } from "@/lib/nctirs/api"
 // Types
 import type {
     SecurityIncident,
-    CrimePrediction,
+    CyberRiskPrediction,
     SurveillanceFeed,
     CommunityReport,
     EmergencyResponse,
@@ -62,26 +62,21 @@ import type {
     FederatedLearningStatus,
     XAIExplanation,
     SovereignAIStatus,
+    Region,
+    IncidentType,
+    IncidentStatus,
+    ThreatLevel,
 } from "@/types"
 // Mock data generators
 import {
-    generateCrimePredictions,
+    generateMockIncidents,
+    generateCyberRiskPredictions,
     generateSurveillanceFeeds,
     generateCommunityReports,
-    generateEmergencyResponses,
     generateThreatAnalytics,
     generateTimeSeriesData,
     generateDataLakeSources,
-    generateBlockchainLedger,
-    generateCoordinatedAttacks,
-    generateAutomatedResponses,
-    generatePerceptionLayerStatus,
-    generateCognitionLayerStatus,
-    generateIntegrityLayerStatus,
-    generateAdversarialMetrics,
-    generateFederatedNodes,
-    generateXAIExplanations,
-    generateSovereignAIStatus,
+    generateCyberThreats,
 } from "@/lib/nctirs/mockData"
 import {
     generateNairobiTraffic,
@@ -105,7 +100,7 @@ import { createNC4Report } from "@/lib/nctirs/soar-logic"
 
 interface DashboardData {
     incidents: SecurityIncident[];
-    predictions: CrimePrediction[];
+    predictions: CyberRiskPrediction[];
     surveillanceFeeds: SurveillanceFeed[];
     communityReports: CommunityReport[];
     emergencyResponses: EmergencyResponse[];
@@ -151,31 +146,31 @@ interface KeyMetricsProps {
 function KeyMetrics({ metrics }: KeyMetricsProps) {
     return (
         <div className="grid grid-cols-3 lg:grid-cols-6 gap-2">
-            <div className="glass-panel p-3 text-center transition-all duration-300 hover:scale-[1.02] hover:shadow-green-500/20 hover:border-green-500/50">
-                <div className="text-[10px] text-green-800">THREAT LEVEL</div>
-                <div className={`text-lg font-bold ${metrics.threatLevel === 'CRITICAL' ? 'text-red-500 animate-pulse' : 'text-green-500'}`}>
+            <div className="glass-panel p-3 text-center border-emerald-500/20 bg-slate-900/80 transition-all duration-300 hover:scale-[1.02] hover:shadow-emerald-500/20 hover:border-emerald-500/50">
+                <div className="text-[10px] text-emerald-500/70 tracking-widest font-mono">CYBER PULSE</div>
+                <div className={`text-lg font-bold font-mono ${metrics.threatLevel === 'CRITICAL' ? 'text-red-500 animate-pulse' : 'text-emerald-400'}`}>
                     {metrics.threatLevel}
                 </div>
             </div>
-            <div className="glass-panel p-3 text-center transition-all duration-300 hover:scale-[1.02] hover:shadow-green-500/20 hover:border-green-500/50">
-                <div className="text-[10px] text-green-800">ACTIVE CASES</div>
-                <div className="text-lg font-bold text-green-400">{metrics.activeIncidents}</div>
+            <div className="glass-panel p-3 text-center border-blue-500/20 bg-slate-900/80 transition-all duration-300 hover:scale-[1.02] hover:shadow-blue-500/20 hover:border-blue-500/50">
+                <div className="text-[10px] text-blue-500/70 tracking-widest font-mono">ACTIVE SIGINT</div>
+                <div className="text-lg font-bold text-blue-400 font-mono">{metrics.activeIncidents}</div>
             </div>
-            <div className="glass-panel p-3 text-center transition-all duration-300 hover:scale-[1.02] hover:shadow-green-500/20 hover:border-green-500/50">
-                <div className="text-[10px] text-green-800">AI CONFIDENCE</div>
-                <div className="text-lg font-bold text-cyan-400">{metrics.aiConfidence}%</div>
+            <div className="glass-panel p-3 text-center border-cyan-500/20 bg-slate-900/80 transition-all duration-300 hover:scale-[1.02] hover:shadow-cyan-500/20 hover:border-cyan-500/50">
+                <div className="text-[10px] text-cyan-500/70 tracking-widest font-mono">AURA RELIABILITY</div>
+                <div className="text-lg font-bold text-cyan-400 font-mono">{metrics.aiConfidence}%</div>
             </div>
-            <div className="glass-panel p-3 text-center transition-all duration-300 hover:scale-[1.02] hover:shadow-green-500/20 hover:border-green-500/50">
-                <div className="text-[10px] text-green-800">SYSTEM LOAD</div>
-                <div className="text-lg font-bold text-yellow-500">{metrics.systemLoad}%</div>
+            <div className="glass-panel p-3 text-center border-amber-500/20 bg-slate-900/80 transition-all duration-300 hover:scale-[1.02] hover:shadow-amber-500/20 hover:border-amber-500/50">
+                <div className="text-[10px] text-amber-500/70 tracking-widest font-mono">NEURAL LOAD</div>
+                <div className="text-lg font-bold text-amber-500 font-mono">{metrics.systemLoad}%</div>
             </div>
-            <div className="glass-panel p-3 text-center transition-all duration-300 hover:scale-[1.02] hover:shadow-green-500/20 hover:border-green-500/50">
-                <div className="text-[10px] text-green-800">NET TRAFFIC</div>
-                <div className="text-lg font-bold text-blue-400">{metrics.networkTraffic}</div>
+            <div className="glass-panel p-3 text-center border-indigo-500/20 bg-slate-900/80 transition-all duration-300 hover:scale-[1.02] hover:shadow-indigo-500/20 hover:border-indigo-500/50">
+                <div className="text-[10px] text-indigo-500/70 tracking-widest font-mono">TRAFFIC FLOW</div>
+                <div className="text-lg font-bold text-indigo-400 font-mono">{metrics.networkTraffic}</div>
             </div>
-            <div className="glass-panel p-3 text-center transition-all duration-300 hover:scale-[1.02] hover:shadow-green-500/20 hover:border-green-500/50">
-                <div className="text-[10px] text-green-800">AUTO-RESPONSE</div>
-                <div className="text-lg font-bold text-purple-400">{metrics.responsesActive}</div>
+            <div className="glass-panel p-3 text-center border-violet-500/20 bg-slate-900/80 transition-all duration-300 hover:scale-[1.02] hover:shadow-violet-500/20 hover:border-violet-500/50">
+                <div className="text-[10px] text-violet-500/70 tracking-widest font-mono">AUTO-MITIGATION</div>
+                <div className="text-lg font-bold text-violet-400 font-mono">{metrics.responsesActive}</div>
             </div>
         </div>
     )
@@ -189,6 +184,11 @@ export default function Home() {
     const [isEmergency, setIsEmergency] = useState(false)
     const [mounted, setMounted] = useState(false)
     const [data, setData] = useState<DashboardData | null>(null)
+    const [strategicAdvice, setStrategicAdvice] = useState<{
+        containment_strategy: string[];
+        geopolitical_impact: string;
+        advisory_code: string;
+    } | null>(null)
 
     // Track page views and view changes
     useEffect(() => {
@@ -218,43 +218,42 @@ export default function Home() {
         const channel = ably.channels.get('nctirs-alerts');
 
         channel.subscribe((message) => {
-            console.log("实时 AI 警报收到:", message.name, message.data);
+            console.log("Cyber AI Pulse Received:", message.name, message.data);
             
-            if (message.name === 'surveillance-threat') {
-                toast.error("🚨 CRITICAL AI ALERT", {
-                    description: `Suspicious activity detected on feed ${message.data.feed_id}: ${message.data.detections.map((d: any) => d.label).join(', ')}`,
+            if (message.name === 'elite-threat-detected') {
+                toast.critical("🛑 NATION-STATE THREAT DETECTED", {
+                    description: `Attribution: ${message.data.attribution}. Impact Score: ${message.data.score.toFixed(1)}. Strategic containment initiated.`,
                     duration: 10000,
                 });
                 
-                // Add to incidents local state
                 setData(prev => {
                     if (!prev) return prev;
                     const newIncident: SecurityIncident = {
-                        id: `AI-${Date.now()}`,
-                        title: "AI DETECTED THREAT",
-                        description: `Automated vision detection: ${message.data.detections[0].label}`,
-                        type: "SURVEILLANCE",
-                        threatLevel: "CRITICAL",
-                        status: "OPEN",
-                        timestamp: new Date().toISOString(),
-                        location: { name: `Feed ${message.data.feed_id}`, region: "NAIROBI", coordinates: [-1.2833, 36.8167] }, // Center for now
-                        tags: ["AI_VISION", "REALTIME_ALERT"]
+                        id: `ELITE-AI-${Date.now()}`,
+                        title: `TACTICAL ALERT: ${message.data.attribution}`,
+                        description: `Nation-state activity detected. Impact: ${message.data.score}. Tactical attribution confirmed via AURA engine.`,
+                        type: "APT",
+                        threatLevel: message.data.level as any,
+                        status: "DETECTED",
+                        timestamp: new Date(),
+                        location: { name: "MOMBASA_EDGE_SUBMARINE", region: "MOMBASA_EDGE", coordinates: [-4.0435, 39.6682] },
+                        networkContext: {
+                            sourceIp: "Masked (Attributor: AURA)",
+                            targetIp: "National Fiber Backbone",
+                            protocol: "HTTPS",
+                            attackVector: "Nation-State Multi-Stage Breaching"
+                        },
+                        aiConfidence: 98,
+                        sources: ["AURA_ATTRIBUTION_ENGINE", "NEURAL_CORE_V3"],
+                        affectedSystems: 124
                     };
                     return { ...prev, incidents: [newIncident, ...prev.incidents] };
                 });
             }
 
-            if (message.name === 'risk-high') {
-                toast.warning("⚠️ ELEVATED REGIONAL RISK", {
-                    description: `AI Risk Model flags ${message.data.level} risk at ${message.data.location.lat}, ${message.data.location.lng}`,
-                });
-                
-                // Update predictions or add marker logic here
-            }
-
-            if (message.name === 'sentiment-volatility') {
-                toast.info("📡 INTEL SHIFT", {
-                    description: `NLP Engine detects high negative sentiment volatility: ${message.data.score.toFixed(2)}`,
+            if (message.name === 'cyber-risk-high') {
+                toast.error("⚠️ HIGH RISK TELEMETRY", {
+                    description: `AI Model flags anomaly. Score: ${message.data.score.toFixed(1)}. Vector: ${message.data.factors?.exfiltration ? 'Exfiltration' : 'Brute Force'}`,
                 });
             }
         });
@@ -271,99 +270,100 @@ export default function Home() {
 
             try {
                 // Fetch from API (with fallback to mock data)
-                const [incidents, cyberThreats] = await Promise.all([
-                    fetchIncidents({ limit: 30 }),
-                    fetchThreats({ limit: 20 }),
-                ])
+                const incidents = await fetchIncidents({ limit: 30 });
+                const cyberThreats = await generateCyberThreats(20); // Fallback until API is ready
 
                 // Generate remaining mock data for components without API yet
-                const predictions = generateCrimePredictions(15);
+                const predictions = generateCyberRiskPredictions(15);
 
                 // Fetch real AI prediction from python backend
                 try {
-                    const res = await fetch('http://localhost:8000/api/v1/predict/', {
+                    const res = await fetch('http://localhost:8000/api/predict/cyber-risk', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            latitude: -1.2921,
-                            longitude: 36.8219,
-                            is_night: new Date().getHours() < 6 || new Date().getHours() > 18 ? 1 : 0
+                            port_activity: 0.85,
+                            failed_logins: 0.6,
+                            traffic_entropy: 0.72,
+                            payload_size: 0.4,
+                            actor_persistence: 0.95,
+                            infra_criticality: 0.9,
+                            geopolitical_tension: 0.82,
+                            is_business_hours: 1
                         })
                     });
                     if (res.ok) {
                         const pyData = await res.json();
-                        if (pyData.risk_score) {
+                        if (pyData.impact_score) {
                             predictions.unshift({
-                                id: 'LIVE-AI-PREDICT',
-                                location: { name: 'Nairobi CBD (Live)', region: 'NAIROBI', coordinates: [-1.2921, 36.8219] },
-                                probability: pyData.risk_score / 100,
-                                timeWindow: 'Live AI Assessment',
-                                crimeTypes: ['VIOLENT_CRIME', 'PUBLIC_DISORDER'],
-                                riskFactors: ['Live Geo-spatial Risk Model'],
-                                recommendedActions: ['Deploy Patrol Unit', 'Active Surveillance Request']
+                                id: 'LIVE-ELITE-AI',
+                                targetSystem: 'National Infrastructure (Live)',
+                                riskProbability: pyData.impact_score,
+                                riskFactors: [
+                                    `Attribution: ${pyData.attribution}`,
+                                    `Strategic Advice: ${pyData.strategic_advice}`
+                                ],
+                                predictedVector: "APT",
+                                recommendedMitigation: [pyData.strategic_advice]
                             });
+
+                            // Fetch strategic advice if high impact
+                            if (pyData.impact_score > 60) {
+                                const adviseRes = await fetch(`http://localhost:8000/api/strategic/advise?threat_id=CORE-${Date.now()}`);
+                                if (adviseRes.ok) {
+                                    const advice = await adviseRes.json();
+                                    setStrategicAdvice(advice);
+                                }
+                            }
                         }
                     }
                 } catch {
-                    console.log("FastAPI backend not reachable for live predictions.");
+                    console.log("Cyber AI backend not reachable for live predictions.");
                 }
 
                 const surveillanceFeeds = generateSurveillanceFeeds(40);
                 const communityReports = generateCommunityReports(25);
-                const emergencyResponses = generateEmergencyResponses(12);
                 const threatAnalytics = generateThreatAnalytics();
                 const timeSeriesData = generateTimeSeriesData(30);
-                // NCTIRS data (mock for now)
                 const dataLakeSources = generateDataLakeSources();
-                const blockchainLedger = generateBlockchainLedger(25);
-                const coordinatedAttacks = generateCoordinatedAttacks(5);
-                const automatedResponses = generateAutomatedResponses(15);
-                const perceptionLayer = generatePerceptionLayerStatus();
-                const cognitionLayer = generateCognitionLayerStatus();
-                const integrityLayer = generateIntegrityLayerStatus();
-                // 4 WINNING PILLARS data
-                const adversarialMetrics = generateAdversarialMetrics();
-                const federatedStatus = generateFederatedNodes();
-                const xaiExplanations = generateXAIExplanations(8);
-                const sovereignAIStatus = generateSovereignAIStatus();
+                const cyberThreats = generateCyberThreats(20);
 
-                // Kenya 'Golden Data'
-                const kenyaWeather = getCurrentNairobiWeather();
-                const kenyaTraffic = generateNairobiTraffic(30);
-                const mpesaTransactions = generateMpesaData(40);
-                const borderLogs = generateBorderLogs();
-                const wildlife = generateWildlifeData();
-                const sentiment = generateSocialSentiment();
-                const cyberTraces = generateCyberAttribution();
+                // NCTIRS static/fallback data for winning pillars
+                const perceptionLayer = { status: 'OPTIMAL', score: 98, lastUpdate: new Date(), latency: 12, precision: 0.99 };
+                const cognitionLayer = { status: 'OPTIMAL', reasoningUnits: 154, throughput: 2400, modelVersion: 'NCTIRS-COG-v4' };
+                const integrityLayer = { status: 'SECURE', encryptionLevel: 'AES-GCM-256', blockchainSync: true, authAnomalies: 0 };
+                const adversarialMetrics = { robustness: 0.95, evasionRate: 0.02, detectionDrift: 0.01, attackAttempts: 4500 };
+                const federatedStatus = { nodesActive: 24, syncStatus: 'STABLE', globalRound: 452 };
+                const xaiExplanations = [];
+                const sovereignAIStatus = { localExecution: true, offlineMode: false, dataSovereignty: 1.0 };
 
                 setData({
                     incidents,
                     predictions,
                     surveillanceFeeds,
                     communityReports,
-                    emergencyResponses,
+                    emergencyResponses: [],
                     threatAnalytics,
                     timeSeriesData,
                     cyberThreats,
                     dataLakeSources,
-                    blockchainLedger,
-                    coordinatedAttacks,
-                    automatedResponses,
-                    perceptionLayer,
-                    cognitionLayer,
-                    integrityLayer,
-                    // 4 WINNING PILLARS
+                    blockchainLedger: [],
+                    coordinatedAttacks: [],
+                    automatedResponses: [],
+                    perceptionLayer: perceptionLayer as any,
+                    cognitionLayer: cognitionLayer as any,
+                    integrityLayer: integrityLayer as any,
                     adversarialMetrics,
-                    federatedStatus,
+                    federatedStatus: federatedStatus as any,
                     xaiExplanations,
                     sovereignAIStatus,
-                    kenyaWeather,
-                    kenyaTraffic,
-                    mpesaTransactions,
-                    borderLogs,
-                    wildlife,
-                    sentiment,
-                    cyberTraces
+                    kenyaWeather: getCurrentNairobiWeather(),
+                    kenyaTraffic: [],
+                    mpesaTransactions: [],
+                    borderLogs: [],
+                    wildlife: [],
+                    sentiment: [],
+                    cyberTraces: []
                 })
             } catch (error) {
                 console.error('Critical Error loading dashboard data:', error);
@@ -379,21 +379,8 @@ export default function Home() {
         loadData()
     }, [])
 
-    if (!mounted || !data) {
-        return (
-            <div className="min-h-screen bg-black flex items-center justify-center font-mono text-green-500">
-                <div className="text-center">
-                    <div className="animate-pulse text-xl mb-2">NSSPIP</div>
-                    <div className="text-sm text-green-800">INITIALIZING_SECURE_CONNECTION...</div>
-                    <div className="mt-4 flex items-center justify-center gap-2">
-                        <div className="h-2 w-2 bg-green-500 rounded-full animate-ping" />
-                        <div className="h-2 w-2 bg-green-500 rounded-full animate-ping" style={{ animationDelay: '0.2s' }} />
-                        <div className="h-2 w-2 bg-green-500 rounded-full animate-ping" style={{ animationDelay: '0.4s' }} />
-                    </div>
-                </div>
-            </div>
-        )
-    }
+    if (!mounted) return null
+    if (!data) return <div className="h-screen w-screen bg-black flex items-center justify-center font-mono text-emerald-500">INITIALIZING SHADOW-CORE...</div>
 
     // Calculate stats logic was removed here
 
@@ -434,12 +421,11 @@ export default function Home() {
     };
 
     const {
-        highThreatCount = 0,
-        activeResponses = 0,
-        criticalCyber = 0,
-        activeCoordinated = 0
+        highThreatCount,
+        activeResponses,
+        criticalCyber,
+        activeCoordinated
     } = {
-        // Recalculating these cheaply for display since we removed the vars before
         highThreatCount: data.incidents.filter(i => i.threatLevel === 'CRITICAL' || i.threatLevel === 'HIGH').length,
         activeResponses: data.emergencyResponses.filter(r => r.status !== 'RESOLVED').length,
         criticalCyber: data.cyberThreats.filter(t => t.severity === 'CRITICAL').length,
@@ -596,8 +582,49 @@ export default function Home() {
                                 </div>
                                 {/* RIGHT - Intel Sidebar */}
                                 <div className="col-span-12 lg:col-span-4 flex flex-col gap-4 overflow-y-auto">
-                                    <div className="glass-panel border-green-900/50 p-6">
-                                        <h2 className="text-sm font-bold text-green-400 mb-3 border-b border-green-900/50 pb-2 uppercase tracking-wider">
+                                    <div className="mb-6">
+                        <motion.h1 
+                            initial={{ x: -20, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            className="text-4xl font-black text-white tracking-tighter mb-1 font-mono"
+                        >
+                            NCTIRS <span className="text-emerald-500">SHADOW-CORE</span>
+                        </motion.h1>
+                        <p className="text-slate-500 text-xs uppercase tracking-[0.3em] font-mono">
+                            Elite Cyber Intelligence & Automated Universal Risk Attribution (AURA)
+                        </p>
+                    </div>
+                                    {/* Elite Strategic Advisory Terminal */}
+                                    <div className="glass-panel border-emerald-500/30 p-4 bg-slate-900/90 shadow-lg shadow-emerald-500/10">
+                                        <div className="flex items-center justify-between mb-4 border-b border-emerald-500/20 pb-2">
+                                            <h2 className="text-xs font-black text-emerald-400 uppercase tracking-widest font-mono">Strategic Advisory</h2>
+                                            <span className="text-[10px] font-mono text-emerald-600 animate-pulse">{strategicAdvice?.advisory_code || 'AWAITING_SIGINT'}</span>
+                                        </div>
+                                        {strategicAdvice ? (
+                                            <div className="space-y-4 font-mono">
+                                                <div className="p-3 bg-emerald-500/5 border border-emerald-500/10 rounded">
+                                                    <div className="text-[10px] text-emerald-700 mb-1">GEOPOLITICAL IMPACT</div>
+                                                    <div className="text-xs text-emerald-200">{strategicAdvice.geopolitical_impact}</div>
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <div className="text-[10px] text-emerald-700 uppercase">Containment Protcols</div>
+                                                    {strategicAdvice.containment_strategy.map((s, i) => (
+                                                        <div key={i} className="flex items-start gap-2 text-[11px] text-slate-300">
+                                                            <span className="text-emerald-500">▶</span>
+                                                            {s}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="h-32 flex items-center justify-center">
+                                                <div className="text-[10px] text-slate-600 font-mono italic animate-pulse">Scanning Neural Pulse for nation-state signatures...</div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="glass-panel border-emerald-900/50 p-6">
+                                        <h2 className="text-sm font-bold text-emerald-400 mb-3 border-b border-emerald-900/50 pb-2 uppercase tracking-wider font-mono">
                                             Inter-Agency Comms
                                         </h2>
                                         <AIAssistantPanel />

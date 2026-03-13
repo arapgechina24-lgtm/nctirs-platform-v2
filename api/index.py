@@ -1,238 +1,139 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
-import random
+import os
+import asyncio
 from typing import List, Optional
 from datetime import datetime
-
-# Define root_path for Vercel integration
-app = FastAPI(title="NSSPIP AI Engine", version="1.0.0", root_path="/api/ai")
-
-# --- Models ---
-class RiskRequest(BaseModel):
-    latitude: float
-    longitude: float
-    time_of_day: Optional[str] = None
-
-class RiskResponse(BaseModel):
-    risk_score: int
-    risk_level: str
-    contributing_factors: List[str]
-
-class SurveillanceRequest(BaseModel):
-    feed_id: str
-    image_url: Optional[str] = None
-
-class ObjectDetection(BaseModel):
-    label: str
-    confidence: float
-    bbox: List[int] # [x, y, w, h]
-
-class SurveillanceResponse(BaseModel):
-    feed_id: str
-    timestamp: str
-    detected_objects: List[ObjectDetection]
-    alert_triggered: bool
-
-import pandas as pd
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+import numpy as np
 import joblib
-import os
-import random
-import nltk
-from nltk.sentiment.vader import SentimentIntensityAnalyzer
-
-# Serverless environments restrict file writing to /tmp
-NLTK_DATA_DIR = "/tmp/nltk_data"
-os.makedirs(NLTK_DATA_DIR, exist_ok=True)
-nltk.data.path.append(NLTK_DATA_DIR)
-try:
-    nltk.data.find('sentiment/vader_lexicon.zip')
-except LookupError:
-    nltk.download('vader_lexicon', download_dir=NLTK_DATA_DIR)
-
-sia = SentimentIntensityAnalyzer()
-
-# Load model on Cold Start
-MODEL_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'ai-models', 'risk_model.joblib')
-try:
-    risk_model = joblib.load(MODEL_PATH)
-    print("✅ NSSPIP Random Forest Model Loaded Successfully")
-except Exception as e:
-    print(f"⚠️ Failed to load AI model (Running in degrade mode): {e}")
-    risk_model = None
-
-# --- Mock Logic & AI Inference ---
-
-def calculate_risk(lat: float, lng: float, time_of_day: str = None) -> int:
-    if risk_model:
-        # AI Inference
-        is_night = 1 if time_of_day == "night" else 0
-        
-        # Scikit-Learn expects a dataframe matching training features
-        features = pd.DataFrame({'latitude': [lat], 'longitude': [lng], 'is_night': [is_night]})
-        score = risk_model.predict(features)[0]
-        return int(score)
-
-    # Fallback MVP: Mock logic based on "Nairobi" coordinates
-    base_score = random.randint(10, 30)
-    if -1.29 < lat < -1.27 and 36.81 < lng < 36.83:
-        base_score += random.randint(40, 60)
-    
-    return min(base_score, 100)
-
+from textblob import TextBlob
 from api.utils.ably_handler import ably_handler
-import asyncio
 
-# --- Endpoints ---
+app = FastAPI()
+
+# --- Elite Cyber Security AI Engine (NCTIRS v3.0) ---
+
+class CyberRiskRequest(BaseModel):
+    port_activity: float          # 0-1
+    failed_logins: float          # 0-1
+    traffic_entropy: float        # 0-1
+    payload_size: float           # 0-1
+    actor_persistence: float      # 0-1 (Elite)
+    infra_criticality: float      # 0-1 (Elite)
+    geopolitical_tension: float   # 0-1 (Elite)
+    is_business_hours: int        # 0 or 1
+
+class TrafficRequest(BaseModel):
+    pcap_id: str
+    packet_count: int
+    data_points: List[float]
+
+# AURA: Automated Universal Risk Attribution Engine
+APT_PROFILES = {
+    "APT28 (Fancy Bear)": {"vectors": ["PHISHING", "ZERO_DAY"], "persistence": 0.85},
+    "Lazarus Group": {"vectors": ["DDOS", "RANSOMWARE"], "persistence": 0.92},
+    "APT41 (Double Dragon)": {"vectors": ["DATA_EXFIL", "ZERO_DAY"], "persistence": 0.88},
+    "ZINC-24": {"vectors": ["APT", "DATA_EXFIL"], "persistence": 0.95}
+}
+
+def attribute_threat(request: CyberRiskRequest, score: float):
+    if score < 40: return "Unknown/Low Profile"
+    
+    # Heuristic Attribution
+    if request.actor_persistence > 0.9 and request.infra_criticality > 0.8:
+        return "ZINC-24 (Nation-State Actor)"
+    if request.traffic_entropy > 0.8 and request.payload_size > 0.7:
+        return "APT41 (Exfiltration Specialist)"
+    if request.failed_logins > 0.7:
+        return "Lazarus Group (Destructive Operations)"
+    
+    return "Generic Advanced Persistent Threat"
+
+# Helper to load the Cyber model
+def get_cyber_model():
+    model_path = os.path.join(os.path.dirname(__file__), 'ai-models/risk_model.joblib')
+    if os.path.exists(model_path):
+        try:
+            return joblib.load(model_path)
+        except Exception as e:
+            print(f"Error loading model: {e}")
+    return None
 
 @app.get("/")
-def health_check():
-    return {"status": "operational", "service": "NSSPIP AI Engine (Serverless)"}
-
-@app.post("/predict/risk-score", response_model=RiskResponse)
-async def get_risk_score(request: RiskRequest):
-    score = calculate_risk(request.latitude, request.longitude, request.time_of_day)
-    
-    level = "LOW"
-    if score > 40: level = "MEDIUM"
-    if score > 70: level = "HIGH"
-    if score > 90: level = "CRITICAL"
-
-    factors = []
-    if level in ["HIGH", "CRITICAL"]:
-        factors = ["Historical crime density high", "Poor lighting reported", "Proximity to high-value target"]
-        # Trigger Ably Alert for High/Critical Risk
-        asyncio.create_task(ably_handler.publish_alert("nctirs-alerts", "risk-high", {
-            "score": score,
-            "level": level,
-            "location": {"lat": request.latitude, "lng": request.longitude},
-            "timestamp": datetime.now().isoformat()
-        }))
-    elif level == "MEDIUM":
-        factors = ["Recent minor incidents"]
-    
+def read_root():
     return {
-        "risk_score": score,
-        "risk_level": level,
-        "contributing_factors": factors
+        "status": "NCTIRS Elite SIGINT Engine Online", 
+        "version": "3.0.0-elite",
+        "capabilities": ["Elite Risk Prediction", "AURA Attribution", "Strategic Geopolitical Analysis"]
     }
 
-# Try to load YOLOv8 locally for CV
-cv_model = None
-try:
-    from ultralytics import YOLO
-    import urllib.request
-    import tempfile
-    CV_MODEL_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'yolov8n.pt')
-    if os.path.exists(CV_MODEL_PATH):
-       cv_model = YOLO(CV_MODEL_PATH)
-       print("✅ NSSPIP YOLOv8 CV Model Loaded Successfully")
-    else:
-       # If it doesn't exist, it will download on first run
-       cv_model = YOLO('yolov8n.pt')
-       print("✅ NSSPIP YOLOv8 CV Model Initialized")
-except ImportError:
-    print("⚠️ Ultralytics not found. CV endpoint will run in mock Serverless degrade mode.")
-
-@app.post("/analyze/surveillance", response_model=SurveillanceResponse)
-async def analyze_surveillance(request: SurveillanceRequest):
-    detections = []
-    triggered = False
+@app.post("/predict/cyber-risk")
+async def predict_cyber_risk(request: CyberRiskRequest):
+    model = get_cyber_model()
+    if not model:
+        raise HTTPException(status_code=500, detail="Elite Neural Core not found")
     
-    if cv_model and request.image_url:
-        try:
-            # We would download the image or use a local test path
-            # For the demo, we use a placeholder image if image_url is just 'live_stream_placeholder'
-            img_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "ai-models", "surveillance_input.jpg")
-            if not os.path.exists(img_path):
-                 # Download the sample if missing
-                 urllib.request.urlretrieve("https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=1470&auto=format&fit=crop", img_path)
-                 
-            # Run inference targeting people, bags, knives
-            TARGET_CLASSES = [0, 24, 26, 28, 43]
-            results = cv_model(img_path, classes=TARGET_CLASSES, conf=0.35)
-            
-            if results:
-                for box in results[0].boxes:
-                    cls_id = int(box.cls[0])
-                    conf = float(box.conf[0])
-                    label = cv_model.names[cls_id]
-                    
-                    x1, y1, x2, y2 = map(int, box.xyxy[0])
-                    detections.append({
-                        "label": label,
-                        "confidence": conf,
-                        "bbox": [x1, y1, int(x2-x1), int(y2-y1)]
-                    })
-                    
-                    if cls_id in [24, 26, 28, 43]: # Suspicious bags/weapons
-                        triggered = True
-                        
-        except Exception as e:
-            print(f"YOLO Inference Error: {e}")
-            pass # Fallthrough to mock if error
-
-    # Run mock if no model or YOLO failed
-    if not detections and not triggered:
-        # Randomly simulate finding a weapon or abandoned bag
-        if random.random() < 0.2: # 20% chance of threat in simulation
-            detections.append({
-                "label": "abandoned_bag",
-                "confidence": 0.89,
-                "bbox": [100, 200, 50, 50]
-            })
-            triggered = True
-            
-        if random.random() < 0.05: # 5% chance of weapon
-            detections.append({
-                "label": "weapon",
-                "confidence": 0.95,
-                "bbox": [120, 220, 30, 10]
-            })
-            triggered = True
-
-    if triggered:
-        asyncio.create_task(ably_handler.publish_alert("nctirs-alerts", "surveillance-threat", {
-            "feed_id": request.feed_id,
-            "detections": [d for d in detections if d['label'] in ['abandoned_bag', 'weapon' or 'knife']],
+    # Prepare features for the ensemble (Must match training order)
+    features = np.array([[
+        request.port_activity,
+        request.failed_logins,
+        request.traffic_entropy,
+        request.payload_size,
+        request.actor_persistence,
+        request.infra_criticality,
+        request.geopolitical_tension,
+        request.is_business_hours
+    ]])
+    
+    impact_score = model.predict(features)[0]
+    attribution = attribute_threat(request, impact_score)
+    
+    risk_level = "LOW"
+    if impact_score > 85: risk_level = "CRITICAL"
+    elif impact_score > 65: risk_level = "HIGH"
+    elif impact_score > 40: risk_level = "MEDIUM"
+    
+    # Emit Tactical Ably Alert
+    if impact_score > 50:
+        asyncio.create_task(ably_handler.publish_alert("nctirs-alerts", "elite-threat-detected", {
+            "score": float(impact_score),
+            "level": risk_level,
+            "attribution": attribution,
+            "tactical_alert": True,
             "timestamp": datetime.now().isoformat()
         }))
-
-    return {
-        "feed_id": request.feed_id,
-        "timestamp": datetime.now().isoformat(),
-        "detected_objects": detections,
-        "alert_triggered": triggered
-    }
-
-@app.post("/analyze/sentiment")
-async def analyze_sentiment(text: str):
-    # Live ML NLP inference via NLTK VADER
-    try:
-        scores = sia.polarity_scores(text)
-        compound = scores['compound']
         
-        sentiment = "NEUTRAL"
-        if compound >= 0.05:
-            sentiment = "POSITIVE"
-        elif compound <= -0.05:
-            sentiment = "NEGATIVE"
-            
-        if sentiment == "NEGATIVE" and compound < -0.4:
-            asyncio.create_task(ably_handler.publish_alert("nctirs-alerts", "sentiment-volatility", {
-                "score": compound,
-                "text": text[:100],
-                "timestamp": datetime.now().isoformat()
-            }))
+    return {
+        "impact_score": float(impact_score),
+        "level": risk_level,
+        "attribution": attribution,
+        "strategic_advice": "Initiate Protocol BLACK-HORIZON" if risk_level == "CRITICAL" else "Monitor for SIGINT pulses",
+        "timestamp": datetime.now().isoformat()
+    }
 
-        return {
-            "text_preview": text[:50],
-            "sentiment": sentiment,
-            "score": compound
-        }
-    except Exception as e:
-        # Fallback in case of serverless init errors
-        return {
-            "text_preview": text[:50],
-            "sentiment": "ERROR",
-            "score": 0.0
-        }
+@app.get("/api/strategic/advise")
+async def get_strategic_advice(threat_id: str):
+    # Simulated Strategic Advisory AI
+    return {
+        "threat_id": threat_id,
+        "containment_strategy": [
+            "Harden Edge Gateways in MOMBASA_EDGE",
+            "Rotate SSL Certificates for NAIROBI_HUB",
+            "Trigger Honeytoken traps on Database clusters"
+        ],
+        "geopolitical_impact": "High - Potential escalation in Cyber-Domain tensions",
+        "advisory_code": "SIGINT-TACTICAL-ALPHA"
+    }
+
+@app.post("/analyze/traffic")
+async def analyze_traffic(request: TrafficRequest):
+    data_array = np.array(request.data_points)
+    anomaly_score = float(np.std(data_array) * (request.packet_count / 1000.0))
+    is_threat = anomaly_score > 0.5
+    
+    return {
+        "pcap_id": request.pcap_id,
+        "anomaly_score": anomaly_score,
+        "is_threat": is_threat,
+        "classification": "NATION_STATE_SIGINT" if is_threat else "NORMAL_TRAFFIC"
+    }

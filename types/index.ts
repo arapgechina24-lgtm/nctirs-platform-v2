@@ -11,9 +11,9 @@
 // ============================================================
 
 export type ThreatLevel = 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
-export type IncidentType = 'TERRORISM' | 'ORGANIZED_CRIME' | 'CYBER_ATTACK' | 'VIOLENT_CRIME' | 'TRAFFICKING' | 'RADICALIZATION' | 'BORDER_SECURITY' | 'PUBLIC_DISORDER';
-export type IncidentStatus = 'ACTIVE' | 'INVESTIGATING' | 'RESOLVED' | 'MONITORING';
-export type Region = 'NAIROBI' | 'MOMBASA' | 'KISUMU' | 'NAKURU' | 'ELDORET' | 'TURKANA' | 'GARISSA' | 'MANDERA';
+export type IncidentType = 'APT' | 'DDoS' | 'RANSOMWARE' | 'PHISHING' | 'ZERO_DAY' | 'DATA_EXFIL';
+export type IncidentStatus = 'DETECTED' | 'ANALYZING' | 'CONTAINED' | 'NEUTRALIZED';
+export type Region = 'GLOBAL' | 'NAIROBI_HUB' | 'MOMBASA_EDGE' | 'CLOUD_INSTANCE' | 'HYBRID_INFRA';
 
 export interface SecurityIncident {
     id: string;
@@ -23,30 +23,30 @@ export interface SecurityIncident {
     location: {
         name: string;
         region: Region;
-        coordinates: [number, number];
+        coordinates: [number, number]; // Source coordinates (e.g. Attacker IP geo)
+    };
+    networkContext?: {
+        sourceIp: string;
+        targetIp: string;
+        protocol: 'TCP' | 'UDP' | 'HTTP' | 'HTTPS' | 'SSH' | 'FTP';
+        attackVector: string;
+        asn?: string;
     };
     threatLevel: ThreatLevel;
     status: IncidentStatus;
     timestamp: Date;
-    affectedArea: number;
-    casualties?: number;
-    suspects?: number;
+    affectedSystems: number;
     aiConfidence: number;
     sources: string[];
 }
 
-export interface CrimePrediction {
+export interface CyberRiskPrediction {
     id: string;
-    location: {
-        name: string;
-        region: Region;
-        coordinates: [number, number];
-    };
-    crimeTypes: IncidentType[];
-    probability: number;
-    timeWindow: string;
+    targetSystem: string;
+    riskProbability: number; // 0-100
     riskFactors: string[];
-    recommendedActions: string[];
+    predictedVector: IncidentType;
+    recommendedMitigation: string[];
 }
 
 export interface SurveillanceFeed {
@@ -213,31 +213,38 @@ export interface AutomatedResponse {
 // ============================================================
 
 export interface PerceptionLayerStatus {
-    iotSensorsActive: number;
-    iotSensorsTotal: number;
-    dronesActive: number;
-    dronesTotal: number;
-    networkSniffersActive: number;
-    cctvFeeds: number;
+    sensorCount: number;
+    activeSensors: number;
     dataIngestionRate: number;
+    anomalyDetectionRate: number;
+    lastUpdate: Date;
+    status: 'OPERATIONAL' | 'DEGRADED';
+    // Backwards compat for old components if any
+    iotSensorsActive?: number;
+    networkSniffersActive?: number;
 }
 
 export interface CognitionLayerStatus {
-    mlModelsActive: number;
-    aptSignaturesLoaded: number;
-    threatClassificationsToday: number;
-    averageProcessingTimeMs: number;
-    falsePositiveRate: number;
-    modelAccuracy: number;
+    modelCount: number;
+    activeModels: number;
+    inferenceRate: number;
+    threatIntelligenceFeeds: number;
+    lastUpdate: Date;
+    status: 'OPTIMAL' | 'WARNING';
+    // Backwards compat
+    mlModelsActive?: number;
+    modelAccuracy?: number;
 }
 
 export interface IntegrityLayerStatus {
-    blockchainHeight: number;
-    lastBlockHash: string;
-    pendingTransactions: number;
-    nodesOnline: number;
-    dataProtectionCompliant: boolean;
-    lastAuditDate: Date;
+    policyCount: number;
+    enforcementPoints: number;
+    complianceScore: number;
+    incidentResponseAutomations: number;
+    lastUpdate: Date;
+    status: 'SECURE' | 'CRITICAL';
+    // Backwards compat
+    blockchainHeight?: number;
 }
 
 // ============================================================
