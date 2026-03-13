@@ -1,5 +1,6 @@
 // Incidents API: CRUD operations (with RBAC + rate limiting)
 import { NextRequest, NextResponse } from 'next/server'
+export const dynamic = 'force-dynamic'
 import { prisma } from '@/lib/db'
 import { createHash } from 'crypto'
 import { requireAuth, requireRole } from '@/lib/rbac'
