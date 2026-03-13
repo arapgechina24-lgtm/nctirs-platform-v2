@@ -79,6 +79,9 @@ def calculate_risk(lat: float, lng: float, time_of_day: str = None) -> int:
     
     return min(base_score, 100)
 
+from api.utils.ably_handler import ably_handler
+import asyncio
+
 # --- Endpoints ---
 
 @app.get("/")
@@ -86,7 +89,7 @@ def health_check():
     return {"status": "operational", "service": "NSSPIP AI Engine (Serverless)"}
 
 @app.post("/predict/risk-score", response_model=RiskResponse)
-def get_risk_score(request: RiskRequest):
+async def get_risk_score(request: RiskRequest):
     score = calculate_risk(request.latitude, request.longitude, request.time_of_day)
     
     level = "LOW"
@@ -97,6 +100,13 @@ def get_risk_score(request: RiskRequest):
     factors = []
     if level in ["HIGH", "CRITICAL"]:
         factors = ["Historical crime density high", "Poor lighting reported", "Proximity to high-value target"]
+        # Trigger Ably Alert for High/Critical Risk
+        asyncio.create_task(ably_handler.publish_alert("nctirs-alerts", "risk-high", {
+            "score": score,
+            "level": level,
+            "location": {"lat": request.latitude, "lng": request.longitude},
+            "timestamp": datetime.now().isoformat()
+        }))
     elif level == "MEDIUM":
         factors = ["Recent minor incidents"]
     
@@ -124,7 +134,7 @@ except ImportError:
     print("⚠️ Ultralytics not found. CV endpoint will run in mock Serverless degrade mode.")
 
 @app.post("/analyze/surveillance", response_model=SurveillanceResponse)
-def analyze_surveillance(request: SurveillanceRequest):
+async def analyze_surveillance(request: SurveillanceRequest):
     detections = []
     triggered = False
     
@@ -180,6 +190,13 @@ def analyze_surveillance(request: SurveillanceRequest):
             })
             triggered = True
 
+    if triggered:
+        asyncio.create_task(ably_handler.publish_alert("nctirs-alerts", "surveillance-threat", {
+            "feed_id": request.feed_id,
+            "detections": [d for d in detections if d['label'] in ['abandoned_bag', 'weapon' or 'knife']],
+            "timestamp": datetime.now().isoformat()
+        }))
+
     return {
         "feed_id": request.feed_id,
         "timestamp": datetime.now().isoformat(),
@@ -188,7 +205,7 @@ def analyze_surveillance(request: SurveillanceRequest):
     }
 
 @app.post("/analyze/sentiment")
-def analyze_sentiment(text: str):
+async def analyze_sentiment(text: str):
     # Live ML NLP inference via NLTK VADER
     try:
         scores = sia.polarity_scores(text)
@@ -200,6 +217,13 @@ def analyze_sentiment(text: str):
         elif compound <= -0.05:
             sentiment = "NEGATIVE"
             
+        if sentiment == "NEGATIVE" and compound < -0.4:
+            asyncio.create_task(ably_handler.publish_alert("nctirs-alerts", "sentiment-volatility", {
+                "score": compound,
+                "text": text[:100],
+                "timestamp": datetime.now().isoformat()
+            }))
+
         return {
             "text_preview": text[:50],
             "sentiment": sentiment,

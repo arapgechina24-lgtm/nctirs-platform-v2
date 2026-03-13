@@ -19,31 +19,53 @@ num_samples = 10000
 lat_min, lat_max = -1.35, -1.20
 lng_min, lng_max = 36.70, 36.95
 
+# Define Realistic Nairobi Hotspots with unique risk profiles
+# CBD: High density, higher petty crime, highest surveillance
+# Kibera/Mathare: High density, varied risk modifiers
+# Westlands: High-value targets, specific transit risks
+# Eastleigh: Business hub, specific transit/congestion risk
+HOTSPOTS = [
+    {"name": "CBD", "lat": -1.2833, "lng": 36.8167, "base_risk": 45, "radius": 0.01},
+    {"name": "Kibera", "lat": -1.3133, "lng": 36.7833, "base_risk": 55, "radius": 0.015},
+    {"name": "Mathare", "lat": -1.2583, "lng": 36.8583, "base_risk": 58, "radius": 0.012},
+    {"name": "Westlands", "lat": -1.2633, "lng": 36.8033, "base_risk": 35, "radius": 0.01},
+    {"name": "Eastleigh", "lat": -1.2750, "lng": 36.8450, "base_risk": 50, "radius": 0.013}
+]
+
 # Feature engineering
 lats = np.random.uniform(lat_min, lat_max, num_samples)
 lngs = np.random.uniform(lng_min, lng_max, num_samples)
 
-# Simulate "Hotspots" (CBD / High Crime density areas)
-# CBD Approx: -1.282, 36.821
-cbd_lat, cbd_lng = -1.282, 36.821
-cbd_dist = np.sqrt((lats - cbd_lat)**2 + (lngs - cbd_lng)**2)
-
-# Time of day mapping
-# 0: Day, 1: Night
+# Time of day mapping (0: Day, 1: Night)
 time_of_day_encoded = np.random.choice([0, 1], num_samples, p=[0.6, 0.4])
 
-# Formulate base risk score (0-100)
-# Proximity to CBD increases risk. Night increases risk.
-base_risk = np.random.normal(30, 10, num_samples)
+# Formulate realistic risk scores
+risk_scores = np.zeros(num_samples)
 
-# Hotspot proximity multiplier (closer = higher score, max ~ +50)
-proximity_penalty = np.clip(50 - (cbd_dist * 500), 0, 50)
+for i in range(num_samples):
+    current_lat, current_lng = lats[i], lngs[i]
+    is_night = time_of_day_encoded[i]
+    
+    # Base baseline
+    score = np.random.normal(20, 5)
+    
+    # Calculate proximity to each hotspot
+    for spot in HOTSPOTS:
+        dist = np.sqrt((current_lat - spot["lat"])**2 + (current_lng - spot["lng"])**2)
+        if dist < spot["radius"] * 3: # Influence zone
+            # Gaussian-like risk falloff
+            influence = np.exp(-(dist**2) / (2 * (spot["radius"]**2)))
+            score += spot["base_risk"] * influence
+    
+    # Night penalty (escalates risk in hotspots)
+    if is_night:
+        score += 15
+        # Night-time risk is higher in the CBD and Kibera specifically
+        cbd_dist = np.sqrt((current_lat - (-1.2833))**2 + (current_lng - 36.8167)**2)
+        if cbd_dist < 0.01:
+            score += 20
 
-# Night penalty (+20)
-time_penalty = time_of_day_encoded * 20
-
-# Final formulated labels
-risk_scores = np.clip(base_risk + proximity_penalty + time_penalty, 0, 100)
+    risk_scores[i] = np.clip(score, 0, 100)
 
 df = pd.DataFrame({
     'latitude': lats,

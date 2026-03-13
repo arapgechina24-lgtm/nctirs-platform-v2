@@ -34,6 +34,9 @@ import KenyaContextPanel from "@/components/nctirs/compliance/KenyaContextPanel"
 import MultiplayerSession from "@/components/nctirs/shared/MultiplayerSession"
 import DemoModeController from "@/components/nctirs/shared/DemoModeController"
 import { VoiceCommandPanel } from "@/components/nctirs/shared/VoiceCommandPanel"
+// Ably Real-time
+import { getAblyClient } from "@/lib/nctirs/ably"
+import { toast } from "sonner"
 // Analytics tracking
 import { trackPageView, trackAction, trackPerformance } from "@/lib/nctirs/analytics"
 // API Client for real data
@@ -204,6 +207,62 @@ export default function Home() {
             trackAction('view_change', { view: currentView })
         }
     }, [currentView, mounted])
+
+    // ABLY REAL-TIME AI INTEGRATION
+    useEffect(() => {
+        if (!mounted) return;
+
+        const ably = getAblyClient();
+        if (!ably) return;
+
+        const channel = ably.channels.get('nctirs-alerts');
+
+        channel.subscribe((message) => {
+            console.log("实时 AI 警报收到:", message.name, message.data);
+            
+            if (message.name === 'surveillance-threat') {
+                toast.error("🚨 CRITICAL AI ALERT", {
+                    description: `Suspicious activity detected on feed ${message.data.feed_id}: ${message.data.detections.map((d: any) => d.label).join(', ')}`,
+                    duration: 10000,
+                });
+                
+                // Add to incidents local state
+                setData(prev => {
+                    if (!prev) return prev;
+                    const newIncident: SecurityIncident = {
+                        id: `AI-${Date.now()}`,
+                        title: "AI DETECTED THREAT",
+                        description: `Automated vision detection: ${message.data.detections[0].label}`,
+                        type: "SURVEILLANCE",
+                        threatLevel: "CRITICAL",
+                        status: "OPEN",
+                        timestamp: new Date().toISOString(),
+                        location: { name: `Feed ${message.data.feed_id}`, region: "NAIROBI", coordinates: [-1.2833, 36.8167] }, // Center for now
+                        tags: ["AI_VISION", "REALTIME_ALERT"]
+                    };
+                    return { ...prev, incidents: [newIncident, ...prev.incidents] };
+                });
+            }
+
+            if (message.name === 'risk-high') {
+                toast.warning("⚠️ ELEVATED REGIONAL RISK", {
+                    description: `AI Risk Model flags ${message.data.level} risk at ${message.data.location.lat}, ${message.data.location.lng}`,
+                });
+                
+                // Update predictions or add marker logic here
+            }
+
+            if (message.name === 'sentiment-volatility') {
+                toast.info("📡 INTEL SHIFT", {
+                    description: `NLP Engine detects high negative sentiment volatility: ${message.data.score.toFixed(2)}`,
+                });
+            }
+        });
+
+        return () => {
+            channel.unsubscribe();
+        };
+    }, [mounted]);
 
     useEffect(() => {
         // Async function to load data from API + mock generators
