@@ -326,7 +326,6 @@ export default function Home() {
                 const threatAnalytics = generateThreatAnalytics();
                 const timeSeriesData = generateTimeSeriesData(30);
                 const dataLakeSources = generateDataLakeSources();
-                const cyberThreats = generateCyberThreats(20);
 
                 // NCTIRS static/fallback data for winning pillars
                 const perceptionLayer = { status: 'OPTIMAL', score: 98, lastUpdate: new Date(), latency: 12, precision: 0.99 };
