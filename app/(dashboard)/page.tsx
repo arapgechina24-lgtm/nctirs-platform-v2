@@ -221,7 +221,7 @@ export default function Home() {
             console.log("Cyber AI Pulse Received:", message.name, message.data);
             
             if (message.name === 'elite-threat-detected') {
-                toast.critical("🛑 NATION-STATE THREAT DETECTED", {
+                toast.error("🛑 NATION-STATE THREAT DETECTED", {
                     description: `Attribution: ${message.data.attribution}. Impact Score: ${message.data.score.toFixed(1)}. Strategic containment initiated.`,
                     duration: 10000,
                 });
@@ -280,7 +280,10 @@ export default function Home() {
                 try {
                     const res = await fetch('/api/ai/predict/cyber-risk', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'X-NCTIRS-SECRET': 'SHADOW-CORE-ALPHA-99'
+                        },
                         body: JSON.stringify({
                             port_activity: 0.85,
                             failed_logins: 0.6,
@@ -309,7 +312,9 @@ export default function Home() {
 
                             // Fetch strategic advice if high impact
                             if (pyData.impact_score > 60) {
-                                const adviseRes = await fetch(`/api/ai/strategic/advise?threat_id=CORE-${Date.now()}`);
+                                const adviseRes = await fetch(`/api/ai/strategic/advise?threat_id=CORE-${Date.now()}`, {
+                                    headers: { 'X-NCTIRS-SECRET': 'SHADOW-CORE-ALPHA-99' }
+                                });
                                 if (adviseRes.ok) {
                                     const advice = await adviseRes.json();
                                     setStrategicAdvice(advice);
@@ -317,7 +322,7 @@ export default function Home() {
                             }
                         }
                     }
-                } catch {
+                } catch (e) {
                     console.log("Cyber AI backend not reachable for live predictions.");
                 }
 
@@ -331,10 +336,39 @@ export default function Home() {
                 const perceptionLayer = { status: 'OPTIMAL', score: 98, lastUpdate: new Date(), latency: 12, precision: 0.99 };
                 const cognitionLayer = { status: 'OPTIMAL', reasoningUnits: 154, throughput: 2400, modelVersion: 'NCTIRS-COG-v4' };
                 const integrityLayer = { status: 'SECURE', encryptionLevel: 'AES-GCM-256', blockchainSync: true, authAnomalies: 0 };
-                const adversarialMetrics = { robustness: 0.95, evasionRate: 0.02, detectionDrift: 0.01, attackAttempts: 4500 };
+                const adversarialMetrics: AdversarialMetrics = { 
+                    attacksDetected: 4410,
+                    attacksBlocked: 4395,
+                    evasionAttempts: 120,
+                    poisoningAttempts: 15,
+                    modelExtractionAttempts: 5,
+                    defenseStatus: {
+                        gradientMasking: 'ACTIVE',
+                        noiseInjection: 'ACTIVE',
+                        adversarialTraining: 'ACTIVE',
+                        ensembleVoting: 'ACTIVE',
+                        certifiedRobustness: 'ACTIVE'
+                    },
+                    redTeamCycle: {
+                        lastRun: new Date(),
+                        attacksGenerated: 12000,
+                        failuresAnalyzed: 45,
+                        modelsRetrained: 3
+                    },
+                    hardeningProgress: 0.98
+                };
                 const federatedStatus = { nodesActive: 24, syncStatus: 'STABLE', globalRound: 452 };
-                const xaiExplanations = [];
-                const sovereignAIStatus = { localExecution: true, offlineMode: false, dataSovereignty: 1.0 };
+                const xaiExplanations: XAIExplanation[] = [];
+                const sovereignAIStatus: SovereignAIStatus = { 
+                    llms: [],
+                    edgeNodes: [],
+                    foreignAPICallsToday: 12,
+                    dataEgressToday: 0.5,
+                    onPremisePercentage: 0.99,
+                    sovereignCloudProvider: 'NCTIRS-CORE-DC',
+                    lastSecurityAudit: new Date(),
+                    dpaCompliant: true
+                };
 
                 setData({
                     incidents,
@@ -693,8 +727,8 @@ export default function Home() {
                                         <div className="space-y-3">
                                             {data.predictions.slice(0, 5).map((p, i) => (
                                                 <div key={i} className="flex justify-between items-center text-xs border-b border-blue-900/20 pb-2">
-                                                    <span className="text-gray-400 truncate mr-2">{p.crimeTypes.join(', ')}</span>
-                                                    <span className="text-blue-400 font-mono">{(p.probability * 100).toFixed(1)}%</span>
+                                                    <span className="text-gray-400 truncate mr-2">{p.predictedVector}</span>
+                                                    <span className="text-blue-400 font-mono">{p.riskProbability.toFixed(1)}%</span>
                                                 </div>
                                             ))}
                                         </div>

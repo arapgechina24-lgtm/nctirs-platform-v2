@@ -2,7 +2,7 @@ import os
 import asyncio
 from typing import List, Optional
 from datetime import datetime
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Header, Depends
 from pydantic import BaseModel
 import numpy as np
 import joblib
@@ -10,6 +10,14 @@ from textblob import TextBlob
 from api.utils.ably_handler import ably_handler
 
 app = FastAPI()
+
+# --- Shield-Core Security Protocols ---
+NCTIRS_INTERNAL_SECRET = os.getenv("NCTIRS_INTERNAL_SECRET", "SHADOW-CORE-ALPHA-99")
+
+async def verify_nctirs_secret(x_nctirs_secret: str = Header(None)):
+    if x_nctirs_secret != NCTIRS_INTERNAL_SECRET:
+        raise HTTPException(status_code=403, detail="SHIELD-CORE: Access Denied. Invalid Internal Secret.")
+    return x_nctirs_secret
 
 # --- Elite Cyber Security AI Engine (NCTIRS v3.0) ---
 
@@ -68,7 +76,7 @@ def read_root():
     }
 
 @app.post("/predict/cyber-risk")
-async def predict_cyber_risk(request: CyberRiskRequest):
+async def predict_cyber_risk(request: CyberRiskRequest, secret: str = Depends(verify_nctirs_secret)):
     model = get_cyber_model()
     if not model:
         raise HTTPException(status_code=500, detail="Elite Neural Core not found")
@@ -112,7 +120,7 @@ async def predict_cyber_risk(request: CyberRiskRequest):
     }
 
 @app.get("/api/strategic/advise")
-async def get_strategic_advice(threat_id: str):
+async def get_strategic_advice(threat_id: str, secret: str = Depends(verify_nctirs_secret)):
     # Simulated Strategic Advisory AI
     return {
         "threat_id": threat_id,
@@ -126,7 +134,7 @@ async def get_strategic_advice(threat_id: str):
     }
 
 @app.post("/analyze/traffic")
-async def analyze_traffic(request: TrafficRequest):
+async def analyze_traffic(request: TrafficRequest, secret: str = Depends(verify_nctirs_secret)):
     data_array = np.array(request.data_points)
     anomaly_score = float(np.std(data_array) * (request.packet_count / 1000.0))
     is_threat = anomaly_score > 0.5
