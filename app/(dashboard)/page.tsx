@@ -278,7 +278,7 @@ export default function Home() {
 
                 // Fetch real AI prediction from python backend
                 try {
-                    const res = await fetch('http://localhost:8000/api/predict/cyber-risk', {
+                    const res = await fetch('/api/ai/predict/cyber-risk', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -309,7 +309,7 @@ export default function Home() {
 
                             // Fetch strategic advice if high impact
                             if (pyData.impact_score > 60) {
-                                const adviseRes = await fetch(`http://localhost:8000/api/strategic/advise?threat_id=CORE-${Date.now()}`);
+                                const adviseRes = await fetch(`/api/ai/strategic/advise?threat_id=CORE-${Date.now()}`);
                                 if (adviseRes.ok) {
                                     const advice = await adviseRes.json();
                                     setStrategicAdvice(advice);
