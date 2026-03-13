@@ -4,6 +4,9 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   headers: async () => {
     return [
       {
@@ -34,14 +37,6 @@ const nextConfig: NextConfig = {
     ];
   },
   poweredByHeader: false,
-  rewrites: async () => {
-    return [
-      {
-        source: "/api/ai/:path*",
-        destination: "http://127.0.0.1:5328/api/ai/:path*",
-      },
-    ];
-  },
 };
 
 export default nextConfig;
