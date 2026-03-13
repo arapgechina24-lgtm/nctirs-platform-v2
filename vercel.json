@@ -1,8 +1,0 @@
-{
-    "rewrites": [
-        {
-            "source": "/api/ai/:path*",
-            "destination": "/ai-engine/index.py"
-        }
-    ]
-}
