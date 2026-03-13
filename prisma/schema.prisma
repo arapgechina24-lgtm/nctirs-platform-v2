@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 // NextAuth Models
@@ -15,15 +15,22 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
-  encryptedDetails String? @db.Text // Encrypted PII (Phone, Home Address, etc.)
+  encryptedDetails String?
+
   role          UserRole  @default(OFFICER)
+  agency        String?
+  department    String?
+  clearanceLevel Int      @default(1)
+  isActive      Boolean   @default(true)
+  lastLogin     DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
   accounts      Account[]
   sessions      Session[]
-  incidents     Incident[]
+  incidents     Incident[] @relation("ReportedIncidents")
   intelligence  Intelligence[]
+  auditLogs     AuditLog[]
 }
 
 enum UserRole {
@@ -39,12 +46,15 @@ model Account {
   type               String
   provider           String
   providerAccountId  String
-  refresh_token      String? @db.Text
-  access_token       String? @db.Text
+  refresh_token      String?
+
+  access_token       String?
+
   expires_at         Int?
   token_type         String?
   scope              String?
-  id_token           String? @db.Text
+  id_token           String?
+
   session_state      String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -77,21 +87,27 @@ model Incident {
   type        String         @default("GENERAL")
   priority    Priority       @default(MEDIUM)
   status      IncidentStatus @default(OPEN)
+  severity    String         @default("MEDIUM") // Standardize with 'severity' for some UI parts
   location    String?
   latitude    Float?
   longitude   Float?
   county      String?
   targetAsset String?
   attackVector String?
-  indicators  String?        @db.Text
+  indicators  String?       
+
   
-  encryptedDetails String? @db.Text // JSON string of encrypted fields
+  encryptedDetails String?
+
   reportedBy  String?
-  reporter    User?          @relation(fields: [reportedBy], references: [id])
+  reporter    User?          @relation("ReportedIncidents", fields: [reportedBy], references: [id])
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
   detectedAt  DateTime       @default(now())
   resolvedAt  DateTime?
+
+  threats     Threat[]
+  responses   Response[]
 }
 
 model Threat {
@@ -104,17 +120,46 @@ model Threat {
   confidence  Float    @default(0.0)
   mitreId     String?
   description String?
-  indicators  String?  @db.Text
+  indicators  String? 
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  incidents   Incident[]
+}
+
+model Response {
+  id          String   @id @default(cuid())
+  type        String
+  status      String
+  incidentId  String
+  incident    Incident @relation(fields: [incidentId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
 
+model AuditLog {
+  id          String   @id @default(cuid())
+  action      String
+  resource    String
+  resourceId  String?
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id])
+  details     String? 
+
+  ipAddress   String?
+  userAgent   String?
+  hash        String   @unique
+  previousHash String?
+  createdAt   DateTime @default(now())
+}
 
 enum IncidentStatus {
   OPEN
   IN_PROGRESS
   RESOLVED
   CLOSED
+  ACTIVE
 }
 
 enum Priority {
@@ -141,4 +186,16 @@ enum Classification {
   CONFIDENTIAL
   SECRET
   TOP_SECRET
+}
+
+model SurveillanceFeed {
+  id          String   @id @default(cuid())
+  location    String
+  type        String
+  status      String   @default("ACTIVE")
+  latitude    Float?
+  longitude   Float?
+  streamUrl   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
