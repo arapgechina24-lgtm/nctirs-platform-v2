@@ -370,37 +370,69 @@ export default function Home() {
                     dpaCompliant: true
                 };
 
+                if (incidents && Array.isArray(incidents)) {
+                    setData({
+                        incidents,
+                        predictions,
+                        surveillanceFeeds,
+                        communityReports,
+                        emergencyResponses: [],
+                        threatAnalytics,
+                        timeSeriesData,
+                        cyberThreats,
+                        dataLakeSources,
+                        blockchainLedger: [],
+                        coordinatedAttacks: [],
+                        automatedResponses: [],
+                        perceptionLayer: perceptionLayer as any,
+                        cognitionLayer: cognitionLayer as any,
+                        integrityLayer: integrityLayer as any,
+                        adversarialMetrics,
+                        federatedStatus: federatedStatus as any,
+                        xaiExplanations,
+                        sovereignAIStatus,
+                        kenyaWeather: getCurrentNairobiWeather(),
+                        kenyaTraffic: [],
+                        mpesaTransactions: [],
+                        borderLogs: [],
+                        wildlife: [],
+                        sentiment: [],
+                        cyberTraces: []
+                    })
+                } else {
+                    throw new Error('Invalid incidents data received');
+                }
+            } catch (error) {
+                console.error('Critical Error loading dashboard data:', error);
+                // Fallback to minimal mock data if critical failure
                 setData({
-                    incidents,
-                    predictions,
-                    surveillanceFeeds,
-                    communityReports,
+                    incidents: generateMockIncidents(30),
+                    predictions: generateCyberRiskPredictions(15),
+                    surveillanceFeeds: generateSurveillanceFeeds(40),
+                    communityReports: generateCommunityReports(25),
                     emergencyResponses: [],
-                    threatAnalytics,
-                    timeSeriesData,
-                    cyberThreats,
-                    dataLakeSources,
+                    threatAnalytics: generateThreatAnalytics(),
+                    timeSeriesData: generateTimeSeriesData(30),
+                    cyberThreats: generateCyberThreats(20),
+                    dataLakeSources: generateDataLakeSources(),
                     blockchainLedger: [],
                     coordinatedAttacks: [],
                     automatedResponses: [],
-                    perceptionLayer: perceptionLayer as any,
-                    cognitionLayer: cognitionLayer as any,
-                    integrityLayer: integrityLayer as any,
-                    adversarialMetrics,
-                    federatedStatus: federatedStatus as any,
-                    xaiExplanations,
-                    sovereignAIStatus,
+                    perceptionLayer: { status: 'DEGRADED', score: 0, lastUpdate: new Date(), latency: 0, precision: 0 } as any,
+                    cognitionLayer: { status: 'DEGRADED', reasoningUnits: 0, throughput: 0, modelVersion: 'FALLBACK' } as any,
+                    integrityLayer: { status: 'ALERT', encryptionLevel: 'NONE', blockchainSync: false, authAnomalies: 0 } as any,
+                    adversarialMetrics: { attacksDetected: 0, attacksBlocked: 0, evasionAttempts: 0, poisoningAttempts: 0, modelExtractionAttempts: 0, defenseStatus: {}, redTeamCycle: {}, hardeningProgress: 0 } as any,
+                    federatedStatus: { nodesActive: 0, syncStatus: 'DISCONNECTED', globalRound: 0 } as any,
+                    xaiExplanations: [],
+                    sovereignAIStatus: { llms: [], edgeNodes: [], foreignAPICallsToday: 0, dataEgressToday: 0, onPremisePercentage: 0, sovereignCloudProvider: 'OFFLINE', lastSecurityAudit: new Date(), dpaCompliant: false },
                     kenyaWeather: getCurrentNairobiWeather(),
-                    kenyaTraffic: [],
-                    mpesaTransactions: [],
-                    borderLogs: [],
-                    wildlife: [],
-                    sentiment: [],
-                    cyberTraces: []
-                })
-            } catch (error) {
-                console.error('Critical Error loading dashboard data:', error);
-                // Fallback to entirely mock data if critical failure (though individual fetches should handle this)
+                    kenyaTraffic: generateNairobiTraffic(30),
+                    mpesaTransactions: generateMpesaData(10),
+                    borderLogs: generateBorderLogs(),
+                    wildlife: generateWildlifeData(),
+                    sentiment: generateSocialSentiment(),
+                    cyberTraces: generateCyberAttribution()
+                });
             } finally {
                 setMounted(true)
                 // Track render performance

@@ -1,6 +1,7 @@
 import { auth } from "@/auth"
+import { NextRequest } from "next/server"
 
-export default auth((req) => {
+export default auth(async function proxy(req) {
     const isLoggedIn = !!req.auth;
     const isApiAuthRoute = req.nextUrl.pathname.startsWith('/api/auth');
     const isPublicRoute = req.nextUrl.pathname === '/login';
