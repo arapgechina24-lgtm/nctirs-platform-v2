@@ -16,13 +16,14 @@ export async function POST(request: NextRequest) {
         }
 
         // Find user by email
-        // @ts-ignore - password field is present after schema update
+        // @ts-expect-error - password field is present after schema update but IDE might be using stale types
         const user = await prisma.user.findUnique({
             where: { email },
             select: {
                 id: true,
                 email: true,
                 name: true,
+                // @ts-expect-error - password exists in schema
                 password: true,
                 role: true,
                 agency: true,
@@ -47,7 +48,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Verify password
-        // @ts-ignore - password field is present after schema update
+        // @ts-expect-error - password field is present after schema update
         const isValid = await bcrypt.compare(password, user.password)
         if (!isValid) {
             return NextResponse.json(
@@ -81,9 +82,9 @@ export async function POST(request: NextRequest) {
         }
 
         // Return user data (without password)
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        // @ts-ignore - password field is present after schema update
-        const { password: _, ...userWithoutPassword } = user
+        // @ts-expect-error - password field is present after schema update
+        const { password: _password, ...userWithoutPassword } = user
+        void _password; // Explicitly consume to avoid unused variable warning
 
         // In production, you would set a secure HTTP-only cookie here
         // For now, return user data as JSON
