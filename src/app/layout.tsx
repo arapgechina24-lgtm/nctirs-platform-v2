@@ -9,8 +9,8 @@ import Providers from '@/components/Providers';
 const outfit = Outfit({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'USALAMA APP',
-  description: 'AI-powered field citizen incident reporting platform',
+  title: 'NCTIRS — National Cyber Threat Intelligence & Response System',
+  description: 'AI-powered cyber threat intelligence, real-time surveillance, and automated incident response platform for national security operations.',
 };
 
 export default function RootLayout({

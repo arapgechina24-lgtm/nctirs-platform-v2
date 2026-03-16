@@ -4,7 +4,7 @@ import { NextRequest } from "next/server"
 export const proxy = auth(async function proxy(req: NextRequest & { auth?: any }) {
     const isLoggedIn = !!req.auth;
     const isApiAuthRoute = req.nextUrl.pathname.startsWith('/api/auth');
-    const isPublicRoute = ['/login', '/register', '/api/auth/register'].includes(req.nextUrl.pathname);
+    const isPublicRoute = ['/login', '/register', '/api/auth/register'].includes(req.nextUrl.pathname) || req.nextUrl.pathname.startsWith('/api/ai/');
 
     if (isApiAuthRoute) return;
 

@@ -317,3 +317,96 @@ export function generateFallbackIncidentAnalysis(input: IncidentAnalysisInput): 
         source: 'fallback',
     };
 }
+
+// ===== IOC Extraction Engine =====
+
+export interface ExtractedIOCs {
+    ipv4: string[];
+    ipv6: string[];
+    domains: string[];
+    urls: string[];
+    emails: string[];
+    md5Hashes: string[];
+    sha1Hashes: string[];
+    sha256Hashes: string[];
+    cveIds: string[];
+}
+
+/**
+ * Extract Indicators of Compromise (IOCs) from raw text.
+ * Supports: IPv4, IPv6, domains, URLs, emails, MD5/SHA1/SHA256 hashes, CVE IDs.
+ */
+export function extractIOCs(text: string): ExtractedIOCs {
+    const ipv4Regex = /\b(?:(?:25[0-5]|2[0-4]\d|[01]?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d?\d)\b/g;
+    const ipv6Regex = /\b(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}\b/g;
+    const domainRegex = /\b(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+(?:com|net|org|gov|edu|ke|io|co|mil|info)\b/g;
+    const urlRegex = /https?:\/\/[^\s<>"']+/g;
+    const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g;
+    const md5Regex = /\b[a-fA-F0-9]{32}\b/g;
+    const sha1Regex = /\b[a-fA-F0-9]{40}\b/g;
+    const sha256Regex = /\b[a-fA-F0-9]{64}\b/g;
+    const cveRegex = /CVE-\d{4}-\d{4,}/g;
+
+    return {
+        ipv4: [...new Set(text.match(ipv4Regex) || [])],
+        ipv6: [...new Set(text.match(ipv6Regex) || [])],
+        domains: [...new Set(text.match(domainRegex) || [])],
+        urls: [...new Set(text.match(urlRegex) || [])],
+        emails: [...new Set(text.match(emailRegex) || [])],
+        md5Hashes: [...new Set(text.match(md5Regex) || [])],
+        sha1Hashes: [...new Set(text.match(sha1Regex) || [])],
+        sha256Hashes: [...new Set(text.match(sha256Regex) || [])],
+        cveIds: [...new Set(text.match(cveRegex) || [])],
+    };
+}
+
+// ===== CVE Correlation Engine =====
+
+interface CVEInfo {
+    id: string;
+    severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
+    description: string;
+    affectedSystems: string[];
+    kenyaRelevance: string;
+}
+
+const KNOWN_CVE_DB: Record<string, CVEInfo> = {
+    'CVE-2024-3400': {
+        id: 'CVE-2024-3400',
+        severity: 'CRITICAL',
+        description: 'Palo Alto Networks PAN-OS command injection vulnerability enabling unauthenticated RCE.',
+        affectedSystems: ['PAN-OS firewalls', 'GlobalProtect VPN'],
+        kenyaRelevance: 'Critical — Palo Alto firewalls protect KPLC grid, CBK, and eCitizen perimeters.',
+    },
+    'CVE-2023-44228': {
+        id: 'CVE-2023-44228',
+        severity: 'CRITICAL',
+        description: 'Apache Log4j2 JNDI injection vulnerability (Log4Shell).',
+        affectedSystems: ['Java applications', 'Apache Solr', 'Elasticsearch'],
+        kenyaRelevance: 'High — Java-based banking, M-Pesa middleware, and eCitizen backend systems.',
+    },
+    'CVE-2024-21887': {
+        id: 'CVE-2024-21887',
+        severity: 'CRITICAL',
+        description: 'Ivanti Connect Secure command injection vulnerability.',
+        affectedSystems: ['Ivanti Connect Secure', 'Ivanti Policy Secure'],
+        kenyaRelevance: 'High — Government VPN infrastructure used by multiple agencies.',
+    },
+    'CVE-2023-36884': {
+        id: 'CVE-2023-36884',
+        severity: 'HIGH',
+        description: 'Microsoft Office/Windows HTML RCE vulnerability exploited via document phishing.',
+        affectedSystems: ['Microsoft Office', 'Windows OS'],
+        kenyaRelevance: 'High — Government ministries heavily reliant on Microsoft Office suite.',
+    },
+};
+
+/**
+ * Correlate extracted CVE IDs with known vulnerability intelligence.
+ * Returns enriched CVE data with Kenya-specific impact assessment.
+ */
+export function correlateCVEs(cveIds: string[]): CVEInfo[] {
+    return cveIds
+        .map(id => KNOWN_CVE_DB[id])
+        .filter((info): info is CVEInfo => !!info);
+}

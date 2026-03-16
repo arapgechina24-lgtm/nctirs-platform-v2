@@ -8,7 +8,7 @@ import {
     PerceptionLayerStatus,
     CognitionLayerStatus,
     IntegrityLayerStatus
-} from "@/lib/nctirs/mockData"
+} from "@/types"
 
 interface SystemArchitectureProps {
     perception: PerceptionLayerStatus;
@@ -140,7 +140,7 @@ export function SystemArchitecture({ perception, cognition, integrity }: SystemA
                         <div className="pt-2 border-t border-purple-900/30">
                             <div className="text-[8px] text-green-800 mb-1">MODEL ACCURACY</div>
                             <div className="text-sm font-bold text-purple-400 font-mono">
-                                {cognition.modelAccuracy.toFixed(1)}%
+                                {cognition.modelAccuracy?.toFixed(1) ?? "0.0"}%
                             </div>
                         </div>
                     </div>
@@ -162,7 +162,7 @@ export function SystemArchitecture({ perception, cognition, integrity }: SystemA
                                 <span className="text-[9px] text-green-600">Chain Height</span>
                             </div>
                             <span className="text-[9px] font-mono text-amber-400">
-                                #{integrity.blockchainHeight.toLocaleString()}
+                                #{integrity.blockchainHeight?.toLocaleString() ?? "0"}
                             </span>
                         </div>
 
@@ -196,7 +196,7 @@ export function SystemArchitecture({ perception, cognition, integrity }: SystemA
                         <div className="pt-2 border-t border-amber-900/30">
                             <div className="text-[8px] text-green-800 mb-1">LAST BLOCK</div>
                             <div className="text-[9px] font-mono text-amber-400 truncate" title={integrity.lastBlockHash}>
-                                {integrity.lastBlockHash.substring(0, 20)}...
+                                {integrity.lastBlockHash?.substring(0, 20) ?? "N/A"}...
                             </div>
                         </div>
                     </div>

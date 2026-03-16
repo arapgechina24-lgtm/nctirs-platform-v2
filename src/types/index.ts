@@ -219,8 +219,12 @@ export interface PerceptionLayerStatus {
     anomalyDetectionRate: number;
     lastUpdate: Date;
     status: 'OPERATIONAL' | 'DEGRADED';
-    // Backwards compat for old components if any
+    // Dashboard-specific fields
     iotSensorsActive?: number;
+    iotSensorsTotal?: number;
+    dronesActive?: number;
+    dronesTotal?: number;
+    cctvFeeds?: number;
     networkSniffersActive?: number;
 }
 
@@ -231,9 +235,12 @@ export interface CognitionLayerStatus {
     threatIntelligenceFeeds: number;
     lastUpdate: Date;
     status: 'OPTIMAL' | 'WARNING';
-    // Backwards compat
+    // Dashboard-specific fields
     mlModelsActive?: number;
     modelAccuracy?: number;
+    aptSignaturesLoaded?: number;
+    threatClassificationsToday?: number;
+    averageProcessingTimeMs?: number;
 }
 
 export interface IntegrityLayerStatus {
@@ -243,8 +250,12 @@ export interface IntegrityLayerStatus {
     incidentResponseAutomations: number;
     lastUpdate: Date;
     status: 'SECURE' | 'CRITICAL';
-    // Backwards compat
+    // Dashboard-specific fields
     blockchainHeight?: number;
+    pendingTransactions?: number;
+    nodesOnline?: number;
+    dataProtectionCompliant?: boolean;
+    lastBlockHash?: string;
 }
 
 // ============================================================
