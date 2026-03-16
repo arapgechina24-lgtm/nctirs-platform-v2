@@ -1,7 +1,7 @@
 // GitHub Webhook Handler: Receives and processes GitHub events
 import { NextRequest, NextResponse } from 'next/server'
 import { createHmac, timingSafeEqual } from 'crypto'
-import prisma from '@/lib/db'
+import { prisma } from '@/lib/db'
 
 // GitHub event types we handle
 type GitHubEvent =

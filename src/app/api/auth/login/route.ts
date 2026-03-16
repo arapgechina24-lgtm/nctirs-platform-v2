@@ -1,6 +1,6 @@
 // Authentication API: Login
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/db'
+import { prisma } from '@/lib/db'
 import bcrypt from 'bcryptjs'
 import { createHash } from 'crypto'
 
