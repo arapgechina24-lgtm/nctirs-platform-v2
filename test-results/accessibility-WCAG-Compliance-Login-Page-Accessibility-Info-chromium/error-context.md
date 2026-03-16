@@ -1,0 +1,53 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - img [ref=e4]
+    - generic [ref=e6]: ACTIVE SECTORAL THREATS DETECTED (LEVEL 3)
+  - generic [ref=e12]:
+    - generic [ref=e13]:
+      - img [ref=e18]
+      - heading "NCTIRS SECURE ACCESS" [level=1] [ref=e20]
+      - paragraph [ref=e21]: NATIONAL CYBER COMMAND • LEVEL 4 CLEARANCE REQUIRED
+    - generic [ref=e23]:
+      - img [ref=e24]
+      - generic [ref=e26]: UNAUTHORIZED ACCESS IS A FEDERAL OFFENSE
+    - generic [ref=e27]:
+      - generic [ref=e28]:
+        - generic [ref=e29]: OPERATOR EMAIL
+        - generic [ref=e30]:
+          - img [ref=e31]
+          - textbox "operator@nis.go.ke" [ref=e34]
+      - generic [ref=e35]:
+        - generic [ref=e36]: ACCESS CODE
+        - generic [ref=e37]:
+          - img [ref=e38]
+          - textbox "••••••••" [ref=e41]
+          - button [ref=e42]:
+            - img [ref=e43]
+      - generic [ref=e46]:
+        - checkbox "MAINTAIN SESSION" [ref=e47]
+        - generic [ref=e48]: MAINTAIN SESSION
+      - button "INITIATE SECURE ACCESS" [ref=e49]:
+        - img [ref=e50]
+        - text: INITIATE SECURE ACCESS
+    - paragraph [ref=e54]:
+      - text: NEW OPERATOR?
+      - link "REQUEST ACCESS" [ref=e55] [cursor=pointer]:
+        - /url: /register
+    - generic [ref=e56]:
+      - generic [ref=e57]: "DEMO CREDENTIALS:"
+      - generic [ref=e58]:
+        - generic [ref=e59]: Admin:admin@nis.go.ke
+        - generic [ref=e60]: Pass:admin123
+    - generic [ref=e61]: ENCRYPTED CONNECTION • TLS 1.3 • SHA-256
+  - contentinfo [ref=e62]:
+    - generic [ref=e63]:
+      - generic [ref=e64]: 🇰🇪 REPUBLIC OF KENYA | NATIONAL CYBER COMMAND
+      - generic [ref=e65]: NCTIRS v1.3.0 | NIST SP 800-53 COMPLIANT
+      - generic [ref=e66]: Built with ❤️ for NIRU Hackathon 2026
+  - button "Open Next.js Dev Tools" [ref=e72] [cursor=pointer]:
+    - img [ref=e73]
+  - alert [ref=e76]
+```

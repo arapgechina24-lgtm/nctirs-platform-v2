@@ -1,0 +1,68 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - img [ref=e4]
+    - generic [ref=e6]: ACTIVE SECTORAL THREATS DETECTED (LEVEL 3)
+  - generic [ref=e12]:
+    - generic [ref=e13]:
+      - img [ref=e18]
+      - heading "OPERATOR REGISTRATION" [level=1] [ref=e20]
+      - paragraph [ref=e21]: REQUEST SECURE ACCESS CREDENTIALS
+    - generic [ref=e23]:
+      - img [ref=e24]
+      - generic [ref=e26]: CLEARANCE SUBJECT TO VERIFICATION
+    - generic [ref=e27]:
+      - generic [ref=e28]:
+        - generic [ref=e29]: FULL NAME
+        - generic [ref=e30]:
+          - img [ref=e31]
+          - textbox "John Mwangi" [ref=e34]
+      - generic [ref=e35]:
+        - generic [ref=e36]: OFFICIAL EMAIL
+        - generic [ref=e37]:
+          - img [ref=e38]
+          - textbox "operator@agency.go.ke" [ref=e41]
+      - generic [ref=e42]:
+        - generic [ref=e43]: AGENCY
+        - generic [ref=e44]:
+          - img [ref=e45]
+          - combobox "AGENCY" [ref=e49] [cursor=pointer]:
+            - option "Select Agency..." [selected]
+            - option "National Intelligence Service"
+            - option "Directorate of Criminal Investigations"
+            - option "Kenya Police Service"
+            - option "National Cyber Fusion Centre"
+            - option "Communications Authority of Kenya"
+            - option "Central Bank of Kenya"
+            - option "Other Agency"
+      - generic [ref=e50]:
+        - generic [ref=e51]: ACCESS CODE
+        - generic [ref=e52]:
+          - img [ref=e53]
+          - textbox "Min 6 characters" [ref=e56]
+          - button [ref=e57]:
+            - img [ref=e58]
+      - generic [ref=e61]:
+        - generic [ref=e62]: CONFIRM ACCESS CODE
+        - generic [ref=e63]:
+          - img [ref=e64]
+          - textbox "Confirm password" [ref=e67]
+      - button "REQUEST ACCESS CREDENTIALS" [ref=e68]:
+        - img [ref=e69]
+        - text: REQUEST ACCESS CREDENTIALS
+    - paragraph [ref=e72]:
+      - text: ALREADY REGISTERED?
+      - link "SECURE LOGIN" [ref=e73] [cursor=pointer]:
+        - /url: /login
+    - generic [ref=e74]: DATA PROTECTION ACT 2019 COMPLIANT • ISO 27001
+  - contentinfo [ref=e75]:
+    - generic [ref=e76]:
+      - generic [ref=e77]: 🇰🇪 REPUBLIC OF KENYA | NATIONAL CYBER COMMAND
+      - generic [ref=e78]: NCTIRS v1.3.0 | NIST SP 800-53 COMPLIANT
+      - generic [ref=e79]: Built with ❤️ for NIRU Hackathon 2026
+  - button "Open Next.js Dev Tools" [ref=e85] [cursor=pointer]:
+    - img [ref=e86]
+  - alert [ref=e89]
+```
