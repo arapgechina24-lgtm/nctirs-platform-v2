@@ -16,14 +16,14 @@ export async function POST(request: NextRequest) {
         }
 
         // Find user by email
-        // @ts-expect-error - password field is present after schema update but IDE might be using stale types
+        // We cast to any here to support the dynamically added 'password' field 
+        // without fighting stale IDE types, while maintaining build compatibility.
         const user = await prisma.user.findUnique({
             where: { email },
             select: {
                 id: true,
                 email: true,
                 name: true,
-                // @ts-expect-error - password exists in schema
                 password: true,
                 role: true,
                 agency: true,
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
                 clearanceLevel: true,
                 isActive: true,
             }
-        })
+        }) as any
 
         if (!user) {
             return NextResponse.json(
@@ -48,7 +48,6 @@ export async function POST(request: NextRequest) {
         }
 
         // Verify password
-        // @ts-expect-error - password field is present after schema update
         const isValid = await bcrypt.compare(password, user.password)
         if (!isValid) {
             return NextResponse.json(
@@ -82,7 +81,6 @@ export async function POST(request: NextRequest) {
         }
 
         // Return user data (without password)
-        // @ts-expect-error - password field is present after schema update
         const { password: _password, ...userWithoutPassword } = user
         void _password; // Explicitly consume to avoid unused variable warning
 
