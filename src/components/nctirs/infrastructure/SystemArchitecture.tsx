@@ -115,7 +115,7 @@ export function SystemArchitecture({ perception, cognition, integrity }: SystemA
                                 <span className="text-[9px] text-green-600">APT Signatures</span>
                             </div>
                             <span className="text-[9px] font-mono text-purple-400">
-                                {cognition.aptSignaturesLoaded.toLocaleString()}
+                                {cognition.aptSignaturesLoaded?.toLocaleString() ?? "0"}
                             </span>
                         </div>
 
@@ -125,7 +125,7 @@ export function SystemArchitecture({ perception, cognition, integrity }: SystemA
                                 <span className="text-[9px] text-green-600">Classifications</span>
                             </div>
                             <span className="text-[9px] font-mono text-purple-400">
-                                {cognition.threatClassificationsToday.toLocaleString()}
+                                {cognition.threatClassificationsToday?.toLocaleString() ?? "0"}
                             </span>
                         </div>
 

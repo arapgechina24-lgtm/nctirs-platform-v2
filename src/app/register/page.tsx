@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, FormEvent } from 'react'
+import { useState, useEffect, FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Shield, Lock, Mail, User, Building2, AlertTriangle, Eye, EyeOff, CheckCircle } from 'lucide-react'
@@ -32,8 +32,14 @@ export default function RegisterPage() {
     const [isLoading, setIsLoading] = useState(false)
 
     // Redirect if already authenticated
+    useEffect(() => {
+        if (isAuthenticated && !authLoading) {
+            router.push('/')
+        }
+    }, [isAuthenticated, authLoading, router])
+
+
     if (isAuthenticated && !authLoading) {
-        router.push('/')
         return null
     }
 

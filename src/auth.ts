@@ -2,6 +2,7 @@ import NextAuth from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/lib/db"
 import CredentialsProvider from "next-auth/providers/credentials"
+import bcrypt from "bcryptjs"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
     // @ts-expect-error - NextAuth PrismaAdapter beta type mismatch
@@ -18,26 +19,27 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 password: { label: "Passcode", type: "password" }
             },
             async authorize(credentials) {
-                // Mock authorization for prototyping & $1M SaaS pitch
                 if (!credentials?.badgeId || !credentials?.password) return null;
 
-                const badgeId = credentials.badgeId as string;
+                const email = credentials.badgeId as string;
                 const password = credentials.password as string;
 
-                // Simple mock logic for demonstration
-                // In production, use bcrypt.compare against db hash
-                if (password !== "nctirs2024") return null;
+                // Find user in database
+                const user = await prisma.user.findUnique({
+                    where: { email }
+                });
 
-                let role = "OFFICER";
-                if (badgeId.includes("admin")) role = "ADMIN";
-                else if (badgeId.includes("commander")) role = "COMMANDER";
-                else if (badgeId.includes("analyst")) role = "ANALYST";
+                if (!user || !user.password) return null;
+
+                // Compare password
+                const isValid = await bcrypt.compare(password, user.password);
+                if (!isValid) return null;
 
                 return {
-                    id: badgeId, // using badgeId as mock ID
-                    email: badgeId,
-                    name: badgeId.split('@')[0].toUpperCase(),
-                    role: role,
+                    id: user.id,
+                    email: user.email,
+                    name: user.name,
+                    role: user.role,
                 }
             }
         })
