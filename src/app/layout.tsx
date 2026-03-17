@@ -25,8 +25,8 @@ export default function RootLayout({
           <AuthProvider>
             <ThemeProvider
               attribute="class"
-              defaultTheme="system"
-              enableSystem
+              defaultTheme="dark"
+              forcedTheme="dark"
               disableTransitionOnChange
             >
               <TooltipProvider>{children}</TooltipProvider>
