@@ -39,7 +39,11 @@ export default function RegisterPage() {
     }, [isAuthenticated, authLoading, router])
 
 
-    if (isAuthenticated && !authLoading) {
+    if (authLoading) {
+        return null
+    }
+
+    if (isAuthenticated) {
         return null
     }
 

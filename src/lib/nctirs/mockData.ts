@@ -26,6 +26,10 @@ import type {
   PerceptionLayerStatus,
   CognitionLayerStatus,
   IntegrityLayerStatus,
+  AdversarialMetrics,
+  FederatedLearningStatus,
+  XAIExplanation,
+  SovereignAIStatus,
 } from '@/types';
 
 // Digital Infrastructure Nodes
@@ -261,15 +265,30 @@ export function generateTimeSeriesData(days: number = 30) {
 
 // Keep other generators but adjust if needed for Cyber focus
 export const generateCyberThreats = (count: number = 20): CyberThreat[] => {
+    const threatNames = [
+        'APT-KE-55 "Sandstorm"', 'LockBit-4.0 Campaign', 'DNS Amplification Wave',
+        'eCitizen Portal Breach', 'CBK SWIFT Hijack', 'M-Pesa API Exploit',
+        'KRA iTax SQL Injection', 'NTSA Database Ransomware',
+    ];
+    const sectors: CyberTargetType[] = ['GOVERNMENT', 'FINANCIAL', 'INFRASTRUCTURE', 'TELECOM', 'ENERGY'];
+    const iocSamples = [
+        'IP:41.206.188.x', 'HASH:e3b0c44298fc1c14', 'DOMAIN:kra-verify.top',
+        'CVE-2024-21762', 'IP:185.220.101.x', 'URL:https://c2.malicious.io',
+    ];
     return Array.from({ length: count }, (_, i) => ({
         id: `CT-${i}`,
-        type: i % 2 === 0 ? 'APT' : 'DDoS',
+        type: i % 2 === 0 ? 'APT' : 'DDOS',
+        name: threatNames[i % threatNames.length],
+        description: `Threat ${i + 1}: Advanced persistent threat detected in national infrastructure.`,
         severity: i % 5 === 0 ? 'CRITICAL' : 'HIGH',
-        status: 'ACTIVE',
-        timestamp: new Date(),
+        targetSector: sectors[i % sectors.length],
         targetSystem: 'National Backbone Router',
+        timestamp: new Date(Date.now() - i * 3600000),
+        aiConfidence: Math.floor(Math.random() * 30) + 70,
+        status: 'DETECTED' as const,
+        iocIndicators: [iocSamples[i % iocSamples.length], iocSamples[(i + 1) % iocSamples.length]],
         attribution: 'ZINC-24 GROUP',
-        mitigationStatus: 'IN_PROGRESS'
+        mitigationStatus: 'IN_PROGRESS',
     }));
 };
 
@@ -318,7 +337,6 @@ export function generateAdversarialMetrics(): AdversarialMetrics {
     attacksDetected: Math.floor(Math.random() * 10000) + 1000,
     attacksBlocked: Math.floor(Math.random() * 9500) + 900,
     evasionAttempts: Math.floor(Math.random() * 50) + 5,
-    attackAttempts: Math.floor(Math.random() * 11000),
     poisoningAttempts: 2,
     modelExtractionAttempts: 0,
     defenseStatus: {

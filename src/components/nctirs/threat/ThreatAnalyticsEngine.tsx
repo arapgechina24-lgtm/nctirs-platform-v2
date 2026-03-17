@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Brain, Cpu, Target, TrendingUp, AlertTriangle, Zap } from "lucide-react"
-import { CyberThreat, CoordinatedAttack } from "@/lib/nctirs/mockData"
+import { CyberThreat, CoordinatedAttack } from "@/types"
 import { AIAnalysisPanel } from "@/components/nctirs/intelligence/AIAnalysisPanel"
 
 interface ThreatAnalyticsEngineProps {
@@ -130,7 +130,7 @@ export function ThreatAnalyticsEngine({ cyberThreats, coordinatedAttacks }: Thre
                     >
                         <div className="flex items-center justify-between mb-1">
                             <span className="text-[10px] font-bold text-red-400">{threat.name}</span>
-                            <span className={`text-[8px] px-1.5 py-0.5 ${severityColors[threat.severity]}`}>
+                            <span className={`text-[8px] px-1.5 py-0.5 ${severityColors[threat.severity as keyof typeof severityColors] ?? ''}`}>
                                 {threat.severity}
                             </span>
                         </div>
@@ -139,7 +139,7 @@ export function ThreatAnalyticsEngine({ cyberThreats, coordinatedAttacks }: Thre
                             <span className="text-cyan-500 font-mono">{threat.aiConfidence}% conf</span>
                         </div>
                         <div className="text-[8px] text-green-900 font-mono mt-1">
-                            {threat.iocIndicators[0]}
+                            {threat.iocIndicators?.[0]}
                         </div>
                         <div className="mt-2">
                             <AIAnalysisPanel
