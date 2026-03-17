@@ -118,33 +118,33 @@ export async function submitCitizenReport(formData: FormData) {
         reportedBy: "CITIZEN_PORTAL"
     }
 
-    const NSSPIP_API_URL = process.env.NSSPIP_API_URL
-    const NSSPIP_SYNC_TOKEN = process.env.NSSPIP_SYNC_TOKEN
+    const NCTIRS_API_URL = process.env.NCTIRS_API_URL
+    const NCTIRS_SYNC_TOKEN = process.env.NCTIRS_SYNC_TOKEN
 
-    if (!NSSPIP_API_URL || !NSSPIP_SYNC_TOKEN) {
+    if (!NCTIRS_API_URL || !NCTIRS_SYNC_TOKEN) {
         console.error("Sync configuration missing")
         return { success: false, message: "Server configuration error" }
     }
 
     try {
-        const response = await fetch(NSSPIP_API_URL, {
+        const response = await fetch(NCTIRS_API_URL, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "X-Sync-Token": NSSPIP_SYNC_TOKEN
+                "X-Sync-Token": NCTIRS_SYNC_TOKEN
             },
             body: JSON.stringify(payload)
         })
 
         if (!response.ok) {
             const errorText = await response.text()
-            console.error("NSSPIP Sync Error:", errorText)
-            return { success: false, message: "Failed to sync with NSSPIP" }
+            console.error("NCTIRS Sync Error:", errorText)
+            return { success: false, message: "Failed to sync with NCTIRS" }
         }
 
         return { success: true, message: "Report submitted successfully" }
     } catch (error) {
         console.error("Sync Connection Error:", error)
-        return { success: false, message: "Failed to reach NSSPIP" }
+        return { success: false, message: "Failed to reach NCTIRS" }
     }
 }

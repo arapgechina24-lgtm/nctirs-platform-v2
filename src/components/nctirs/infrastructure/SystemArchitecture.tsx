@@ -25,7 +25,7 @@ export function SystemArchitecture({ perception, cognition, integrity }: SystemA
                         <Database className="h-5 w-5 text-green-400" />
                     </div>
                     <div>
-                        <h2 className="text-sm font-bold text-green-400 tracking-wider">NSSPIP THREE-LAYER ARCHITECTURE</h2>
+                        <h2 className="text-sm font-bold text-green-400 tracking-wider">NCTIRS THREE-LAYER ARCHITECTURE</h2>
                         <p className="text-[10px] text-green-800 font-mono">PERCEPTION • COGNITION • INTEGRITY</p>
                     </div>
                 </div>

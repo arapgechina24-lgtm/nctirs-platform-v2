@@ -1,10 +1,10 @@
-# NSSPIP Technical Whitepaper
+# NCTIRS Technical Whitepaper
 
 **AI-Powered National Security & Smart Policing Intelligence Platform**
 
 ## 1. Architecture Overview
 
-NSSPIP operates on a microservices architecture designed for scalability and security.
+NCTIRS operates on a microservices architecture designed for scalability and security.
 
 ### 1.1 Frontend (Dashboard)
 

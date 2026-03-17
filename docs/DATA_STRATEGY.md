@@ -4,7 +4,7 @@ To properly train the AI models and validate the platform without exposing real 
 
 ## 1. Aggregating Open-Source Historical Datasets
 
-The NSSPIP platform's initial risk models are trained/benchmarked against these publicly available datasets.
+The NCTIRS platform's initial risk models are trained/benchmarked against these publicly available datasets.
 
 ### Recommended Sources
 

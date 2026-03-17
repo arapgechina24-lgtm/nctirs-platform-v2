@@ -45,7 +45,7 @@ export function LoginForm({
                 return
             }
 
-            toast.success("Authentication successful. Welcome to NSSPIP.")
+            toast.success("Authentication successful. Welcome to NCTIRS.")
             router.push("/")
             router.refresh()
         } catch (error) {

@@ -7,10 +7,10 @@ Since you already have the code on GitHub, you don't need to "Clone" it. You jus
 1. **Log in to Vercel**: Go to [vercel.com/dashboard](https://vercel.com/dashboard).
 2. **Add New Project**: Click the **"Add New..."** button (top right) -> Select **"Project"**.
 3. **Select Repository**:
-    * You should see `NSSPIP` in the list of your repositories.
+    * You should see `NCTIRS` in the list of your repositories.
     * Click the **Import** button next to it.
 4. **Configure Project**:
-    * **Project Name**: Leave as `nsspip` (or whatever it suggests).
+    * **Project Name**: Leave as `nctirs` (or whatever it suggests).
     * **Framework Preset**: It should auto-detect `Next.js`.
     * **Root Directory**: Leave as `./`.
 5. **Environment Variables (Crucial)**:

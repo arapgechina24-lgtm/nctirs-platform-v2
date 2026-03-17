@@ -1,6 +1,6 @@
 # Cloud Environments & CI/CD Configuration
 
-The NSSPIP platform is structured to be flexibly deployed either via Managed Serverless Services or Traditional IaaS configurations.
+The NCTIRS platform is structured to be flexibly deployed either via Managed Serverless Services or Traditional IaaS configurations.
 
 ## 1. Managed Deployment Route (Vercel & NeonDB)
 
@@ -38,7 +38,7 @@ For deployments requiring explicit data residency controls.
 
 ## 3. GitHub CI/CD Pipeline
 
-The NSSPIP CI/CD pipeline (`.github/workflows/ci.yml`) is strict but ensures clean environments.
+The NCTIRS CI/CD pipeline (`.github/workflows/ci.yml`) is strict but ensures clean environments.
 
 1. **Dependency Generation**: `npm ci` is strictly handled, followed essentially by the `npx prisma generate` command to construct the required Prisma Client binaries for the Ubuntu workflow container.
 2. **Linting**: Tests are passed utilizing the custom rules established in `eslint.config.mjs` ensuring high compliance code structures.

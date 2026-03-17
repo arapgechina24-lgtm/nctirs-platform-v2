@@ -1,12 +1,11 @@
 
-// API Client for NSSPIP Dashboard
+// API Client for NCTIRS Dashboard
 // Fetches data from backend API routes with fallback to mock data
 import {
     generateMockIncidents,
     generateCyberThreats,
-    SecurityIncident,
-    CyberThreat,
 } from './mockData'
+import type { SecurityIncident, CyberThreat } from '@/types'
 
 // Base API URL
 const API_BASE = '/api'
@@ -86,16 +85,16 @@ export async function fetchIncidents(options?: {
 function mapDBIncidentToSecurityIncident(db: DBIncident): SecurityIncident {
     // Map county to Region type
     const regionMap: Record<string, SecurityIncident['location']['region']> = {
-        'Nairobi': 'NAIROBI',
-        'Mombasa': 'MOMBASA',
-        'Kisumu': 'KISUMU',
-        'Nakuru': 'NAKURU',
-        'Eldoret': 'ELDORET',
-        'Turkana': 'TURKANA',
-        'Garissa': 'GARISSA',
-        'Mandera': 'MANDERA',
+        'Nairobi': 'NAIROBI_HUB',
+        'Mombasa': 'MOMBASA_EDGE',
+        'Kisumu': 'NAIROBI_HUB',
+        'Nakuru': 'NAIROBI_HUB',
+        'Eldoret': 'NAIROBI_HUB',
+        'Turkana': 'GLOBAL',
+        'Garissa': 'GLOBAL',
+        'Mandera': 'GLOBAL',
     }
-    const region = db.county ? (regionMap[db.county] || 'NAIROBI') : 'NAIROBI'
+    const region = db.county ? (regionMap[db.county] || 'NAIROBI_HUB') : 'NAIROBI_HUB'
 
     return {
         id: db.id,
@@ -110,14 +109,12 @@ function mapDBIncidentToSecurityIncident(db: DBIncident): SecurityIncident {
                 db.longitude || 36.8219
             ] as [number, number],
         },
-        threatLevel: db.severity as SecurityIncident['threatLevel'], // 'threatLevel' not 'severity'
+        threatLevel: db.severity as SecurityIncident['threatLevel'],
         status: db.status as SecurityIncident['status'],
         timestamp: new Date(db.createdAt),
-        affectedArea: Math.floor(Math.random() * 50) + 1, // Not stored in DB, generate placeholder
-        casualties: undefined, // Not stored in DB
-        suspects: undefined, // Not stored in DB
-        aiConfidence: 75 + Math.floor(Math.random() * 20), // Not stored in DB, generate realistic value
-        sources: ['Database', 'API'].slice(0, Math.floor(Math.random() * 2) + 1), // Placeholder
+        affectedSystems: Math.floor(Math.random() * 50) + 1,
+        aiConfidence: 75 + Math.floor(Math.random() * 20),
+        sources: ['Database', 'API'].slice(0, Math.floor(Math.random() * 2) + 1),
     }
 }
 

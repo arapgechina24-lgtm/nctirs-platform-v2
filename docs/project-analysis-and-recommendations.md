@@ -1,4 +1,4 @@
-# Project Analysis & Recommendations: NSSPIP vs. Proposal
+# Project Analysis & Recommendations: NCTIRS vs. Proposal
 
 **Objective**: Win the NIRU Hackathon & Demonstrate NIS-Ready Capability.
 

@@ -6,7 +6,7 @@ import { Bot, Send } from 'lucide-react';
 
 const AIAssistantPanel: React.FC = () => {
     const [messages, setMessages] = useState<{ role: 'user' | 'ai'; content: string }[]>([
-        { role: 'ai', content: 'NSSPIP AI Core Online. Ready to assist with threat mitigation strategies.' }
+        { role: 'ai', content: 'NCTIRS AI Core Online. Ready to assist with threat mitigation strategies.' }
     ]);
     const [input, setInput] = useState('');
     const [isTyping, setIsTyping] = useState(false);
@@ -22,7 +22,7 @@ const AIAssistantPanel: React.FC = () => {
             });
             if (res.ok) {
                 const data = await res.json();
-                fullResponse = `[NSSPIP LIVE NLP ENGINE]\n\nVOLATILITY SCORE: ${data.sentiment} (Score: ${data.score})\nCONTEXT: "${data.text_preview}..."\n\nAI RECOMMENDATION: ${data.sentiment === 'NEGATIVE' ? 'ELEVATED THREAT DETECTED. ADVISE DEPLOYMENT OF COUNTERMEASURES.' : 'MAINTAIN OBSERVATION. NO IMMEDIATE THREAT IDENTIFIED.'}`;
+                fullResponse = `[NCTIRS LIVE NLP ENGINE]\n\nVOLATILITY SCORE: ${data.sentiment} (Score: ${data.score})\nCONTEXT: "${data.text_preview}..."\n\nAI RECOMMENDATION: ${data.sentiment === 'NEGATIVE' ? 'ELEVATED THREAT DETECTED. ADVISE DEPLOYMENT OF COUNTERMEASURES.' : 'MAINTAIN OBSERVATION. NO IMMEDIATE THREAT IDENTIFIED.'}`;
             } else {
                 fullResponse = "ERROR: UNABLE TO CONTACT SERVERLESS AI ENGINE.";
             }

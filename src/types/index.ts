@@ -1,5 +1,5 @@
 /**
- * NSSPIP Platform - Shared Type Definitions
+ * NCTIRS Platform - Shared Type Definitions
  *
  * Central type definitions for the National Cyber Threat Intelligence
  * & Response System. All domain types are defined here and re-exported

@@ -1,9 +1,9 @@
-// Data fetching hooks for NSSPIP Dashboard
+// Data fetching hooks for NCTIRS Dashboard
 // Wraps API calls with React state management
 
 import { useState, useEffect, useCallback } from 'react'
 import { fetchIncidents, fetchThreats } from '@/lib/nctirs/api'
-import type { SecurityIncident, CyberThreat } from '@/lib/nctirs/mockData'
+import type { SecurityIncident, CyberThreat } from '@/types'
 
 export function useIncidents(options?: Parameters<typeof fetchIncidents>[0]) {
     const [incidents, setIncidents] = useState<SecurityIncident[]>([])

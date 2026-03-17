@@ -1,4 +1,4 @@
-// Analytics tracking utility for NSSPIP Dashboard
+// Analytics tracking utility for NCTIRS Dashboard
 // Stores analytics in localStorage for demo mode
 
 type EventType = 'pageview' | 'click' | 'action' | 'error' | 'performance'

@@ -1,14 +1,14 @@
-# NSSPIP User Manual
+# NCTIRS User Manual
 
 **AI-Powered National Security & Smart Policing Intelligence Platform**
 
 ## 1. Introduction
 
-Welcome to NSSPIP. This platform leverages AI to predict threats, monitor surveillance feeds, and coordinate incident responses.
+Welcome to NCTIRS. This platform leverages AI to predict threats, monitor surveillance feeds, and coordinate incident responses.
 
 ## 2. Accessing the System
 
-- **URL**: `http://localhost:3000` (Dev) / `https://nsspip.gov.ke` (Prod)
+- **URL**: `http://localhost:3000` (Dev) / `https://nctirs.gov.ke` (Prod)
 - **Login**: Use your secure credentials.
   - *Demo Admin*: `admin@nss.go.ke` / (No password for dev auth)
 

@@ -25,7 +25,7 @@ export default function ReportPage() {
             if (result.success) {
                 setReportId((Math.random() * 10000).toFixed(0))
                 setSuccess(true)
-                toast.success("Report transmitted to NSSPIP")
+                toast.success("Report transmitted to NCTIRS")
             } else {
                 toast.error(result.message || "Failed to submit report")
             }

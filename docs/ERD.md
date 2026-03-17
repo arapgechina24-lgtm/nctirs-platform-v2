@@ -1,6 +1,6 @@
 # Entity Relationship Diagram (ERD)
 
-This document visualizes the PostgreSQL database schema for the AI-Powered National Security and Smart Policing Intelligence Platform (NSSPIP).
+This document visualizes the PostgreSQL database schema for the AI-Powered National Cyber Threat Intelligence & Response System (NCTIRS).
 
 ## Core Architecture
 
